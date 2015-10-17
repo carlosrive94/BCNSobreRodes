@@ -33,7 +33,7 @@ public class Principal extends Activity implements View.OnClickListener {
         Intent intent;
         switch (arg0.getId()) {
             case R.id.button_places:
-                intent = new Intent(this, Places.class);
+                intent = new Intent(this, PlacePickerActivity.class);
                 startActivity(intent);
                 break;
             case R.id.button_map:
