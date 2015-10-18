@@ -7,16 +7,27 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MapPane" >
-
-    <EditText
-        android:id="@+id/header"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:singleLine="true" />
-
+        android:id="@+id/linear_layout">
+        <EditText
+            android:id="@+id/AdressText"
+            android:layout_width="183dp"
+            android:layout_height="wrap_content"
+            android:singleLine="true" />
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Search"
+            android:id="@+id/SearchButton"
+            android:layout_gravity="right"
+            android:onClick="onSearch"/>
+    </LinearLayout>
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        android:layout_below="@+id/header"
+        android:layout_below="@+id/linear_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".MapPane"
