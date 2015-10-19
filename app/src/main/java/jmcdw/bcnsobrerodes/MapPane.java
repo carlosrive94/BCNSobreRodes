@@ -33,8 +33,10 @@ public class MapPane extends Activity implements OnMapReadyCallback {
     }
 
     public void onSearch(View view) {
+        myMap.clear();
         EditText location_tf = (EditText)findViewById(R.id.AdressText);
-        String location = location_tf.getText().toString();
+        //afegeixo Barcelona al final del string per a que googleMaps no busqui a altres llocs.
+        String location = location_tf.getText().toString() + ", Barcelona";
         List<Address> addressList = null;
         if (location != null || !location.equals("")) {
             Geocoder geocoder = new Geocoder(this);
