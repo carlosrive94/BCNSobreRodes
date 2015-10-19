@@ -65,5 +65,17 @@
         android:id="@+id/poweredBy"
         android:src="@drawable/powered_by_google_light"/>
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Categories Nearby"
+        android:id="@+id/categoriesButton"
+        android:layout_below="@+id/whereButton"
+        android:layout_marginTop="56dp"
+        android:layout_alignStart="@+id/pickerButton"
+        android:layout_alignEnd="@+id/pickerButton"
+        android:nestedScrollingEnabled="false"
+        android:onClick="onCategoriesNearby" />
+
 
 </RelativeLayout>

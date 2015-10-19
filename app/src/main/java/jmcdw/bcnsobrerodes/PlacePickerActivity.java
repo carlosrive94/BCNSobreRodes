@@ -16,13 +16,20 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.AutocompleteFilter;
+import com.google.android.gms.location.places.AutocompletePredictionBuffer;
 import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlaceFilter;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.maps.android.SphericalUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class PlacePickerActivity extends AppCompatActivity implements
@@ -56,6 +63,9 @@ public class PlacePickerActivity extends AppCompatActivity implements
                     BOUNDS = convertCenterAndRadiusToBounds(whereIam(), RADIUS_LOCATION);
                 try {
                     PlacePicker.IntentBuilder intentBuilder = new PlacePicker.IntentBuilder();
+                    ///PART D'AFEGIR FILTRES
+                    List<Integer> categoryFilter = new ArrayList<Integer>();
+                    categoryFilter.add(Place.TYPE_BAR);
                     intentBuilder.setLatLngBounds(BOUNDS);
                     Intent intent = intentBuilder.build(getApplicationContext());
                     startActivityForResult(intent, PLACE_PICKER_REQUEST);
@@ -138,5 +148,10 @@ public class PlacePickerActivity extends AppCompatActivity implements
         Toast.makeText(this,
                 "Google Places API connection failed with error code:" +
                         connectionResult.getErrorCode(), Toast.LENGTH_LONG).show();
+    }
+
+    public void onCategoriesNearby(View v){
+       Intent intent = new Intent(this, CategoriesActivity.class);
+       startActivity(intent);
     }
 }

@@ -11,5 +11,6 @@
     <string name="title_activity_maps">Map</string>
 
       <string name="google_maps_key_instructions" templateMergeStrategy="replace"/>
+    <string name="title_activity_categories">CategoriesActivity</string>
 
 </resources>
