@@ -1,25 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:fitsSystemWindows="true"
-    tools:context="jmcdw.bcnsobrerodes.CategoriesActivity">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="1">
 
-    <android.support.design.widget.AppBarLayout android:layout_height="wrap_content"
-        android:layout_width="match_parent" android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar android:id="@+id/toolbar"
-            android:layout_width="match_parent" android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary" app:popupTheme="@style/AppTheme.PopupOverlay" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Categories Nearby"
+        android:id="@+id/categoriesTitle"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="6dp" />
 
-    </android.support.design.widget.AppBarLayout>
+    <EditText
+        android:layout_width="239dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/placeType"
+        android:layout_marginTop="4dp" />
 
-    <include layout="@layout/content_categories" />
+    <Button
+        android:layout_width="95dp"
+        android:layout_height="wrap_content"
+        android:text="SEARCH"
+        android:id="@+id/button"
+        android:layout_gravity="right"
+        android:layout_marginRight="14dp" />
 
-    <android.support.design.widget.FloatingActionButton android:id="@+id/fab"
-        android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end" android:layout_margin="@dimen/fab_margin"
-        android:src="@android:drawable/ic_dialog_email" />
+    <TextView
+        android:layout_width="354dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/byCategResult"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.87"
+        android:layout_marginTop="15dp" />
 
-</android.support.design.widget.CoordinatorLayout>
+</LinearLayout>

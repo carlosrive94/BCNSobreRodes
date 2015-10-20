@@ -63,9 +63,6 @@ public class PlacePickerActivity extends AppCompatActivity implements
                     BOUNDS = convertCenterAndRadiusToBounds(whereIam(), RADIUS_LOCATION);
                 try {
                     PlacePicker.IntentBuilder intentBuilder = new PlacePicker.IntentBuilder();
-                    ///PART D'AFEGIR FILTRES
-                    List<Integer> categoryFilter = new ArrayList<Integer>();
-                    categoryFilter.add(Place.TYPE_BAR);
                     intentBuilder.setLatLngBounds(BOUNDS);
                     Intent intent = intentBuilder.build(getApplicationContext());
                     startActivityForResult(intent, PLACE_PICKER_REQUEST);
