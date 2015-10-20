@@ -1,5 +1,6 @@
 package jmcdw.bcnsobrerodes;
 import android.app.Activity;
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -26,7 +27,6 @@ public class MapPane extends Activity implements OnMapReadyCallback {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_pane);
-
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -49,8 +49,13 @@ public class MapPane extends Activity implements OnMapReadyCallback {
             Address address = addressList.get(0);
             LatLng latLng = new LatLng(address.getLatitude(),address.getLongitude());
             myMap.addMarker(new MarkerOptions().position(latLng).title(address.getAddressLine(0)));
-            myMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+            myMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,10));
         }
+    }
+
+    public void onClickRoute(View view) {
+        Intent i = new Intent(getApplicationContext(),FromToActivity.class);
+        startActivity(i);
     }
 
     @Override

@@ -7,6 +7,16 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MapPane" >
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_weight="1"
+        android:scrollbars="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MapPane"
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.MapFragment">
+    </fragment>
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -20,19 +30,18 @@
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Search"
+            android:text="Cerca"
             android:id="@+id/SearchButton"
             android:layout_gravity="right"
             android:onClick="onSearch"/>
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ruta"
+            android:id="@+id/RouteButton"
+            android:layout_gravity="right"
+            android:onClick="onClickRoute"/>
     </LinearLayout>
-    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_below="@+id/linear_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".MapPane"
-        android:id="@+id/map"
-        android:name="com.google.android.gms.maps.MapFragment">
-    </fragment>
 
 </RelativeLayout>
