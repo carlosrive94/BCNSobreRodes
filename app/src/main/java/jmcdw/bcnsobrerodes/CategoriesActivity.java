@@ -2,11 +2,14 @@ package jmcdw.bcnsobrerodes;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -18,12 +21,15 @@ import com.google.android.gms.location.places.PlaceLikelihood;
 import com.google.android.gms.location.places.PlaceLikelihoodBuffer;
 import com.google.android.gms.location.places.Places;
 
-public class CategoriesActivity extends AppCompatActivity  implements
+public class CategoriesActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener {
 
     private static final int GOOGLE_API_CLIENT_ID = 0;
     GoogleApiClient mGoogleApiClient;
     private static final String LOG_TAG = "CategoriesActivity";
+    private int mTipus = -1;
+    private Spinner categSpinner;
+    private TextView mfilterResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,30 +37,11 @@ public class CategoriesActivity extends AppCompatActivity  implements
         setContentView(R.layout.activity_categories);
         Log.v(LOG_TAG, "After onCreate");
         buildGoogleAPIClient();
-        Log.v(LOG_TAG, "After building GoogleAPIClient");
-        if (mGoogleApiClient.isConnected()){
-            Toast t = new Toast(this);
-            t.setText("API Connected");
-            t.show();
-            Log.v(LOG_TAG, "Google API Connected");
+        buildCategorySpinner();
+        mfilterResult = (TextView) findViewById(R.id.byCategResult);
+        mfilterResult.setMovementMethod(new ScrollingMovementMethod());
+       }
 
-            PendingResult<PlaceLikelihoodBuffer> result = Places.PlaceDetectionApi
-                    .getCurrentPlace(mGoogleApiClient, null);
-            result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
-                @Override
-                public void onResult(PlaceLikelihoodBuffer likelyPlaces) {
-                    for (PlaceLikelihood placeLikelihood: likelyPlaces){
-                        Place place = placeLikelihood.getPlace();
-                        TextView camp = (TextView) findViewById(R.id.byCategResult);
-                        camp.setText("");
-                        Log.v(LOG_TAG, place.getName().toString());
-                        camp.append(place.getName().toString());
-                    }
-                }
-            });
-
-        }
-    }
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Log.e(LOG_TAG, "Google Places API connection failed with error code: "
@@ -64,6 +51,7 @@ public class CategoriesActivity extends AppCompatActivity  implements
                 "Google Places API connection failed with error code:" +
                         connectionResult.getErrorCode(), Toast.LENGTH_LONG).show();
     }
+
     private void buildGoogleAPIClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(Places.PLACE_DETECTION_API)
@@ -72,13 +60,60 @@ public class CategoriesActivity extends AppCompatActivity  implements
                 .build();
     }
 
-    public void onClickOK(){
-        EditText typeField = (EditText) findViewById(R.id.placeType);
-        String gottenType = typeField.getText().toString();
-        switch (gottenType){
-            case "gym":
+    private void buildCategorySpinner(){
+        categSpinner = (Spinner) findViewById(R.id.categorySelector);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.categories, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        categSpinner.setAdapter(adapter);
+    }
 
-            case "supermarket":
+    public void onClickOK(View v) {
+        mfilterResult.setText("");
+        if (mGoogleApiClient.isConnected()) {
+            String gottenType = categSpinner.getSelectedItem().toString();
+            switch (gottenType) {
+                case "Gym":
+                    mTipus = Place.TYPE_GYM;
+                    break;
+                case "Shop":
+                    mTipus = Place.TYPE_STORE;
+                    break;
+                case "Restaurant":
+                    mTipus = Place.TYPE_RESTAURANT;
+                    break;
+                case "Hospital":
+                    mTipus = Place.TYPE_HOSPITAL;
+                    break;
+                case "Bank":
+                    mTipus = Place.TYPE_BANK;
+                    break;
+                case "University":
+                    mTipus = Place.TYPE_UNIVERSITY;
+                    break;
+                case "School":
+                    mTipus = Place.TYPE_SCHOOL;
+                    break;
+                case "Show All":
+                    break;
+            }
+            PendingResult<PlaceLikelihoodBuffer> result = Places.PlaceDetectionApi
+                    .getCurrentPlace(mGoogleApiClient, null);
+            result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
+                @Override
+                public void onResult(PlaceLikelihoodBuffer likelyPlaces) {
+                    for (PlaceLikelihood placeLikelihood : likelyPlaces) {
+                        Place place = placeLikelihood.getPlace();
+                        if (place.getPlaceTypes().contains(mTipus) || mTipus == -1) {
+                            Log.v(LOG_TAG, place.getName().toString());
+                            mfilterResult.append(place.getName().toString());
+                            mfilterResult.append("\n");
+                            mTipus = -1;
+                        }
+                    }
+                }
+            });
+
         }
     }
 
