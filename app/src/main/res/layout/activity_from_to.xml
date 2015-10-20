@@ -24,7 +24,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Destí: "
+            android:text="Destí:  "
             />
         <EditText
             android:id="@+id/ToText"
@@ -35,7 +35,7 @@
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cerca"
+            android:text="Mostra ruta"
             android:id="@+id/SearchButton"
             android:layout_gravity="right"
             android:onClick="onSearchRoute"/>
