@@ -1,5 +1,7 @@
 package jmcdw.bcnsobrerodes;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.location.Address;
@@ -7,6 +9,7 @@ import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
@@ -35,6 +38,7 @@ import java.util.List;
 public class MapPane extends Activity implements OnMapReadyCallback {
 
     private GoogleMap myMap;
+    private Geocoder geocoder = new Geocoder(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,37 +50,20 @@ public class MapPane extends Activity implements OnMapReadyCallback {
     }
 
     @Override
+    public void onMapReady(GoogleMap map) {
+        LatLng barcelona = new LatLng(41.3909267, 2.1673073);
+
+        map.setMyLocationEnabled(true);
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(barcelona, 13));
+        myMap = map;
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1 && resultCode == RESULT_OK) {
             if (data.hasExtra("from") && data.hasExtra("to")) {
                 //dibuixa la ruta des de "from" fins a "to"
-                List<Address> addressList = null;
-                Geocoder geocoder = new Geocoder(this);
-                try {
-                    //afegim ", Barcelona" al final del string per obtenir l'adreça
-                    addressList = geocoder.getFromLocationName(getIntent().getStringExtra("from") + ", Barcelona", 1);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                Address from = addressList.get(0);
-                try {
-                    //afegim ", Barcelona" al final del string per obtenir l'adreça
-                    addressList = geocoder.getFromLocationName(getIntent().getStringExtra("to") + ", Barcelona", 1);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                Address to = addressList.get(0);
-                LatLng origin = new LatLng(from.getLatitude(),from.getLongitude());
-                LatLng dest = new LatLng(to.getLatitude(),to.getLongitude());
-                myMap.addMarker(new MarkerOptions().position(origin).title(from.getAddressLine(0)));
-                myMap.addMarker(new MarkerOptions().position(dest).title(to.getAddressLine(0)));
-                // Getting URL to the Google Directions API
-                String url = getDirectionsUrl(origin, dest);
-
-                DownloadTask downloadTask = new DownloadTask();
-
-                // Start downloading json data from Google Directions API
-                downloadTask.execute(url);
+                drawRoute(getIntent().getStringExtra("from"), getIntent().getStringExtra("to"));
             }
         }
     }
@@ -88,7 +75,6 @@ public class MapPane extends Activity implements OnMapReadyCallback {
         String location = location_tf.getText().toString() + ", Barcelona";
         List<Address> addressList = null;
         if (location != null || !location.equals("")) {
-            Geocoder geocoder = new Geocoder(this);
             try {
                 addressList = geocoder.getFromLocationName(location, 1);
             }
@@ -98,23 +84,78 @@ public class MapPane extends Activity implements OnMapReadyCallback {
             Address address = addressList.get(0);
             LatLng latLng = new LatLng(address.getLatitude(),address.getLongitude());
             myMap.addMarker(new MarkerOptions().position(latLng).title(address.getAddressLine(0)));
-            myMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,10));
+            myMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
         }
 
     }
 
     public void onClickRoute(View view) {
-        Intent i = new Intent(getApplicationContext(),FromToActivity.class);
-        startActivityForResult(i,1);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        // Get the layout inflater
+        LayoutInflater inflater = this.getLayoutInflater();
+        // Inflate and set the layout for the dialog
+        // Pass null as the parent view because its going in the dialog layout
+        builder.setView(inflater.inflate(R.layout.dialog_from_to, null))
+                // Add action buttons
+                .setPositiveButton("Cerca", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        String from = ((AlertDialog) dialog).findViewById(R.id.FromText).toString();
+                        String to = ((AlertDialog) dialog).findViewById(R.id.ToText).toString();
+                        drawRoute(from, to);
+                        dialog.dismiss();
+                    }
+                })
+                .setNegativeButton("Cancela", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                    }
+                });
+        builder.create().show();
     }
 
-    @Override
-    public void onMapReady(GoogleMap map) {
-        LatLng barcelona = new LatLng(41.3909267,2.1673073);
+    /*
+    private void alertDialog(String msg) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(msg)
+                .setTitle("Avís");
+        AlertDialog dialog = builder.create();
+    }
+    */
 
-        map.setMyLocationEnabled(true);
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(barcelona, 13));
-        myMap = map;
+    public void drawRoute(String str_from, String str_to) {
+        List<Address> addressList = null;
+        Address addr_from = null;
+        Address addr_to = null;
+        if (str_from != null || !str_from.equals("")) {
+            try {
+                //afegim ", Barcelona" al final del string
+                addressList = geocoder.getFromLocationName(str_from + ", Barcelona", 1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            addr_from = addressList.get(0);
+        }
+        if (str_to != null || !str_to.equals("")) {
+            try {
+                //afegim ", Barcelona" al final del string
+                addressList = geocoder.getFromLocationName(str_to + ", Barcelona", 1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            addr_to = addressList.get(0);
+        }
+        LatLng latLng_from = new LatLng(addr_from.getLatitude(),addr_from.getLongitude());
+        LatLng latLng_to = new LatLng(addr_to.getLatitude(),addr_to.getLongitude());
+        myMap.addMarker(new MarkerOptions().position(latLng_from).title(addr_from.getAddressLine(0)));
+        myMap.addMarker(new MarkerOptions().position(latLng_to).title(addr_to.getAddressLine(0)));
+        // Getting URL to the Google Directions API
+        String url = getDirectionsUrl(latLng_from, latLng_to);
+
+        DownloadTask downloadTask = new DownloadTask();
+
+        // Start downloading json data from Google Directions API
+        downloadTask.execute(url);
     }
 
     /*
