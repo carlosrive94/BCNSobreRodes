@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -100,8 +101,10 @@ public class MapPane extends Activity implements OnMapReadyCallback {
                 .setPositiveButton("Cerca", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        String from = ((AlertDialog) dialog).findViewById(R.id.FromText).toString();
-                        String to = ((AlertDialog) dialog).findViewById(R.id.ToText).toString();
+                        EditText from_et = (EditText)((AlertDialog) dialog).findViewById(R.id.FromText);
+                        EditText to_et = (EditText)((AlertDialog) dialog).findViewById(R.id.ToText);
+                        String from = from_et.getText().toString();
+                        String to = to_et.getText().toString();
                         drawRoute(from, to);
                         dialog.dismiss();
                     }
