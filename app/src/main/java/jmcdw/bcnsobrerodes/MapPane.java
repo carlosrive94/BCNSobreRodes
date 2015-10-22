@@ -39,7 +39,7 @@ import java.util.List;
 public class MapPane extends Activity implements OnMapReadyCallback {
 
     private GoogleMap myMap;
-    private Geocoder geocoder = new Geocoder(this);
+    private Geocoder geocoder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +48,7 @@ public class MapPane extends Activity implements OnMapReadyCallback {
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        geocoder = new Geocoder(this);
     }
 
     @Override
