@@ -179,6 +179,9 @@ public class MapPane extends Activity implements OnMapReadyCallback {
         // Sensor enabled
         String sensor = "sensor=false";
 
+        // Mode
+        String mode = "mode="+"walking";
+
         // Building the parameters to the web service
         String parameters = str_origin+"&"+str_dest+"&"+sensor;
 
