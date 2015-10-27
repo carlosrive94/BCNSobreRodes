@@ -287,8 +287,8 @@ public class MapPane extends Activity implements OnMapReadyCallback {
                 JSONObject distanceObj = legArray.getJSONObject(0).getJSONObject("distance");
                 JSONObject durationObj = legArray.getJSONObject(0).getJSONObject("duration");
                 String distance = distanceObj.getString("text"); //String that contains the distance value formatted
-                String duration = durationObj.getString("text"); //String that contains the duration time value formatted
-                infoToDisplay = "Travel distance: "+distance+"\nEstimated duration: "+duration;
+                String time = durationObj.getString("text"); //String that contains the duration time value formatted
+                infoToDisplay = "Distància: "+distance+"\nTemps estimat: "+time;
             } catch (JSONException e) {
                 e.printStackTrace();
             }
