@@ -33,7 +33,7 @@
             android:text="Cerca"
             android:id="@+id/SearchButton"
             android:layout_gravity="right"
-            android:onClick="onSearch"/>
+            android:onClick="onClickSearch"/>
         <Button
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
@@ -48,11 +48,12 @@
         android:layout_below="@+id/linear_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/linear_layout_aux">
+        android:id="@+id/info_layout">
         <TextView
-            android:id="@+id/text_aux"
-            android:layout_width="183dp"
-            android:layout_height="wrap_content" />
+            android:id="@+id/InfoText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"/>
     </LinearLayout>
 
 </RelativeLayout>

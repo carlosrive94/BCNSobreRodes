@@ -8,8 +8,10 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -22,6 +24,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -40,6 +44,7 @@ public class MapPane extends Activity implements OnMapReadyCallback {
 
     private GoogleMap myMap;
     private Geocoder geocoder;
+    private String infoToDisplay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,8 +75,23 @@ public class MapPane extends Activity implements OnMapReadyCallback {
         }
     }
 
-    public void onSearch(View view) {
+    protected void displayInfo() {
+        TextView infoText = (TextView)findViewById(R.id.InfoText);
+        infoText.setText(infoToDisplay);
+    }
+
+    protected void eraseDisplayedInfo() {
+        infoToDisplay = "";
+        displayInfo();
+    }
+
+    protected void clearView() {
         myMap.clear();
+        eraseDisplayedInfo();
+    }
+
+    public void onClickSearch(View view) {
+        clearView();
         EditText location_tf = (EditText)findViewById(R.id.AdressText);
         //afegeixo Barcelona al final del string per a que googleMaps no busqui a altres llocs.
         String location = location_tf.getText().toString() + ", Barcelona";
@@ -88,10 +108,10 @@ public class MapPane extends Activity implements OnMapReadyCallback {
             myMap.addMarker(new MarkerOptions().position(latLng).title(address.getAddressLine(0)));
             myMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
         }
-
     }
 
     public void onClickRoute(View view) {
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         // Get the layout inflater
         LayoutInflater inflater = this.getLayoutInflater();
@@ -102,12 +122,23 @@ public class MapPane extends Activity implements OnMapReadyCallback {
                 .setPositiveButton("Cerca", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
+                        //myMap.clear();
+                        clearView();
                         EditText from_et = (EditText)((AlertDialog) dialog).findViewById(R.id.FromText);
                         EditText to_et = (EditText)((AlertDialog) dialog).findViewById(R.id.ToText);
                         String from = from_et.getText().toString();
                         String to = to_et.getText().toString();
                         drawRoute(from, to);
                         dialog.dismiss();
+                        //esperem 1 segon a que el thread creat a drawRoute actualitzi la variable global infoToDisplay.
+                        final Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                // Do something after 1s = 1000ms
+                                displayInfo();
+                            }
+                        }, 1000);
                     }
                 })
                 .setNegativeButton("Cancela", new DialogInterface.OnClickListener() {
@@ -177,13 +208,13 @@ public class MapPane extends Activity implements OnMapReadyCallback {
         String str_dest = "destination="+dest.latitude+","+dest.longitude;
 
         // Sensor enabled
-        String sensor = "sensor=false";
+        //String sensor = "sensor=false";
 
         // Mode
         String mode = "mode="+"walking";
 
         // Building the parameters to the web service
-        String parameters = str_origin+"&"+str_dest+"&"+sensor;
+        String parameters = str_origin+"&"+str_dest+"&"+mode;
 
         // Output format
         String output = "json";
@@ -247,6 +278,19 @@ public class MapPane extends Activity implements OnMapReadyCallback {
                 data = downloadUrl(url[0]);
             }catch(Exception e){
                 Log.d("Background Task",e.toString());
+            }
+            //display distance and travel duration values
+            try {
+                JSONObject jsonObj = new JSONObject(data.toString());
+                JSONArray parentArray = jsonObj.getJSONArray("routes");
+                final JSONArray legArray = parentArray.getJSONObject(0).getJSONArray("legs");
+                JSONObject distanceObj = legArray.getJSONObject(0).getJSONObject("distance");
+                JSONObject durationObj = legArray.getJSONObject(0).getJSONObject("duration");
+                String distance = distanceObj.getString("text"); //String that contains the distance value formatted
+                String duration = durationObj.getString("text"); //String that contains the duration time value formatted
+                infoToDisplay = "Travel distance: "+distance+"\nEstimated duration: "+duration;
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
             return data;
         }
@@ -326,7 +370,7 @@ public class MapPane extends Activity implements OnMapReadyCallback {
     /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.menu_map_pane, menu);
         return true;
     }*/
 }
