@@ -11,6 +11,7 @@ public class Principal extends Activity implements View.OnClickListener {
 
     private Button places;
     private Button map;
+    private Button obstacles;
     private Button db;
 
     @Override
@@ -30,6 +31,9 @@ public class Principal extends Activity implements View.OnClickListener {
 
         db = (Button) findViewById(R.id.button_bd);
         db.setOnClickListener(this);
+
+        obstacles = (Button) findViewById(R.id.button_obstacles);
+        obstacles.setOnClickListener(this);
     }
 
     @Override
@@ -42,6 +46,10 @@ public class Principal extends Activity implements View.OnClickListener {
                 break;
             case R.id.button_map:
                 intent = new Intent(this, MapPane.class);
+                startActivity(intent);
+                break;
+            case R.id.button_obstacles:
+                intent = new Intent(this, ObstaclesActivity.class);
                 startActivity(intent);
                 break;
             case R.id.button_bd:

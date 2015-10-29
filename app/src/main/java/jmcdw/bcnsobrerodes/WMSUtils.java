@@ -17,7 +17,7 @@ public class WMSUtils extends UrlTileProvider{
         return null;
     }
 
-    private static final double[] TILE_ORIGIN = {-20037508.34789244, 20037508.34789244};
+    private static final double[] TILE_ORIGIN = {2.0525032594168, 41.4690211603867};
     //array indexes for that data
     private static final int ORIG_X = 0;
     private static final int ORIG_Y = 1; // "
@@ -41,10 +41,10 @@ public class WMSUtils extends UrlTileProvider{
         double maxy = TILE_ORIGIN[ORIG_Y] - y * tileSize;
 
         double[] bbox = new double[4];
-        bbox[MINX] = minx;
-        bbox[MINY] = miny;
-        bbox[MAXX] = maxx;
-        bbox[MAXY] = maxy;
+        bbox[MINX] = 2.0525032594168;
+        bbox[MINY] = 41.3494505099487;
+        bbox[MAXX] = 2.26456091786947;
+        bbox[MAXY] = 41.4690211603867;
 
         return bbox;
     }

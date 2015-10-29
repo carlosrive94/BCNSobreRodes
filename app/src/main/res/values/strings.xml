@@ -3,7 +3,7 @@
 
     <string name="app_name">BCNSobreRodes</string>
     <string name="title_activity_map_pane">MapPane</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_obstacles">ObstaclesActivity</string>
     <string name="action_settings">Settings</string>
 
     <string name="API_KEY">AIzaSyAErcVJZhg-fK_sa_m7WFN8YL04Ym9tyMg</string>

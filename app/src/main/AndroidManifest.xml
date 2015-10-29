@@ -70,6 +70,10 @@
             android:label="@string/title_activity_categories"
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>
+        <activity
+            android:name=".ObstaclesActivity"
+            android:label="@string/title_activity_obstacles" >
+        </activity>
     </application>
 
 </manifest>

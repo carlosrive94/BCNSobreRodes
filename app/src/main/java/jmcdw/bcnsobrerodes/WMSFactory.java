@@ -1,8 +1,11 @@
 package jmcdw.bcnsobrerodes;
 
+import android.util.Log;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
+
 import com.google.android.gms.maps.model.TileProvider;
 
 public class WMSFactory {
@@ -12,17 +15,17 @@ public class WMSFactory {
                     "?service=WMS" +
                     "&version=1.3.0" +
                     "&request=GetMap" +
-                    "&layers=WMS Mobiliari" +
+                    "&layers=MOBILIARITOT" +
                     "&bbox=%f,%f,%f,%f" +
-                    "&width=256" +
-                    "&height=256" +
-                    "&srs=EPSG:900913" +
+                    "&width=20" +
+                    "&height=15" +
+                    "&crs=EPSG:32631"+
                     "&format=image/png" +
                     "&transparent=true";
 
     // return a geoserver wms tile layer
-    private static TileProvider getTileProvider() {
-        TileProvider tileProvider = new WMSUtils(256,256) {
+    public static TileProvider getTileProvider() {
+        TileProvider tileProvider = new WMSUtils(20, 15) {
 
             @Override
             public synchronized URL getTileUrl(int x, int y, int zoom) {
@@ -30,6 +33,8 @@ public class WMSFactory {
                 String s = String.format(Locale.US, GEOSERVER_FORMAT, bbox[MINX],
                         bbox[MINY], bbox[MAXX], bbox[MAXY]);
                 URL url = null;
+                Log.v("WMSDEMO", s);
+
                 try {
                     url = new URL(s);
                 } catch (MalformedURLException e) {
