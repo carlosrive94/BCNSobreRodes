@@ -2,7 +2,7 @@
 
 Projecte d'Enginyeria de Software. Q1 2015-2016
 
-Desenvolupat per:
+>**Desenvolupat per:**
 
 >- Aula, Miguel
 >- Rivero, Carlos
