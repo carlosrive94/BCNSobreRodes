@@ -11,6 +11,7 @@ public class Principal extends Activity implements View.OnClickListener {
 
     private Button places;
     private Button map;
+    private Button db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +27,9 @@ public class Principal extends Activity implements View.OnClickListener {
 
         map = (Button) findViewById(R.id.button_map);
         map.setOnClickListener(this);
+
+        db = (Button) findViewById(R.id.button_bd);
+        db.setOnClickListener(this);
     }
 
     @Override
@@ -38,6 +42,10 @@ public class Principal extends Activity implements View.OnClickListener {
                 break;
             case R.id.button_map:
                 intent = new Intent(this, MapPane.class);
+                startActivity(intent);
+                break;
+            case R.id.button_bd:
+                intent = new Intent(this, DatabaseActivity.class);
                 startActivity(intent);
                 break;
         }

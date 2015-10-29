@@ -9,29 +9,27 @@
         android:layout_height="wrap_content"
         android:padding="8dp">
 
-        <Button
-            android:id="@+id/button_places"
-            android:layout_width="150dp"
-            android:layout_height="75dp"
-            android:text="PLACES" />
-
-
-        <Button
-            android:id="@+id/button_map"
-            android:layout_width="150dp"
-            android:layout_height="75dp"
-            android:layout_below="@+id/button_places"
-            android:text="MAP" />
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp" />
 
         <Button
-            android:id="@+id/button_bd"
+            android:id="@+id/conecta"
             android:layout_width="150dp"
             android:layout_height="75dp"
-            android:layout_below="@+id/button_map"
+            android:layout_below="@+id/textView"
+            android:text="Conectar a bd" />
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="150dp"
+            android:layout_height="75dp"
+            android:layout_below="@+id/conecta"
             android:text="BD" />
 
-
     </RelativeLayout>
-
-
 </LinearLayout>
