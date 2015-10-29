@@ -1,4 +1,4 @@
-# BCN Sobre Rodes#
+**# BCN Sobre Rodes**
 
 Projecte d'Enginyeria de Software. Q1 2015-2016
 
