@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-public class Principal extends Activity implements View.OnClickListener {
+public class PrincipalActivity extends Activity implements View.OnClickListener {
 
     private Button places;
     private Button map;
