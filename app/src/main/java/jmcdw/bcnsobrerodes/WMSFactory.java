@@ -11,7 +11,7 @@ import com.google.android.gms.maps.model.TileProvider;
 public class WMSFactory {
 
     private static final String GEOSERVER_FORMAT =
-            "http://www.opengis.net/wms" +
+            "http://w24.bcn.cat/WMSMobAltres/request.aspx" +
                     "?service=WMS" +
                     "&version=1.3.0" +
                     "&request=GetMap" +
