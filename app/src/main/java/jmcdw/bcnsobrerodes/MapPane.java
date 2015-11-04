@@ -1,14 +1,17 @@
 package jmcdw.bcnsobrerodes;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,13 +19,18 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,13 +46,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import jmcdw.bcnsobrerodes.Utils.PlacesFunctions;
+
 //import android.appwidget.;
 
-public class MapPane extends Activity implements OnMapReadyCallback {
+
+public class MapPane extends AppCompatActivity implements OnMapReadyCallback, OnMapLongClickListener {
 
     private GoogleMap myMap;
     private Geocoder geocoder;
     private String infoToDisplay;
+    //private GoogleApiClient myGoogleApiClient;
+    private PlacesFunctions placesFunctions;
+    //private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,26 +68,35 @@ public class MapPane extends Activity implements OnMapReadyCallback {
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         geocoder = new Geocoder(this);
+        //context = this;
+        placesFunctions = new PlacesFunctions(this);
+        //myPlacesFunctions = new PlacesFunctions(this);
+        //buildGoogleApiClient();
     }
 
     @Override
     public void onMapReady(GoogleMap map) {
         LatLng barcelona = new LatLng(41.3909267, 2.1673073);
-
         map.setMyLocationEnabled(true);
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(barcelona, 13));
         myMap = map;
+        myMap.setOnMapLongClickListener(this);
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1 && resultCode == RESULT_OK) {
-            if (data.hasExtra("from") && data.hasExtra("to")) {
-                //dibuixa la ruta des de "from" fins a "to"
-                drawRoute(getIntent().getStringExtra("from"), getIntent().getStringExtra("to"));
-            }
-        }
+    public void onMapLongClick(LatLng to) {
+        myMap.clear();
+        //obtain_my_location
+        LatLng from = placesFunctions.whereIam();
+        drawRoute(from, from.toString(), to, to.toString());
+        //showRouteInfo();
     }
+
+    /*protected synchronized void buildGoogleApiClient() {
+        myGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .build();
+    }*/
 
     protected void displayInfo() {
         TextView infoText = (TextView)findViewById(R.id.InfoText);
@@ -122,23 +145,43 @@ public class MapPane extends Activity implements OnMapReadyCallback {
                 .setPositiveButton("Cerca", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        //myMap.clear();
                         clearView();
                         EditText from_et = (EditText)((AlertDialog) dialog).findViewById(R.id.FromText);
                         EditText to_et = (EditText)((AlertDialog) dialog).findViewById(R.id.ToText);
-                        String from = from_et.getText().toString();
-                        String to = to_et.getText().toString();
-                        drawRoute(from, to);
-                        dialog.dismiss();
-                        //esperem 1 segon a que el thread creat a drawRoute actualitzi la variable global infoToDisplay.
-                        final Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                // Do something after 1s = 1000ms
-                                displayInfo();
+                        String from_str = from_et.getText().toString();
+                        String to_str = to_et.getText().toString();
+
+                        //obtenim la latitud i longitud dels punts de la ruta
+                        List<Address> addressList = null;
+                        Address addr_from = null;
+                        Address addr_to = null;
+                        if (from_str != null || !from_str.equals("")) {
+                            try {
+                                //afegim ", Barcelona" al final del string
+                                addressList = geocoder.getFromLocationName(from_str + ", Barcelona", 1);
+                            } catch (IOException e) {
+                                e.printStackTrace();
                             }
-                        }, 1000);
+                            addr_from = addressList.get(0);
+                        }
+                        if (to_str != null || !to_str.equals("")) {
+                            try {
+                                //afegim ", Barcelona" al final del string
+                                addressList = geocoder.getFromLocationName(to_str + ", Barcelona", 1);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            addr_to = addressList.get(0);
+                        }
+                        LatLng from = new LatLng(addr_from.getLatitude(),addr_from.getLongitude());
+                        LatLng to = new LatLng(addr_to.getLatitude(),addr_to.getLongitude());
+
+                        //obtenim la informació dels punts de la ruta per mostrarlos als markers
+                        String from_info = addr_from.getAddressLine(0);
+                        String to_info = addr_to.getAddressLine(0);
+
+                        drawRoute(from, from_info, to, to_info);
+                        dialog.dismiss();
                     }
                 })
                 .setNegativeButton("Cancela", new DialogInterface.OnClickListener() {
@@ -148,6 +191,18 @@ public class MapPane extends Activity implements OnMapReadyCallback {
                 });
         builder.create().show();
     }
+    /*
+    private void showRouteInfo() {
+        //esperem 1 segon a que el thread creat a drawRoute actualitzi la variable global infoToDisplay.
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // Do something after 1s = 1000ms
+                displayInfo();
+            }
+        }, 1000);
+    }*/
 
     /*
     private void alertDialog(String msg) {
@@ -158,7 +213,7 @@ public class MapPane extends Activity implements OnMapReadyCallback {
     }
     */
 
-    public void drawRoute(String str_from, String str_to) {
+    /*public void drawRoute(String str_from, String str_to) {
         List<Address> addressList = null;
         Address addr_from = null;
         Address addr_to = null;
@@ -184,8 +239,25 @@ public class MapPane extends Activity implements OnMapReadyCallback {
         LatLng latLng_to = new LatLng(addr_to.getLatitude(),addr_to.getLongitude());
         myMap.addMarker(new MarkerOptions().position(latLng_from).title(addr_from.getAddressLine(0)));
         myMap.addMarker(new MarkerOptions().position(latLng_to).title(addr_to.getAddressLine(0)));
+        LatLng cameraLatLng = new LatLng((latLng_from.latitude + latLng_to.latitude)/2,(latLng_from.longitude + latLng_to.longitude)/2);
+        myMap.animateCamera(CameraUpdateFactory.newLatLngZoom(cameraLatLng, 13));
         // Getting URL to the Google Directions API
         String url = getDirectionsUrl(latLng_from, latLng_to);
+
+        DownloadTask downloadTask = new DownloadTask();
+
+        // Start downloading json data from Google Directions API
+        downloadTask.execute(url);
+    }*/
+
+    public void drawRoute(LatLng from, String from_info, LatLng to, String to_info) {
+        myMap.addMarker(new MarkerOptions().position(from).title(from_info));
+        myMap.addMarker(new MarkerOptions().position(to).title(to_info));
+        //col·loquem la càmera al mig de la ruta
+        LatLng cameraLatLng = new LatLng((from.latitude + to.latitude)/2,(from.longitude + to.longitude)/2);
+        myMap.animateCamera(CameraUpdateFactory.newLatLngZoom(cameraLatLng, 13));
+        // Getting URL to the Google Directions API
+        String url = getDirectionsUrl(from, to);
 
         DownloadTask downloadTask = new DownloadTask();
 
@@ -305,6 +377,7 @@ public class MapPane extends Activity implements OnMapReadyCallback {
 
             // Invokes the thread for parsing the JSON data
             parserTask.execute(result);
+            displayInfo();
         }
     }
 
