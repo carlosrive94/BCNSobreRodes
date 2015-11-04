@@ -4,32 +4,32 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import java.util.concurrent.ExecutionException;
 
 import jmcdw.bcnsobrerodes.Utils.Persistence;
 
 public class DatabaseActivity extends AppCompatActivity implements View.OnClickListener {
 
+    private String host = "sql2.freemysqlhosting.net";
+    private String port = "3306";
+    private String catalog = "sql294691";
+    private String user = "sql294691";
+    private String password = "uX2%mW5!";
     private TextView info;
     private Button button, conecta;
-    String host = "sql2.freemysqlhosting.net";
-    String port = "3306";
-    String catalog = "sql294691";
-    String user = "sql294691";
-    String password = "uX2%mW5!";
-    static String query = "select * from LocalitzacioMobilitat";
-    private Persistence persistence;
+    private EditText etQuery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_database);
 
-        persistence = new Persistence();
-
+        etQuery = (EditText) findViewById(R.id.etquery);
         info = (TextView) findViewById(R.id.textView);
-        button = (Button) findViewById(R.id.button);
+        button = (Button) findViewById(R.id.clear);
         button.setOnClickListener(this);
 
         conecta = (Button) findViewById(R.id.conecta);
@@ -39,17 +39,19 @@ public class DatabaseActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void onClick(View arg0) {
         switch (arg0.getId()) {
-            case R.id.button:
-                String resultadoSQL = persistence.executeQuery(false, this, query);
-                info.setText(resultadoSQL);
+            case R.id.clear:
+                info.setText("dasfdas");
                 break;
             case R.id.conecta:
-                boolean isConnected = persistence.connectMySQL(this, host, port, catalog, user, password);
-                if (isConnected) {
-                    Toast.makeText(this,
-                            "Connected!",
-                            Toast.LENGTH_SHORT).show();
-                    conecta.setEnabled(false);
+                Persistence persistence = new Persistence(this, host, catalog, user, password);
+                try {
+                    String query = etQuery.getText().toString();
+                    String s = persistence.execute(query).get();
+                    info.setText(s);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
                 }
                 break;
         }

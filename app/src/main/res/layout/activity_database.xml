@@ -17,19 +17,29 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp" />
 
+        <EditText
+            android:id="@+id/etquery"
+            android:layout_width="350dp"
+            android:layout_height="100dp"
+            android:layout_below="@+id/textView"
+            android:layout_centerHorizontal="true"
+            android:text="select * from LocalitzacioMobilitat" />
+
         <Button
             android:id="@+id/conecta"
             android:layout_width="150dp"
             android:layout_height="75dp"
-            android:layout_below="@+id/textView"
-            android:text="Conectar a bd" />
+            android:layout_below="@+id/etquery"
+            android:layout_centerHorizontal="true"
+            android:text="Execute Query" />
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/clear"
             android:layout_width="150dp"
             android:layout_height="75dp"
             android:layout_below="@+id/conecta"
-            android:text="BD" />
+            android:layout_centerHorizontal="true"
+            android:text="Clear" />
 
     </RelativeLayout>
 </LinearLayout>
