@@ -13,11 +13,6 @@ import jmcdw.bcnsobrerodes.Utils.Persistence;
 
 public class DatabaseActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private String host = "sql2.freemysqlhosting.net";
-    private String port = "3306";
-    private String catalog = "sql294691";
-    private String user = "sql294691";
-    private String password = "uX2%mW5!";
     private TextView info;
     private Button button, conecta;
     private EditText etQuery;
@@ -43,7 +38,7 @@ public class DatabaseActivity extends AppCompatActivity implements View.OnClickL
                 info.setText("dasfdas");
                 break;
             case R.id.conecta:
-                Persistence persistence = new Persistence(this, host, catalog, user, password);
+                Persistence persistence = new Persistence(this);
                 try {
                     String query = etQuery.getText().toString();
                     String s = persistence.execute(query).get();
