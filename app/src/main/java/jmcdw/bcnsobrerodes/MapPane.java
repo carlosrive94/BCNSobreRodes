@@ -90,15 +90,9 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
     public void onMapLongClick(LatLng to) {
         myMap.clear();
         //obtain_my_location
+        LatLng from = placesFunctions.whereIam();
 
-        Geocoder geocoder;
-        List<Address> addresses = new ArrayList<>();
-        geocoder = new Geocoder(this, Locale.getDefault());
-        try {
-            addresses = geocoder.getFromLocation(to.latitude, to.longitude, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        /*
         String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
         String city = addresses.get(0).getLocality();
         String country = addresses.get(0).getCountryName();
@@ -114,11 +108,30 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                         .snippet(sb.toString())
         );
         mark.showInfoWindow();
+        */
 
-        LatLng from = placesFunctions.whereIam();
-        drawRoute(from, from.toString(), to, to.toString());
+        //get info from locations
+        Address address_from = getAddressFromLoc(from);
+        Address address_to = getAddressFromLoc(to);
+        String info_from = address_from.getAddressLine(0);
+        String info_to = address_to.getAddressLine(0);
+
+        drawRoute(from, info_from, to, info_to);
         //showRouteInfo();
 
+    }
+
+    //Pre: loc is not null
+    public Address getAddressFromLoc(LatLng loc) {
+        Geocoder geocoder;
+        List<Address> addresses = new ArrayList<>();
+        geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            addresses = geocoder.getFromLocation(loc.latitude, loc.longitude, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return addresses.get(0);
     }
 
     /*protected synchronized void buildGoogleApiClient() {
