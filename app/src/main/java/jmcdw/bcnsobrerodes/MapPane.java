@@ -26,7 +26,9 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -45,6 +47,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import jmcdw.bcnsobrerodes.Utils.PlacesFunctions;
 
@@ -87,9 +90,35 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
     public void onMapLongClick(LatLng to) {
         myMap.clear();
         //obtain_my_location
+
+        Geocoder geocoder;
+        List<Address> addresses = new ArrayList<>();
+        geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            addresses = geocoder.getFromLocation(to.latitude, to.longitude, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+        String city = addresses.get(0).getLocality();
+        String country = addresses.get(0).getCountryName();
+        String postalCode = addresses.get(0).getPostalCode();
+        StringBuilder sb = new StringBuilder();
+        sb.append(address+"\n" + ", ");
+        sb.append(postalCode + ", " + city + ", " + country);
+
+        Marker mark = myMap.addMarker(new MarkerOptions()
+                        .position(to)
+                        .title("You are here")
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                        .snippet(sb.toString())
+        );
+        mark.showInfoWindow();
+
         LatLng from = placesFunctions.whereIam();
         drawRoute(from, from.toString(), to, to.toString());
         //showRouteInfo();
+
     }
 
     /*protected synchronized void buildGoogleApiClient() {
