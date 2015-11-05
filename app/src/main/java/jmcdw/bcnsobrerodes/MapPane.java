@@ -87,7 +87,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(barcelona, 13));
         myMap = map;
         myMap.setOnMapLongClickListener(this);
-        myMap.setOnMapClickListener(this);
+        //myMap.setOnMapClickListener(this);
     }
 
     @Override
