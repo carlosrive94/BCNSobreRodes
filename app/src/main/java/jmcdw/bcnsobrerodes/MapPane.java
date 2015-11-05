@@ -1,4 +1,5 @@
 package jmcdw.bcnsobrerodes;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -23,6 +24,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -54,7 +56,7 @@ import jmcdw.bcnsobrerodes.Utils.PlacesFunctions;
 //import android.appwidget.;
 
 
-public class MapPane extends AppCompatActivity implements OnMapReadyCallback, OnMapLongClickListener {
+public class MapPane extends AppCompatActivity implements OnMapReadyCallback, OnMapLongClickListener, OnMapClickListener {
 
     private GoogleMap myMap;
     private Geocoder geocoder;
@@ -62,6 +64,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
     //private GoogleApiClient myGoogleApiClient;
     private PlacesFunctions placesFunctions;
     //private Context context;
+    //private PolylineOptions myRuta = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +87,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(barcelona, 13));
         myMap = map;
         myMap.setOnMapLongClickListener(this);
+        myMap.setOnMapClickListener(this);
     }
 
     @Override
@@ -104,7 +108,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         String country = addresses.get(0).getCountryName();
         String postalCode = addresses.get(0).getPostalCode();
         StringBuilder sb = new StringBuilder();
-        sb.append(address+"\n" + ", ");
+        sb.append(address + "\n" + ", ");
         sb.append(postalCode + ", " + city + ", " + country);
 
         Marker mark = myMap.addMarker(new MarkerOptions()
@@ -121,6 +125,13 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
 
     }
 
+    @Override
+    public void onMapClick(LatLng clickCoords) {
+
+
+
+    }
+
     /*protected synchronized void buildGoogleApiClient() {
         myGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
@@ -128,7 +139,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
     }*/
 
     protected void displayInfo() {
-        TextView infoText = (TextView)findViewById(R.id.InfoText);
+        TextView infoText = (TextView) findViewById(R.id.InfoText);
         infoText.setText(infoToDisplay);
     }
 
@@ -144,21 +155,20 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
 
     public void onClickSearch(View view) {
         clearView();
-        EditText location_tf = (EditText)findViewById(R.id.AdressText);
+        EditText location_tf = (EditText) findViewById(R.id.AdressText);
         //afegeixo Barcelona al final del string per a que googleMaps no busqui a altres llocs.
         String location = location_tf.getText().toString() + ", Barcelona";
         List<Address> addressList = null;
         if (location != null || !location.equals("")) {
             try {
                 addressList = geocoder.getFromLocationName(location, 1);
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
             Address address = addressList.get(0);
-            LatLng latLng = new LatLng(address.getLatitude(),address.getLongitude());
+            LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
             myMap.addMarker(new MarkerOptions().position(latLng).title(address.getAddressLine(0)));
-            myMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
+            myMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
         }
     }
 
@@ -175,8 +185,8 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         clearView();
-                        EditText from_et = (EditText)((AlertDialog) dialog).findViewById(R.id.FromText);
-                        EditText to_et = (EditText)((AlertDialog) dialog).findViewById(R.id.ToText);
+                        EditText from_et = (EditText) ((AlertDialog) dialog).findViewById(R.id.FromText);
+                        EditText to_et = (EditText) ((AlertDialog) dialog).findViewById(R.id.ToText);
                         String from_str = from_et.getText().toString();
                         String to_str = to_et.getText().toString();
 
@@ -202,8 +212,8 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                             }
                             addr_to = addressList.get(0);
                         }
-                        LatLng from = new LatLng(addr_from.getLatitude(),addr_from.getLongitude());
-                        LatLng to = new LatLng(addr_to.getLatitude(),addr_to.getLongitude());
+                        LatLng from = new LatLng(addr_from.getLatitude(), addr_from.getLongitude());
+                        LatLng to = new LatLng(addr_to.getLatitude(), addr_to.getLongitude());
 
                         //obtenim la informació dels punts de la ruta per mostrarlos als markers
                         String from_info = addr_from.getAddressLine(0);
@@ -233,14 +243,16 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         }, 1000);
     }*/
 
-    /*
+
     private void alertDialog(String msg) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(msg)
-                .setTitle("Avís");
+                .setTitle("Avís")
+                .show()
+                .closeOptionsMenu();
         AlertDialog dialog = builder.create();
     }
-    */
+
 
     /*public void drawRoute(String str_from, String str_to) {
         List<Address> addressList = null;
@@ -283,7 +295,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         myMap.addMarker(new MarkerOptions().position(from).title(from_info));
         myMap.addMarker(new MarkerOptions().position(to).title(to_info));
         //col·loquem la càmera al mig de la ruta
-        LatLng cameraLatLng = new LatLng((from.latitude + to.latitude)/2,(from.longitude + to.longitude)/2);
+        LatLng cameraLatLng = new LatLng((from.latitude + to.latitude) / 2, (from.longitude + to.longitude) / 2);
         myMap.animateCamera(CameraUpdateFactory.newLatLngZoom(cameraLatLng, 13));
         // Getting URL to the Google Directions API
         String url = getDirectionsUrl(from, to);
@@ -300,37 +312,40 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
 
     */
 
-    private String getDirectionsUrl(LatLng origin,LatLng dest){
+    private String getDirectionsUrl(LatLng origin, LatLng dest) {
 
         // Origin of route
-        String str_origin = "origin="+origin.latitude+","+origin.longitude;
+        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
 
         // Destination of route
-        String str_dest = "destination="+dest.latitude+","+dest.longitude;
+        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
 
         // Sensor enabled
         //String sensor = "sensor=false";
 
         // Mode
-        String mode = "mode="+"walking";
+        String mode = "mode=" + "walking";
 
         // Building the parameters to the web service
-        String parameters = str_origin+"&"+str_dest+"&"+mode;
+        String parameters = str_origin + "&" + str_dest + "&" + mode;
 
         // Output format
         String output = "json";
 
         // Building the url to the web service
-        String url = "https://maps.googleapis.com/maps/api/directions/"+output+"?"+parameters;
+        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
 
         return url;
     }
-    /** A method to download json data from url */
-    private String downloadUrl(String strUrl) throws IOException{
+
+    /**
+     * A method to download json data from url
+     */
+    private String downloadUrl(String strUrl) throws IOException {
         String data = "";
         InputStream iStream = null;
         HttpURLConnection urlConnection = null;
-        try{
+        try {
             URL url = new URL(strUrl);
 
             // Creating an http connection to communicate with url
@@ -347,7 +362,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
             StringBuffer sb = new StringBuffer();
 
             String line = "";
-            while( ( line = br.readLine()) != null){
+            while ((line = br.readLine()) != null) {
                 sb.append(line);
             }
 
@@ -355,9 +370,9 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
 
             br.close();
 
-        }catch(Exception e){
+        } catch (Exception e) {
             Log.d("Error downloading url", e.toString());
-        }finally{
+        } finally {
             iStream.close();
             urlConnection.disconnect();
         }
@@ -374,11 +389,11 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
             // For storing data from web service
             String data = "";
 
-            try{
+            try {
                 // Fetching the data from web service
                 data = downloadUrl(url[0]);
-            }catch(Exception e){
-                Log.d("Background Task",e.toString());
+            } catch (Exception e) {
+                Log.d("Background Task", e.toString());
             }
             //display distance and travel duration values
             try {
@@ -389,7 +404,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                 JSONObject durationObj = legArray.getJSONObject(0).getJSONObject("duration");
                 String distance = distanceObj.getString("text"); //String that contains the distance value formatted
                 String time = durationObj.getString("text"); //String that contains the duration time value formatted
-                infoToDisplay = "Distància: "+distance+"\nTemps estimat: "+time;
+                infoToDisplay = "Distància: " + distance + "\nTemps estimat: " + time;
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -410,8 +425,10 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         }
     }
 
-    /** A class to parse the Google Places in JSON format */
-    private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String,String>>> >{
+    /**
+     * A class to parse the Google Places in JSON format
+     */
+    private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {
 
         // Parsing the data in non-ui thread
         @Override
@@ -420,13 +437,13 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
             JSONObject jObject;
             List<List<HashMap<String, String>>> routes = null;
 
-            try{
+            try {
                 jObject = new JSONObject(jsonData[0]);
                 DirectionsJSONParser parser = new DirectionsJSONParser();
 
                 // Starts parsing data
                 routes = parser.parse(jObject);
-            }catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             return routes;
@@ -440,7 +457,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
             MarkerOptions markerOptions = new MarkerOptions();
 
             // Traversing through all the routes
-            for(int i=0;i<result.size();i++){
+            for (int i = 0; i < result.size(); i++) {
                 points = new ArrayList<LatLng>();
                 lineOptions = new PolylineOptions();
 
@@ -448,8 +465,8 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                 List<HashMap<String, String>> path = result.get(i);
 
                 // Fetching all the points in i-th route
-                for(int j=0;j<path.size();j++){
-                    HashMap<String,String> point = path.get(j);
+                for (int j = 0; j < path.size(); j++) {
+                    HashMap<String, String> point = path.get(j);
 
                     double lat = Double.parseDouble(point.get("lat"));
                     double lng = Double.parseDouble(point.get("lng"));
@@ -462,6 +479,23 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                 lineOptions.addAll(points);
                 lineOptions.width(2);
                 lineOptions.color(Color.RED);
+            }
+            //Save my route on global variables
+            //myRuta = lineOptions;
+            LatLng punts = new LatLng(41,2); // aquests punts s'hauran d'agafar de la BD
+            for (LatLng polyCoords : lineOptions.getPoints()) {
+                //Fer un for amb tots els punts
+
+                float[] results = new float[1];
+
+                Location.distanceBetween(punts.latitude, punts.longitude,
+                        polyCoords.latitude, polyCoords.longitude, results);
+
+                if (results[0] < 20) {
+                    // If distance is less than 100 meters, this is your polyline
+                    alertDialog("Detectat");
+                    break;
+                }
             }
 
             // Drawing polyline in the Google Map for the i-th route
