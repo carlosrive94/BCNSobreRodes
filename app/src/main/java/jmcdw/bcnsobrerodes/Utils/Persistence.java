@@ -13,18 +13,14 @@ public class Persistence extends AsyncTask<String, Void, String> {
 
     private Connection con;
     private Context context;
-    private String host;
-    private String catalog;
-    private String user;
-    private String password;
+    private String host = "sql2.freemysqlhosting.net";
+    //private String port = "3306";
+    private String catalog = "sql294691";
+    private String user = "sql294691";
+    private String password = "uX2%mW5!";
 
-    public Persistence(Context context, String host, String catalog,
-                       String user, String password) {
+    public Persistence(Context context) {
         this.context = context;
-        this.host = host;
-        this.user = user;
-        this.password = password;
-        this.catalog = catalog;
     }
 
     @Override
@@ -44,7 +40,8 @@ public class Persistence extends AsyncTask<String, Void, String> {
 
             while (rs.next()) {
                 for (int i = 1; i <= nColumns; ++i)
-                    result += rsmd.getColumnName(i) + ": " + rs.getString(i) + "\n";
+                    //result += rsmd.getColumnName(i) + ": " + rs.getString(i) + "\n";
+                    result += rs.getString(i);
             }
         } catch (Exception e) {
             e.printStackTrace();

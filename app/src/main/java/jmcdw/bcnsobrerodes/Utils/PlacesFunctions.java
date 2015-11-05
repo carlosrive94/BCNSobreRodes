@@ -14,19 +14,30 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.maps.android.SphericalUtil;
 
+import java.util.concurrent.ExecutionException;
+
 public class PlacesFunctions implements GoogleApiClient.OnConnectionFailedListener {
 
     private static final int GOOGLE_API_CLIENT_ID = 0;
     private static final String LOG_TAG = "PlacesAPIActivity";
     private static final int RADIUS_LOCATION = 50;
+    private static Context context;
     private GoogleApiClient mGoogleApiClient;
     private LatLngBounds BOUNDS = new LatLngBounds(
             new LatLng(41.342535, 2.149677), new LatLng(41.745079, 2.167947));
-    private Context context;
 
     public PlacesFunctions(Context context) {
         this.context = context;
         buildGoogleAPIClient();
+    }
+
+    //Retorna -1 si el place amb id id no està a la bd
+    public static String getPuntuacio(String id) throws ExecutionException, InterruptedException {
+        String query = "select mobilitat from LocalitzacioMobilitat where idPlace="+ id;
+        Persistence persistence = new Persistence(context);
+        String res = persistence.execute(query).get();
+        if(res.equals("")) res="-1";
+        return res;
     }
 
     private void buildGoogleAPIClient() {
@@ -51,7 +62,6 @@ public class PlacesFunctions implements GoogleApiClient.OnConnectionFailedListen
         LatLng location = new LatLng(latitude, longitude);
         return location;
     }
-
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
