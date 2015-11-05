@@ -9,12 +9,15 @@ import android.text.Html;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
+
+import java.util.concurrent.ExecutionException;
 
 import jmcdw.bcnsobrerodes.Utils.PlacesFunctions;
 
@@ -82,10 +85,35 @@ public class PlacePickerActivity extends AppCompatActivity {
             mAddress.setText(address);
             mAttributions.setText(Html.fromHtml(attributions));
 
+            String id = place.getId();
+            String puntuacio = null;
+
+            try {
+                puntuacio = placesFunctions.getPuntuacio(id);
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            String s = "";
+            switch (puntuacio) {
+                case "-1": s=name+" no està a la bd";
+                    break;
+                case "0": s=name+ " 0";
+                    break;
+                case "1": s=name+ " 1";
+                    break;
+                case "2": s=name+ " 2";
+                    break;
+            }
+            Toast.makeText(this,s, Toast.LENGTH_LONG).show();
+
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
+
 
     private void buildTexts() {
         mName = (TextView) findViewById(R.id.textView);
