@@ -41,7 +41,7 @@ public class DatabaseActivity extends AppCompatActivity implements View.OnClickL
                 Persistence persistence = new Persistence(this);
                 try {
                     String query = etQuery.getText().toString();
-                    String s = persistence.execute(query).get();
+                    String s = persistence.execute(query,"select").get();
                     info.setText(s);
                 } catch (InterruptedException e) {
                     e.printStackTrace();

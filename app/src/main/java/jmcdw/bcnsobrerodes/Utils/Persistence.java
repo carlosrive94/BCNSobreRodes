@@ -26,6 +26,7 @@ public class Persistence extends AsyncTask<String, Void, String> {
     @Override
     protected String doInBackground(String... strings) {
         String query = strings[0];
+        String isModification = strings[1];
         String result = "";
 
         try {
@@ -34,14 +35,18 @@ public class Persistence extends AsyncTask<String, Void, String> {
                 con = DriverManager.getConnection("jdbc:mysql://" + host + "/" + catalog
                         , user, password);
             Statement st = con.createStatement();
-            ResultSet rs = st.executeQuery(query);
-            ResultSetMetaData rsmd = rs.getMetaData();
-            int nColumns = rsmd.getColumnCount();
+            if (isModification.equals("modification")) {
+                st.executeUpdate(query);
+            } else {
+                ResultSet rs = st.executeQuery(query);
+                ResultSetMetaData rsmd = rs.getMetaData();
+                int nColumns = rsmd.getColumnCount();
 
-            while (rs.next()) {
-                for (int i = 1; i <= nColumns; ++i)
-                    //result += rsmd.getColumnName(i) + ": " + rs.getString(i) + "\n";
-                    result += rs.getString(i);
+                while (rs.next()) {
+                    for (int i = 1; i <= nColumns; ++i)
+                        //result += rsmd.getColumnName(i) + ": " + rs.getString(i) + "\n";
+                        result += rs.getString(i);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

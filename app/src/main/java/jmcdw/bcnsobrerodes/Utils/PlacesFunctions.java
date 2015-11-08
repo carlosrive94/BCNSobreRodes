@@ -33,10 +33,10 @@ public class PlacesFunctions implements GoogleApiClient.OnConnectionFailedListen
 
     //Retorna -1 si el place amb id id no està a la bd
     public static String getPuntuacio(String id) throws ExecutionException, InterruptedException {
-        String query = "select mobilitat from LocalitzacioMobilitat where idPlace="+ id;
+        String query = "select mobilitat from LocalitzacioMobilitat where idPlace=\"" + id + "\"";
         Persistence persistence = new Persistence(context);
-        String res = persistence.execute(query).get();
-        if(res.equals("")) res="-1";
+        String res = persistence.execute(query, "select").get();
+        if (res.equals("")) res = "-1";
         return res;
     }
 
@@ -76,5 +76,21 @@ public class PlacesFunctions implements GoogleApiClient.OnConnectionFailedListen
     public LatLngBounds getBounds() {
         BOUNDS = convertCenterAndRadiusToBounds(whereIam(), RADIUS_LOCATION);
         return BOUNDS;
+    }
+
+    public void addPuntuacio(String id, float stars) throws ExecutionException, InterruptedException {
+        String query = "";
+        String currentPuntuacio = getPuntuacio(id);
+        if (!currentPuntuacio.equals("-1")) {
+            float newStars = (Float.parseFloat(currentPuntuacio) + stars) / 2;
+            query = "update LocalitzacioMobilitat SET mobilitat=\"" + Float.toString(newStars) +
+                    "\"" + " WHERE idPlace=\"" + id + "\"";
+        } else {
+            query = "insert into LocalitzacioMobilitat values(\"" + id + "\",\""
+                    + Float.toString(stars) + "\")";
+        }
+        Persistence persistence = new Persistence(context);
+        persistence.execute(query, "modification");
+
     }
 }
