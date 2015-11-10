@@ -51,6 +51,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import jmcdw.bcnsobrerodes.Utils.Obstacle;
+import jmcdw.bcnsobrerodes.Utils.ObstacleDatabaseStub;
 import jmcdw.bcnsobrerodes.Utils.PlacesFunctions;
 
 //import android.appwidget.;
@@ -63,7 +65,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
     private String infoToDisplay;
     //private GoogleApiClient myGoogleApiClient;
     private PlacesFunctions placesFunctions;
-    //private Context context;
+    private Context context;
     //private PolylineOptions myRuta = null;
 
     @Override
@@ -74,7 +76,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         geocoder = new Geocoder(this);
-        //context = this;
+        context = this;
         placesFunctions = new PlacesFunctions(this);
         //myPlacesFunctions = new PlacesFunctions(this);
         //buildGoogleApiClient();
@@ -182,6 +184,32 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
             myMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
         }
     }
+
+    public void onClickVeureObstacles(View view) {
+        clearView();
+        ObstacleDatabaseStub DB = new ObstacleDatabaseStub();
+        ArrayList<Obstacle> obstacles = DB.getObstacles();
+        for (Obstacle obstacle : obstacles) {
+            myMap.addMarker(new MarkerOptions().position(obstacle.getPosicio()).title(obstacle.getDescripcio()));
+        }
+    }
+    /*
+    private LatLng getLatLng(String location) {
+        //afegeixo Barcelona al final del string per a que googleMaps no busqui a altres llocs.
+        location +=  ", Barcelona";
+        List<Address> addressList = null;
+        if (location != null || !location.equals("")) {
+            try {
+                addressList = geocoder.getFromLocationName(location, 1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Address address = addressList.get(0);
+            LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+            return latLng;
+        }
+        return null;
+    }*/
 
     public void onClickRoute(View view) {
 
@@ -334,11 +362,14 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         // Sensor enabled
         //String sensor = "sensor=false";
 
+        // Provide route alternatives
+        String route_alternatives = "alternatives=" + "true";
+
         // Mode
         String mode = "mode=" + "walking";
 
         // Building the parameters to the web service
-        String parameters = str_origin + "&" + str_dest + "&" + mode;
+        String parameters = str_origin + "&" + str_dest + "&" + mode + "&" + route_alternatives;
 
         // Output format
         String output = "json";
@@ -490,28 +521,45 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                 lineOptions.addAll(points);
                 lineOptions.width(2);
                 lineOptions.color(Color.RED);
+
+                // Drawing polyline in the Google Map for the i-th route
+                myMap.addPolyline(lineOptions);
+
+                //get obstacles de la BD i afegirlos a obstacles
+                ObstacleDatabaseStub DB = new ObstacleDatabaseStub();
+                ArrayList<Obstacle> obstacles = DB.getObstacles();
+
+                ArrayList<Obstacle> obstaclesRuta = obstaclesARuta(lineOptions, obstacles);
+                if (!obstaclesRuta.isEmpty()) {
+                    alertDialog(obstaclesRuta.get(0).getDescripcio());
+                }
             }
             //Save my route on global variables
             //myRuta = lineOptions;
-            LatLng punts = new LatLng(41,2); // aquests punts s'hauran d'agafar de la BD
+            //41.3937473 , 2.1233227
+
+
+        }
+    }
+
+    private ArrayList<Obstacle> obstaclesARuta(PolylineOptions lineOptions, ArrayList<Obstacle> obstacles) {
+        ArrayList<Obstacle> obstaclesTrobats = new ArrayList<Obstacle>();
+        for (Obstacle obstacle : obstacles) {
+            LatLng punt = obstacle.getPosicio();
             for (LatLng polyCoords : lineOptions.getPoints()) {
-                //Fer un for amb tots els punts
 
                 float[] results = new float[1];
 
-                Location.distanceBetween(punts.latitude, punts.longitude,
+                Location.distanceBetween(punt.latitude, punt.longitude,
                         polyCoords.latitude, polyCoords.longitude, results);
 
                 if (results[0] < 20) {
-                    // If distance is less than 100 meters, this is your polyline
-                    alertDialog("Detectat");
-                    break;
+                    obstaclesTrobats.add(obstacle);
                 }
+                break;
             }
-
-            // Drawing polyline in the Google Map for the i-th route
-            myMap.addPolyline(lineOptions);
         }
+        return obstaclesTrobats;
     }
 
     /*@Override

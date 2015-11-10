@@ -56,4 +56,14 @@
             android:textStyle="bold"/>
     </LinearLayout>
 
+    <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_alignParentBottom="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Veure Obstacles"
+            android:id="@+id/ObstacleButton"
+            android:layout_gravity="right"
+            android:onClick="onClickVeureObstacles"/>
+
 </RelativeLayout>
