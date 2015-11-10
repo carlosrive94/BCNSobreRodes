@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 public class Persistence extends AsyncTask<String, Void, String> {
@@ -54,6 +55,10 @@ public class Persistence extends AsyncTask<String, Void, String> {
                 }
                 if (!result.equals("")) result = result.substring(0, result.length() - 1);
             }
+            con.close();
+        }catch(SQLException se){
+            //Handle errors for JDBC
+            se.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
