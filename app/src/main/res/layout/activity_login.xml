@@ -26,7 +26,8 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/editUser" />
+            android:id="@+id/editUser"
+            android:maxLines="1"/>
     </LinearLayout>
 
     <LinearLayout
@@ -49,6 +50,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:inputType="textPassword"
+            android:maxLines="1"
             android:ems="10"
             android:id="@+id/editPass" />
 
@@ -71,4 +73,11 @@
         android:layout_gravity="center"
         android:layout_marginTop="20dp" />
 
+    <Button
+        android:id="@+id/button_create"
+        android:layout_width="150dp"
+        android:layout_height="75dp"
+        android:text="Create Account"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp" />
 </LinearLayout>

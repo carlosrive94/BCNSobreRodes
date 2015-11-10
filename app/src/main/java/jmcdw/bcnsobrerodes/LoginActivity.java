@@ -1,10 +1,13 @@
 package jmcdw.bcnsobrerodes;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,9 +22,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private Button admin;
     private Button user;
+    private Button newAccount;
     private EditText username;
     private EditText password;
-    private static Context context;
 
 
 
@@ -33,12 +36,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
 
+
     private void init() {
         user = (Button) findViewById(R.id.button_user);
         user.setOnClickListener(this);
 
         admin = (Button) findViewById(R.id.button_admin);
         admin.setOnClickListener(this);
+
+        newAccount = (Button) findViewById(R.id.button_create);
+        newAccount.setOnClickListener(this);
     }
 
     @Override
@@ -47,43 +54,116 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         password = (EditText) findViewById(R.id.editPass);
         Intent intent;
         switch (arg0.getId()) {
-            case R.id.button_user:
-              /*  Toast toast = Toast.makeText(this, "User Login not implemented yet", Toast.LENGTH_SHORT);
-                toast.show();*/
+            case  R.id.button_create:
+                newAccount();
+                break;
 
+            case R.id.button_user:
                 intent = new Intent(this, PrincipalActivity.class);
                 startActivity(intent);
                 break;
+
             case R.id.button_admin:
                 try {
-                    int i = userVerification(username.getText().toString(),password.getText().toString());
-                   /* Toast toast = Toast.makeText(this, user.getText() + " " + password.getText(), Toast.LENGTH_LONG);
-                    toast.show();*/
+                    Toast loginResult = new Toast(this);
+                    if (!(username.getText().toString().equals("") || password.getText().toString().equals(""))) {
+                        int i = userVerification(username.getText().toString(), password.getText().toString());
+                        switch (i) {
+                            case -1:
+                                loginResult = Toast.makeText(this, "Username not found", Toast.LENGTH_SHORT);
+                                break;
+                            case -2:
+                                loginResult = Toast.makeText(this, "Incorrect Password", Toast.LENGTH_SHORT);
+                                break;
+                            case 1:
+                                loginResult = Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT);
+                                break;
+                            case 2:
+                                loginResult = Toast.makeText(this, "This user is not an Admin", Toast.LENGTH_SHORT);
+                                break;
+                        }
+
+                    }
+
+                    else loginResult = Toast.makeText(this, "Please, fill the form", Toast.LENGTH_SHORT);
+                    loginResult.show();
+
                 } catch (ExecutionException e) {
                     e.printStackTrace();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                //intent = new Intent(this, MapPane.class);
-                //startActivity(intent);
-                //break;
                 //TODO Activity with super user options
         }
+    }
+
+    public void newAccount (){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        builder.setView(inflater.inflate(R.layout.new_account_dialog,null))
+                .setPositiveButton("Create", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        EditText usText = (EditText) ((AlertDialog) dialog).findViewById(R.id.userText);
+                        EditText passText = (EditText) ((AlertDialog) dialog).findViewById(R.id.PassText);
+                        EditText verifPassText = (EditText) ((AlertDialog) dialog).findViewById(R.id.PassText2);
+                        EditText email = (EditText) ((AlertDialog) dialog).findViewById(R.id.mailText);
+
+                        String usuario = usText.getText().toString();
+                        String password = passText.getText().toString();
+                        String verif = verifPassText.getText().toString();
+                        String mail = email.getText().toString();
+
+                        Toast t;
+
+                        if (usuario.equals("") || password.equals("") || verif.equals(null) || mail.equals(null)) {
+                            t = Toast.makeText(LoginActivity.this, "Please fill all the blankets", Toast.LENGTH_SHORT);
+                            t.show();
+                        } else if (!password.equals(verif)) {
+                            t = Toast.makeText(LoginActivity.this, "Passwords don't match", Toast.LENGTH_SHORT);
+                            t.show();
+                        }
+
+                        try{
+                            addUser(usuario, password, mail);
+                            t = Toast.makeText(LoginActivity.this, "User " + usuario +" created successfully", Toast.LENGTH_SHORT);
+                            t.show();
+                        }
+
+                        catch(Exception exception){
+                            t = Toast.makeText(LoginActivity.this, exception.getMessage(),Toast.LENGTH_SHORT);
+                            t.show();
+                        }
+
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        builder.create().show();
+    }
+
+    public void addUser(String user, String password, String email) throws Exception{
+        String query = "insert into users(username, email,password)" +
+                " values(\"" + user + "\", \"" + email + "\", \"" + password + "\")";
+        Persistence persistence = new Persistence(this);
+        persistence.execute(query, "modification");
     }
 
     public int userVerification(String user, String password) throws ExecutionException, InterruptedException{
         String query = "select admin,password from users where username=\"" + user + "\"";
         Persistence persistence = new Persistence(this);
-        String res = persistence.execute(query, "select").get();
-        if (res.equals("")) return -1; //-1 = no existe usuario
-        String esAdmin = res.substring(0, 1);
-        String psw = res.substring(1);
-        if (psw.equals(password)) {
-            if (esAdmin.equals("1")) return 1; //1 = login successed and admin;
+        String res[] = persistence.execute(query, "select").get().split("-");
+        if (res[0].equals("")) return -1; //-1 = no existe usuario
+
+        if (res[1].equals(password)) {
+            if (res[0].equals("1")) return 1; //1 = login successed and admin;
             else return 2; //2 = login successed but not admin
         }
-        Toast toast = Toast.makeText(this, psw + ": " + esAdmin, Toast.LENGTH_LONG);
-        toast.show();
         return -2; //incorrect password
     }
 }
