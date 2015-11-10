@@ -20,6 +20,7 @@ import com.google.android.gms.location.places.ui.PlacePicker;
 
 import java.util.concurrent.ExecutionException;
 
+import jmcdw.bcnsobrerodes.Utils.LocalitzacioDisabled;
 import jmcdw.bcnsobrerodes.Utils.PlacesFunctions;
 
 
@@ -69,8 +70,8 @@ public class PlacePickerActivity extends AppCompatActivity {
 
             if (puntuacio.equals("-1"))
                 Toast.makeText(this, name + " no ha estat puntuada mai.", Toast.LENGTH_LONG).show();
-            else{
-                Toast.makeText(this, name + " té " + puntuacio + " estrelles." , Toast.LENGTH_LONG).show();
+            else {
+                Toast.makeText(this, name + " té " + puntuacio + " estrelles.", Toast.LENGTH_LONG).show();
                 ratingBar.setRating(Float.parseFloat(puntuacio));
             }
 
@@ -89,16 +90,18 @@ public class PlacePickerActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 PlacePicker.IntentBuilder intentBuilder = new PlacePicker.IntentBuilder();
-                intentBuilder.setLatLngBounds(placesFunctions.getBounds());
                 Intent intent = null;
                 try {
+                    intentBuilder.setLatLngBounds(placesFunctions.getBounds());
                     intent = intentBuilder.build(getApplicationContext());
+                    startActivityForResult(intent, PLACE_PICKER_REQUEST);
                 } catch (GooglePlayServicesRepairableException e) {
                     e.printStackTrace();
                 } catch (GooglePlayServicesNotAvailableException e) {
                     e.printStackTrace();
+                } catch (LocalitzacioDisabled localitzacioDisabled) {
+                    Toast.makeText(context, "Localització no activada", Toast.LENGTH_LONG).show();
                 }
-                startActivityForResult(intent, PLACE_PICKER_REQUEST);
             }
         });
 

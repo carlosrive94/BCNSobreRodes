@@ -54,12 +54,18 @@ public class PlacesFunctions implements GoogleApiClient.OnConnectionFailedListen
         return new LatLngBounds(southwest, northeast);
     }
 
-    public LatLng whereIam() {
+    public LatLng whereIam() throws LocalitzacioDisabled {
+        LatLng location = null;
         Location currentLocation = LocationServices.FusedLocationApi
                 .getLastLocation(mGoogleApiClient);
-        double longitude = currentLocation.getLongitude();
-        double latitude = currentLocation.getLatitude();
-        LatLng location = new LatLng(latitude, longitude);
+        if(currentLocation != null) {
+            double longitude = currentLocation.getLongitude();
+            double latitude = currentLocation.getLatitude();
+            location = new LatLng(latitude, longitude);
+        }
+        else {
+            throw new LocalitzacioDisabled();
+        }
         return location;
     }
 
@@ -73,7 +79,7 @@ public class PlacesFunctions implements GoogleApiClient.OnConnectionFailedListen
                         connectionResult.getErrorCode(), Toast.LENGTH_LONG).show();
     }
 
-    public LatLngBounds getBounds() {
+    public LatLngBounds getBounds() throws LocalitzacioDisabled {
         BOUNDS = convertCenterAndRadiusToBounds(whereIam(), RADIUS_LOCATION);
         return BOUNDS;
     }
@@ -82,15 +88,23 @@ public class PlacesFunctions implements GoogleApiClient.OnConnectionFailedListen
         String query = "";
         String currentPuntuacio = getPuntuacio(id);
         if (!currentPuntuacio.equals("-1")) {
-            float newStars = (Float.parseFloat(currentPuntuacio) + stars) / 2;
+            int nPuntuacions = getNPuntuacions(id)+1;
+            float newStars = (Float.parseFloat(currentPuntuacio) + stars) / nPuntuacions;
             query = "update LocalitzacioMobilitat SET mobilitat=\"" + Float.toString(newStars) +
-                    "\"" + " WHERE idPlace=\"" + id + "\"";
+                    "\", nPuntuacions=\"" + nPuntuacions + "\" WHERE idPlace=\"" + id + "\"";
         } else {
             query = "insert into LocalitzacioMobilitat values(\"" + id + "\",\""
-                    + Float.toString(stars) + "\")";
+                    + Float.toString(stars) + "\", \"1\" )";
         }
         Persistence persistence = new Persistence(context);
         persistence.execute(query, "modification");
 
+    }
+
+    private int getNPuntuacions(String id) throws ExecutionException, InterruptedException {
+        String query = "select nPuntuacions from LocalitzacioMobilitat where idPlace=\"" + id + "\"";
+        Persistence persistence = new Persistence(context);
+        int res = Integer.parseInt(persistence.execute(query, "select").get());
+        return res;
     }
 }
