@@ -54,12 +54,18 @@ public class PlacesFunctions implements GoogleApiClient.OnConnectionFailedListen
         return new LatLngBounds(southwest, northeast);
     }
 
-    public LatLng whereIam() {
+    public LatLng whereIam() throws LocalitzacioDisabled {
+        LatLng location = null;
         Location currentLocation = LocationServices.FusedLocationApi
                 .getLastLocation(mGoogleApiClient);
-        double longitude = currentLocation.getLongitude();
-        double latitude = currentLocation.getLatitude();
-        LatLng location = new LatLng(latitude, longitude);
+        if(currentLocation != null) {
+            double longitude = currentLocation.getLongitude();
+            double latitude = currentLocation.getLatitude();
+            location = new LatLng(latitude, longitude);
+        }
+        else {
+            throw new LocalitzacioDisabled();
+        }
         return location;
     }
 
@@ -73,7 +79,7 @@ public class PlacesFunctions implements GoogleApiClient.OnConnectionFailedListen
                         connectionResult.getErrorCode(), Toast.LENGTH_LONG).show();
     }
 
-    public LatLngBounds getBounds() {
+    public LatLngBounds getBounds() throws LocalitzacioDisabled {
         BOUNDS = convertCenterAndRadiusToBounds(whereIam(), RADIUS_LOCATION);
         return BOUNDS;
     }

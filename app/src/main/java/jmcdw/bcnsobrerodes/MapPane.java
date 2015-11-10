@@ -19,6 +19,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -51,6 +52,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import jmcdw.bcnsobrerodes.Utils.LocalitzacioDisabled;
 import jmcdw.bcnsobrerodes.Utils.PlacesFunctions;
 
 //import android.appwidget.;
@@ -94,7 +96,12 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
     public void onMapLongClick(LatLng to) {
         myMap.clear();
         //obtain_my_location
-        LatLng from = placesFunctions.whereIam();
+        LatLng from = null;
+        try {
+            from = placesFunctions.whereIam();
+        } catch (LocalitzacioDisabled localitzacioDisabled) {
+            Toast.makeText(this, "Localització no activada", Toast.LENGTH_LONG).show();
+        }
 
         /*
         String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
