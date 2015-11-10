@@ -19,6 +19,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -54,6 +55,7 @@ import java.util.Locale;
 import jmcdw.bcnsobrerodes.Utils.LocalitzacioDisabled;
 import jmcdw.bcnsobrerodes.Utils.Obstacle;
 import jmcdw.bcnsobrerodes.Utils.ObstacleDatabaseStub;
+import jmcdw.bcnsobrerodes.Utils.LocalitzacioDisabled;
 import jmcdw.bcnsobrerodes.Utils.PlacesFunctions;
 
 //import android.appwidget.;
@@ -101,7 +103,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         try {
             from = placesFunctions.whereIam();
         } catch (LocalitzacioDisabled localitzacioDisabled) {
-            localitzacioDisabled.printStackTrace();
+            Toast.makeText(this, "Localització no activada", Toast.LENGTH_LONG).show();
         }
 
         /*
