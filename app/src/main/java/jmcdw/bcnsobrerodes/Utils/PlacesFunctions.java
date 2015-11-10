@@ -82,15 +82,23 @@ public class PlacesFunctions implements GoogleApiClient.OnConnectionFailedListen
         String query = "";
         String currentPuntuacio = getPuntuacio(id);
         if (!currentPuntuacio.equals("-1")) {
-            float newStars = (Float.parseFloat(currentPuntuacio) + stars) / 2;
+            int nPuntuacions = getNPuntuacions(id)+1;
+            float newStars = (Float.parseFloat(currentPuntuacio) + stars) / nPuntuacions;
             query = "update LocalitzacioMobilitat SET mobilitat=\"" + Float.toString(newStars) +
-                    "\"" + " WHERE idPlace=\"" + id + "\"";
+                    "\", nPuntuacions=\"" + nPuntuacions + "\" WHERE idPlace=\"" + id + "\"";
         } else {
             query = "insert into LocalitzacioMobilitat values(\"" + id + "\",\""
-                    + Float.toString(stars) + "\")";
+                    + Float.toString(stars) + "\", \"1\" )";
         }
         Persistence persistence = new Persistence(context);
         persistence.execute(query, "modification");
 
+    }
+
+    private int getNPuntuacions(String id) throws ExecutionException, InterruptedException {
+        String query = "select nPuntuacions from LocalitzacioMobilitat where idPlace=\"" + id + "\"";
+        Persistence persistence = new Persistence(context);
+        int res = Integer.parseInt(persistence.execute(query, "select").get());
+        return res;
     }
 }

@@ -23,6 +23,8 @@ public class Persistence extends AsyncTask<String, Void, String> {
         this.context = context;
     }
 
+
+    //Retorna val1-val2/VAL1-VAL2
     @Override
     protected String doInBackground(String... strings) {
         String query = strings[0];
@@ -43,10 +45,14 @@ public class Persistence extends AsyncTask<String, Void, String> {
                 int nColumns = rsmd.getColumnCount();
 
                 while (rs.next()) {
-                    for (int i = 1; i <= nColumns; ++i)
+                    for (int i = 1; i <= nColumns; ++i) {
                         //result += rsmd.getColumnName(i) + ": " + rs.getString(i) + "\n";
                         result += rs.getString(i);
+                        if (i != nColumns) result += "-";
+                    }
+                    result += "/";
                 }
+                if (!result.equals("")) result = result.substring(0, result.length() - 1);
             }
         } catch (Exception e) {
             e.printStackTrace();
