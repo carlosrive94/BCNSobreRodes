@@ -146,7 +146,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             }
 
                         } catch (Exception exception) {
-                            t = Toast.makeText(LoginActivity.this, exception.getMessage(), Toast.LENGTH_SHORT);
+                                exception.printStackTrace();
+                            t = Toast.makeText(LoginActivity.this, "exception : " + exception.getMessage(), Toast.LENGTH_SHORT);
                             t.show();
                         }
 
@@ -165,15 +166,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         Persistence persistence = new Persistence(this);
         String q1 = "select username, email from users where username=\"" + user + "\" or email=\"" + email +"\"";
         String row[] = persistence.execute(q1, "select").get().split("-");
-        //persistence.cancel(false);
+
+        persistence.cancel(true);
 
         if (row[0].equals(user)) return -1;
-        else if (row[1].equals(email)) return -2;
-        else return 0;
+        else if ((row.length != 1) && row[1].equals(email)) return -2;
+        return 0;
     }
 
     public void addUser(String user, String password, String email) throws Exception{
-        String query = "insert into users(username, email,password)" +
+        String query = "insert into users(username, email, password)" +
                 " values(\"" + user + "\", \"" + email + "\", \"" + password + "\")";
         Persistence persistence = new Persistence(this);
         persistence.execute(query, "modification");
