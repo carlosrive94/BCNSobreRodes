@@ -302,9 +302,12 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(msg)
                 .setTitle("Avís")
-                .show()
-                .closeOptionsMenu();
-        AlertDialog dialog = builder.create();
+                .setNegativeButton("Tanca", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                    }
+                });
+        builder.create().show();
     }
 
 
