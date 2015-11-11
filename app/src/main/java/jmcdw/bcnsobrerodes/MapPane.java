@@ -1,41 +1,31 @@
 package jmcdw.bcnsobrerodes;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
-import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -55,7 +45,6 @@ import java.util.Locale;
 import jmcdw.bcnsobrerodes.Utils.LocalitzacioDisabled;
 import jmcdw.bcnsobrerodes.Utils.Obstacle;
 import jmcdw.bcnsobrerodes.Utils.ObstacleDatabaseStub;
-import jmcdw.bcnsobrerodes.Utils.LocalitzacioDisabled;
 import jmcdw.bcnsobrerodes.Utils.PlacesFunctions;
 
 //import android.appwidget.;
@@ -69,6 +58,8 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
     //private GoogleApiClient myGoogleApiClient;
     private PlacesFunctions placesFunctions;
     private Context context;
+    private boolean obstaclesMostrats;
+    private ArrayList<Marker> markersObstacles;
     //private PolylineOptions myRuta = null;
 
     @Override
@@ -81,6 +72,8 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         geocoder = new Geocoder(this);
         context = this;
         placesFunctions = new PlacesFunctions(this);
+        obstaclesMostrats = false;
+        markersObstacles = new ArrayList<Marker>();
         //myPlacesFunctions = new PlacesFunctions(this);
         //buildGoogleApiClient();
     }
@@ -99,11 +92,12 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
     public void onMapLongClick(LatLng to) {
         myMap.clear();
         //obtain_my_location
+        boolean locationEnabled = true;
         LatLng from = null;
         try {
             from = placesFunctions.whereIam();
         } catch (LocalitzacioDisabled localitzacioDisabled) {
-            Toast.makeText(this, "Localització no activada", Toast.LENGTH_LONG).show();
+            locationEnabled = false;
         }
 
         /*
@@ -123,16 +117,18 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         );
         mark.showInfoWindow();
         */
+        if (locationEnabled) {
+            //get info from locations
+            Address address_from = getAddressFromLoc(from);
+            Address address_to = getAddressFromLoc(to);
+            String info_from = address_from.getAddressLine(0);
+            String info_to = address_to.getAddressLine(0);
 
-        //get info from locations
-        Address address_from = getAddressFromLoc(from);
-        Address address_to = getAddressFromLoc(to);
-        String info_from = address_from.getAddressLine(0);
-        String info_to = address_to.getAddressLine(0);
-
-        drawRoute(from, info_from, to, info_to);
-        //showRouteInfo();
-
+            drawRoute(from, info_from, to, info_to);
+        }
+        else {
+            alertDialog("Per usar aquesta funcionalitat has d'activar la localització");
+        }
     }
     /*
     @Override
@@ -193,12 +189,23 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         }
     }
 
-    public void onClickVeureObstacles(View view) {
-        clearView();
-        ObstacleDatabaseStub DB = new ObstacleDatabaseStub();
-        ArrayList<Obstacle> obstacles = DB.getObstacles();
-        for (Obstacle obstacle : obstacles) {
-            myMap.addMarker(new MarkerOptions().position(obstacle.getPosicio()).title(obstacle.getDescripcio()));
+    public void onClickObstaclesButton(View view) {
+        Button ObstaclesButton = (Button) findViewById(R.id.ObstacleButton);
+        if (!obstaclesMostrats) {
+            ObstacleDatabaseStub DB = new ObstacleDatabaseStub();
+            ArrayList<Obstacle> obstacles = DB.getObstacles();
+            for (Obstacle obstacle : obstacles) {
+                markersObstacles.add(myMap.addMarker(new MarkerOptions().position(obstacle.getPosicio()).title(obstacle.getDescripcio())));
+            }
+            ObstaclesButton.setText("Amaga Obstacles");
+            obstaclesMostrats = true;
+        }
+        else {
+            for (Marker marker : markersObstacles) {
+                marker.remove();
+            }
+            ObstaclesButton.setText("Mostra Obstacles");
+            obstaclesMostrats = false;
         }
     }
     /*

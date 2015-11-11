@@ -61,9 +61,9 @@
             android:layout_alignParentBottom="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Veure Obstacles"
+            android:text="Mostra Obstacles"
             android:id="@+id/ObstacleButton"
             android:layout_gravity="right"
-            android:onClick="onClickVeureObstacles"/>
+            android:onClick="onClickObstaclesButton"/>
 
 </RelativeLayout>
