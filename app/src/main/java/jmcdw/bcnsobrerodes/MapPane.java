@@ -27,6 +27,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.PolyUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,10 +43,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
 import jmcdw.bcnsobrerodes.Utils.LocalitzacioDisabled;
 import jmcdw.bcnsobrerodes.Utils.Obstacle;
 import jmcdw.bcnsobrerodes.Utils.ObstacleDatabaseStub;
+import jmcdw.bcnsobrerodes.Utils.Persistence;
 import jmcdw.bcnsobrerodes.Utils.PlacesFunctions;
 
 //import android.appwidget.;
@@ -74,14 +77,34 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         context = this;
         placesFunctions = new PlacesFunctions(this);
         obstaclesMostrats = true;
-        markersObstacles = new ArrayList<Marker>();
+        markersObstacles = new ArrayList<>();
         //myPlacesFunctions = new PlacesFunctions(this);
         //buildGoogleApiClient();
     }
 
+    public ArrayList<Obstacle> getObstaclesDB() {
+        ArrayList<Obstacle> resultat = new ArrayList<>();
+        String query = "select latitud,longitud,descripcio from Obstacles";
+        Persistence persistence = new Persistence(this);
+        try {
+            String rows[] = persistence.execute(query, "select").get().split("/");
+            for (String row : rows) {
+                String[] infoObstacle = row.split("-");
+                float lat = Float.parseFloat(infoObstacle[0]);
+                float lng = Float.parseFloat(infoObstacle[1]);
+                LatLng loc = new LatLng(lat,lng);
+                String desc = infoObstacle[2];
+                resultat.add(new Obstacle(loc,desc));
+            }
+        } catch (Exception e) {
+            alertDialog(e.getMessage());
+        }
+        return resultat;
+    }
+
     public void carregaObstacles() {
-        ObstacleDatabaseStub DB = new ObstacleDatabaseStub();
-        ArrayList<Obstacle> obstacles = DB.getObstacles();
+        //ObstacleDatabaseStub DB = new ObstacleDatabaseStub();
+        ArrayList<Obstacle> obstacles = getObstaclesDB();
         for (Obstacle obstacle : obstacles) {
             String obstacleAddress = getAddressFromLoc(obstacle.getPosicio()).getAddressLine(0);
             markersObstacles.add(myMap.addMarker(new MarkerOptions()
@@ -589,9 +612,10 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
     }
 
     private ArrayList<Obstacle> obstaclesARuta(PolylineOptions lineOptions, ArrayList<Obstacle> obstacles) {
-        ArrayList<Obstacle> obstaclesTrobats = new ArrayList<Obstacle>();
+        ArrayList<Obstacle> obstaclesTrobats = new ArrayList<>();
         for (Obstacle obstacle : obstacles) {
             LatLng punt = obstacle.getPosicio();
+            /*
             for (LatLng polyCoords : lineOptions.getPoints()) {
 
                 float[] results = new float[1];
@@ -599,11 +623,15 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                 Location.distanceBetween(punt.latitude, punt.longitude,
                         polyCoords.latitude, polyCoords.longitude, results);
 
-                if (results[0] < 20) {
+                if (results[0] < 100) {
                     obstaclesTrobats.add(obstacle);
+                    break;
                 }
-                break;
-            }
+            */
+                if (PolyUtil.isLocationOnPath(punt, lineOptions.getPoints(), true, 20)) {
+                    obstaclesTrobats.add(obstacle);
+                    break;
+                }
         }
         return obstaclesTrobats;
     }
