@@ -64,6 +64,8 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
     private Context context;
     private boolean obstaclesMostrats;
     private ArrayList<Marker> markersObstacles;
+    private ArrayList<Obstacle> obstaclesDB;
+    private List<List<HashMap<String, String>>> rutes;
     //private PolylineOptions myRuta = null;
 
     @Override
@@ -78,34 +80,32 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         placesFunctions = new PlacesFunctions(this);
         obstaclesMostrats = true;
         markersObstacles = new ArrayList<>();
+        obstaclesDB = new ArrayList<>();
         //myPlacesFunctions = new PlacesFunctions(this);
         //buildGoogleApiClient();
     }
 
-    public ArrayList<Obstacle> getObstaclesDB() {
-        ArrayList<Obstacle> resultat = new ArrayList<>();
+    public void carregaObstaclesDB() {
         String query = "select latitud,longitud,descripcio from Obstacles";
         Persistence persistence = new Persistence(this);
         try {
             String rows[] = persistence.execute(query, "select").get().split("/");
             for (String row : rows) {
                 String[] infoObstacle = row.split("-");
-                float lat = Float.parseFloat(infoObstacle[0]);
-                float lng = Float.parseFloat(infoObstacle[1]);
+                double lat = Double.parseDouble(infoObstacle[0]);
+                double lng = Double.parseDouble(infoObstacle[1]);
                 LatLng loc = new LatLng(lat,lng);
                 String desc = infoObstacle[2];
-                resultat.add(new Obstacle(loc,desc));
+                obstaclesDB.add(new Obstacle(loc,desc));
             }
         } catch (Exception e) {
             alertDialog(e.getMessage());
         }
-        return resultat;
     }
 
-    public void carregaObstacles() {
+    public void carregaMarkersObstacles() {
         //ObstacleDatabaseStub DB = new ObstacleDatabaseStub();
-        ArrayList<Obstacle> obstacles = getObstaclesDB();
-        for (Obstacle obstacle : obstacles) {
+        for (Obstacle obstacle : obstaclesDB) {
             String obstacleAddress = getAddressFromLoc(obstacle.getPosicio()).getAddressLine(0);
             markersObstacles.add(myMap.addMarker(new MarkerOptions()
                     .position(obstacle.getPosicio())
@@ -122,9 +122,44 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(barcelona, 13));
         myMap = map;
         myMap.setOnMapLongClickListener(this);
-        carregaObstacles();
+        carregaObstaclesDB();
+        carregaMarkersObstacles();
         //myMap.setOnMapClickListener(this);
     }
+
+    /*private void insertaABD() {
+        //carrer de benet mateu 18, carrer del doctor carulla 68
+        LatLng loc = getLatLng("carrer de benet mateu 18");
+
+        String query = "insert into Obstacles(latitud, longitud, descripcio)" +
+                " values(\"" + loc.latitude + "\", \"" + loc.longitude + "\", \"" + "Carrer molt empinat" + "\")";
+        Persistence persistence = new Persistence(this);
+        persistence.execute(query, "modification");
+
+        loc = getLatLng("carrer del doctor carulla 68");
+
+        query = "insert into Obstacles(latitud, longitud, descripcio)" +
+                " values(\"" + loc.latitude + "\", \"" + loc.longitude + "\", \"" + "Carrer tallat" + "\")";
+        persistence = new Persistence(this);
+        persistence.execute(query, "modification");
+    }
+
+    private LatLng getLatLng(String location) {
+        //afegeixo Barcelona al final del string per a que googleMaps no busqui a altres llocs.
+        location +=  ", Barcelona";
+        List<Address> addressList = null;
+        if (location != null || !location.equals("")) {
+            try {
+                addressList = geocoder.getFromLocationName(location, 1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Address address = addressList.get(0);
+            LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+            return latLng;
+        }
+        return null;
+    }*/
 
     @Override
     public void onMapLongClick(LatLng to) {
@@ -206,16 +241,19 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
     protected void clearView() {
         myMap.clear();
         eraseDisplayedInfo();
-        if(obstaclesMostrats) {
-            ArrayList<Marker> aux = new ArrayList<Marker>();
-            for (Marker marker : markersObstacles) {
-                aux.add(myMap.addMarker(new MarkerOptions()
-                        .position(marker.getPosition())
-                        .title(marker.getTitle())
-                        .snippet(marker.getSnippet())
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))));
+        ArrayList<Marker> aux = new ArrayList<>();
+        for (Marker marker : markersObstacles) {
+            aux.add(myMap.addMarker(new MarkerOptions()
+                    .position(marker.getPosition())
+                    .title(marker.getTitle())
+                    .snippet(marker.getSnippet())
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))));
+        }
+        markersObstacles = aux;
+        if(!obstaclesMostrats) {
+            for(Marker marker: markersObstacles) {
+                marker.setVisible(false);
             }
-            markersObstacles = aux;
         }
     }
 
@@ -560,6 +598,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         // Executes in UI thread, after the parsing process
         @Override
         protected void onPostExecute(List<List<HashMap<String, String>>> result) {
+            boolean mostratAvis = false;
             ArrayList<LatLng> points = null;
             PolylineOptions lineOptions = null;
             MarkerOptions markerOptions = new MarkerOptions();
@@ -585,53 +624,45 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
 
                 // Adding all the points in the route to LineOptions
                 lineOptions.addAll(points);
-                lineOptions.width(2);
-                lineOptions.color(Color.RED);
+                lineOptions.width(4);
+                lineOptions.color(Color.BLUE);
 
                 // Drawing polyline in the Google Map for the i-th route
                 myMap.addPolyline(lineOptions);
 
                 //get obstacles de la BD i afegirlos a obstacles
-                ObstacleDatabaseStub DB = new ObstacleDatabaseStub();
-                ArrayList<Obstacle> obstacles = DB.getObstacles();
-
-                ArrayList<Obstacle> obstaclesRuta = obstaclesARuta(lineOptions, obstacles);
+                ArrayList<Obstacle> obstaclesRuta = obteObstaclesARuta(lineOptions, obstaclesDB);
                 if (obstaclesRuta.isEmpty()) {
                     break;
                 }
-                else {
-                    alertDialog(obstaclesRuta.get(0).getDescripcio());
+                else if (!mostratAvis){
+                    String info="Hem tobat " + obstaclesRuta.size();
+                    if (obstaclesRuta.size() == 1) info += " possible obstacle a la ruta:\n";
+                    else info += " possibles obstacles a la ruta:\n";
+                    for (Obstacle obstacle : obstaclesRuta) {
+                        info += "- " + obstacle.getDescripcio() + "\n";
+                    }
+                    info += "\n Es mostren les rutes alternatives.";
+                    alertDialog(info);
+                    mostratAvis = true;
                 }
             }
             //Save my route on global variables
             //myRuta = lineOptions;
             //41.3937473 , 2.1233227
+            //carrer de benet mateu 18, carrer del doctor carulla 68
 
 
         }
     }
 
-    private ArrayList<Obstacle> obstaclesARuta(PolylineOptions lineOptions, ArrayList<Obstacle> obstacles) {
+    private ArrayList<Obstacle> obteObstaclesARuta(PolylineOptions lineOptions, ArrayList<Obstacle> obstacles) {
         ArrayList<Obstacle> obstaclesTrobats = new ArrayList<>();
         for (Obstacle obstacle : obstacles) {
             LatLng punt = obstacle.getPosicio();
-            /*
-            for (LatLng polyCoords : lineOptions.getPoints()) {
-
-                float[] results = new float[1];
-
-                Location.distanceBetween(punt.latitude, punt.longitude,
-                        polyCoords.latitude, polyCoords.longitude, results);
-
-                if (results[0] < 100) {
-                    obstaclesTrobats.add(obstacle);
-                    break;
-                }
-            */
-                if (PolyUtil.isLocationOnPath(punt, lineOptions.getPoints(), true, 20)) {
-                    obstaclesTrobats.add(obstacle);
-                    break;
-                }
+            if (PolyUtil.isLocationOnPath(punt, lineOptions.getPoints(), true, 20)) {
+                obstaclesTrobats.add(obstacle);
+            }
         }
         return obstaclesTrobats;
     }
@@ -642,4 +673,5 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         getMenuInflater().inflate(R.menu.menu_map_pane, menu);
         return true;
     }*/
+
 }
