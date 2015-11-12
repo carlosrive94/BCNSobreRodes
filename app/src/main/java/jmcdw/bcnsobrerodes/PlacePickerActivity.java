@@ -32,6 +32,7 @@ public class PlacePickerActivity extends AppCompatActivity {
     private PlacesFunctions placesFunctions;
     private String id;
     private RatingBar ratingBar;
+    private int nPuntuacions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,30 +51,38 @@ public class PlacePickerActivity extends AppCompatActivity {
             final CharSequence name = place.getName();
             final CharSequence address = place.getAddress();
             String attributions = PlacePicker.getAttributions(data);
-            if (attributions == null)
-                attributions = "";
-
-            mInfo.setText(name + "\n" + address + "\n" + Html.fromHtml(attributions));
-
+            if (attributions == null) attributions = "";
             id = place.getId();
-            String puntuacio = null;
+
             try {
-                puntuacio = placesFunctions.getPuntuacio(id);
+                nPuntuacions = placesFunctions.getNPuntuacions(id);
             } catch (ExecutionException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
-            RelativeLayout puntuaLayout = (RelativeLayout) findViewById(R.id.puntuaPlace);
-            puntuaLayout.setVisibility(View.VISIBLE);
+            String info = name + "\n" + address + "\n" + Html.fromHtml(attributions);
 
-            if (puntuacio.equals("-1"))
-                Toast.makeText(this, name + " no ha estat puntuada mai.", Toast.LENGTH_LONG).show();
+            if (nPuntuacions == 0) info += "\nNo ha estat puntuada mai.";
             else {
-                Toast.makeText(this, name + " té " + puntuacio + " estrelles.", Toast.LENGTH_LONG).show();
+                String puntuacio = null;
+                try {
+                    puntuacio = placesFunctions.getPuntuacio(id);
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                RelativeLayout puntuaLayout = (RelativeLayout) findViewById(R.id.puntuaPlace);
+                puntuaLayout.setVisibility(View.VISIBLE);
                 ratingBar.setRating(Float.parseFloat(puntuacio));
+
+                info += "\nTé una puntuació de " + puntuacio + " estrelles";
+                info += "\nHa estat puntuada " + nPuntuacions + " cops.";
             }
+
+            mInfo.setText(info);
 
         } else {
             super.onActivityResult(requestCode, resultCode, data);
@@ -111,7 +120,7 @@ public class PlacePickerActivity extends AppCompatActivity {
             public void onClick(View view) {
                 float stars = ratingBar.getRating();
                 try {
-                    placesFunctions.addPuntuacio(id, stars);
+                    placesFunctions.addPuntuacio(id, stars, nPuntuacions);
                     Toast.makeText(context,
                             "La teva puntuacío ha estat guardada!", Toast.LENGTH_LONG).show();
                 } catch (ExecutionException e) {

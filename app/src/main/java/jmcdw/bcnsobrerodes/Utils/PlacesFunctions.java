@@ -58,12 +58,11 @@ public class PlacesFunctions implements GoogleApiClient.OnConnectionFailedListen
         LatLng location = null;
         Location currentLocation = LocationServices.FusedLocationApi
                 .getLastLocation(mGoogleApiClient);
-        if(currentLocation != null) {
+        if (currentLocation != null) {
             double longitude = currentLocation.getLongitude();
             double latitude = currentLocation.getLatitude();
             location = new LatLng(latitude, longitude);
-        }
-        else {
+        } else {
             throw new LocalitzacioDisabled();
         }
         return location;
@@ -84,27 +83,28 @@ public class PlacesFunctions implements GoogleApiClient.OnConnectionFailedListen
         return BOUNDS;
     }
 
-    public void addPuntuacio(String id, float stars) throws ExecutionException, InterruptedException {
+    public void addPuntuacio(String id, float stars, int nPuntuacions) throws ExecutionException, InterruptedException {
         String query = "";
         String currentPuntuacio = getPuntuacio(id);
+        nPuntuacions = ++nPuntuacions;
         if (!currentPuntuacio.equals("-1")) {
-            int nPuntuacions = getNPuntuacions(id)+1;
             float newStars = (Float.parseFloat(currentPuntuacio) + stars) / nPuntuacions;
             query = "update LocalitzacioMobilitat SET mobilitat=\"" + Float.toString(newStars) +
                     "\", nPuntuacions=\"" + nPuntuacions + "\" WHERE idPlace=\"" + id + "\"";
         } else {
             query = "insert into LocalitzacioMobilitat values(\"" + id + "\",\""
-                    + Float.toString(stars) + "\", \"1\" )";
+                    + Float.toString(stars) + "\", \"" + nPuntuacions + "\" )";
         }
         Persistence persistence = new Persistence(context);
         persistence.execute(query, "modification");
 
     }
 
-    private int getNPuntuacions(String id) throws ExecutionException, InterruptedException {
+    public int getNPuntuacions(String id) throws ExecutionException, InterruptedException {
         String query = "select nPuntuacions from LocalitzacioMobilitat where idPlace=\"" + id + "\"";
         Persistence persistence = new Persistence(context);
-        int res = Integer.parseInt(persistence.execute(query, "select").get());
-        return res;
+        String result= persistence.execute(query, "select").get();
+        if(result.equals("")) return 0;
+        else return Integer.parseInt(result);
     }
 }

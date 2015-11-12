@@ -17,39 +17,29 @@
         android:layout_marginTop="20dp" />
 
     <RelativeLayout
-        android:layout_below="@+id/infoPlace"
         android:id="@+id/puntuaPlace"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/poweredBy"
         android:layout_alignParentStart="true"
+        android:layout_below="@+id/infoPlace"
         android:visibility="invisible">
 
         <LinearLayout
             android:id="@+id/linearPuntua"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
-        <TextView
-            android:id="@+id/puntuaText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="20dp"
-            android:text="Puntua Place: " />
 
-        <RatingBar
-            android:id="@+id/ratingBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            <RatingBar
+                android:id="@+id/ratingBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/puntuaButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Puntua!" />
         </LinearLayout>
-
-        <Button
-            android:id="@+id/puntuaButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/linearPuntua"
-            android:text="Puntua!" />
 
     </RelativeLayout>
 
@@ -63,34 +53,17 @@
         android:layout_marginTop="50dp"
         android:text="Launch Places API Picker" />
 
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true" />
-
-    <ImageView
-        android:id="@+id/poweredBy"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/textView3"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:src="@drawable/powered_by_google_light" />
-
     <Button
         android:id="@+id/categoriesButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignEnd="@+id/pickerButton"
         android:layout_alignStart="@+id/pickerButton"
+        android:layout_below="@+id/pickerButton"
         android:layout_marginTop="56dp"
         android:nestedScrollingEnabled="false"
         android:onClick="onCategoriesNearby"
-        android:text="Categories Nearby"
-        android:layout_below="@+id/pickerButton" />
+        android:text="Categories Nearby" />
 
 
 </RelativeLayout>
