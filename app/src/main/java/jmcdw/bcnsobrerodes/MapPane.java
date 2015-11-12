@@ -22,6 +22,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -72,10 +73,23 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         geocoder = new Geocoder(this);
         context = this;
         placesFunctions = new PlacesFunctions(this);
-        obstaclesMostrats = false;
+        obstaclesMostrats = true;
         markersObstacles = new ArrayList<Marker>();
         //myPlacesFunctions = new PlacesFunctions(this);
         //buildGoogleApiClient();
+    }
+
+    public void carregaObstacles() {
+        ObstacleDatabaseStub DB = new ObstacleDatabaseStub();
+        ArrayList<Obstacle> obstacles = DB.getObstacles();
+        for (Obstacle obstacle : obstacles) {
+            String obstacleAddress = getAddressFromLoc(obstacle.getPosicio()).getAddressLine(0);
+            markersObstacles.add(myMap.addMarker(new MarkerOptions()
+                    .position(obstacle.getPosicio())
+                    .title(obstacleAddress)
+                    .snippet(obstacle.getDescripcio())
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))));
+        }
     }
 
     @Override
@@ -85,12 +99,13 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(barcelona, 13));
         myMap = map;
         myMap.setOnMapLongClickListener(this);
+        carregaObstacles();
         //myMap.setOnMapClickListener(this);
     }
 
     @Override
     public void onMapLongClick(LatLng to) {
-        myMap.clear();
+        clearView();
         //obtain_my_location
         boolean locationEnabled = true;
         LatLng from = null;
@@ -168,6 +183,17 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
     protected void clearView() {
         myMap.clear();
         eraseDisplayedInfo();
+        if(obstaclesMostrats) {
+            ArrayList<Marker> aux = new ArrayList<Marker>();
+            for (Marker marker : markersObstacles) {
+                aux.add(myMap.addMarker(new MarkerOptions()
+                        .position(marker.getPosition())
+                        .title(marker.getTitle())
+                        .snippet(marker.getSnippet())
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))));
+            }
+            markersObstacles = aux;
+        }
     }
 
     public void onClickSearch(View view) {
@@ -192,22 +218,21 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
     public void onClickObstaclesButton(View view) {
         Button ObstaclesButton = (Button) findViewById(R.id.ObstacleButton);
         if (!obstaclesMostrats) {
-            ObstacleDatabaseStub DB = new ObstacleDatabaseStub();
-            ArrayList<Obstacle> obstacles = DB.getObstacles();
-            for (Obstacle obstacle : obstacles) {
-                markersObstacles.add(myMap.addMarker(new MarkerOptions().position(obstacle.getPosicio()).title(obstacle.getDescripcio())));
+            for (Marker marker : markersObstacles) {
+                marker.setVisible(true);
             }
             ObstaclesButton.setText("Amaga Obstacles");
             obstaclesMostrats = true;
         }
         else {
             for (Marker marker : markersObstacles) {
-                marker.remove();
+                marker.setVisible(false);
             }
             ObstaclesButton.setText("Mostra Obstacles");
             obstaclesMostrats = false;
         }
     }
+
     /*
     private LatLng getLatLng(String location) {
         //afegeixo Barcelona al final del string per a que googleMaps no busqui a altres llocs.
@@ -548,7 +573,10 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                 ArrayList<Obstacle> obstacles = DB.getObstacles();
 
                 ArrayList<Obstacle> obstaclesRuta = obstaclesARuta(lineOptions, obstacles);
-                if (!obstaclesRuta.isEmpty()) {
+                if (obstaclesRuta.isEmpty()) {
+                    break;
+                }
+                else {
                     alertDialog(obstaclesRuta.get(0).getDescripcio());
                 }
             }

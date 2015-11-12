@@ -61,7 +61,7 @@
             android:layout_alignParentBottom="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Mostra Obstacles"
+            android:text="Amaga Obstacles"
             android:id="@+id/ObstacleButton"
             android:layout_gravity="right"
             android:onClick="onClickObstaclesButton"/>
