@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -26,6 +27,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private EditText username;
     private EditText password;
 
+    public static final String MyPREFERENCES = "MyPrefs" ;
+    SharedPreferences sharedpreferences;
 
 
     @Override
@@ -46,6 +49,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         newAccount = (Button) findViewById(R.id.button_create);
         newAccount.setOnClickListener(this);
+
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
     }
 
     @Override
@@ -59,11 +64,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 break;
 
             case R.id.button_user:
-                intent = new Intent(this, PrincipalActivity.class);
-                startActivity(intent);
-                break;
-
-            case R.id.button_admin:
                 try {
                     Toast loginResult = new Toast(this);
                     if (!(username.getText().toString().equals("") || password.getText().toString().equals(""))) {
@@ -77,12 +77,49 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 break;
                             case 1:
                                 loginResult = Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT);
+                                //guardar la informacon de la sesion con el usuario que ha hecho el login
+                                SharedPreferences.Editor editor = sharedpreferences.edit();
+                                editor.putString("username", username.getText().toString());
+                                editor.commit();
+                                intent = new Intent(this, PrincipalActivity.class);
+                                startActivity(intent);
+                                break;
+                        }
+                    }
+                    else loginResult = Toast.makeText(this, "Please, fill the form", Toast.LENGTH_SHORT);
+                    loginResult.show();
+
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                break;
+
+            case R.id.button_admin:
+                try {
+                    Toast loginResult = new Toast(this);
+                    if (!(username.getText().toString().equals("") || password.getText().toString().equals(""))) {
+                        int i = adminVerification(username.getText().toString(), password.getText().toString());
+                        switch (i) {
+                            case -1:
+                                loginResult = Toast.makeText(this, "Username not found", Toast.LENGTH_SHORT);
+                                break;
+                            case -2:
+                                loginResult = Toast.makeText(this, "Incorrect Password", Toast.LENGTH_SHORT);
+                                break;
+                            case 1:
+                                loginResult = Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT);
+                                //guardar la informacon de la sesion con el usuario que ha hecho el login
+                                SharedPreferences.Editor editor = sharedpreferences.edit();
+                                editor.putString("username", username.getText().toString());
+                                editor.commit();
                                 break;
                             case 2:
                                 loginResult = Toast.makeText(this, "This user is not an Admin", Toast.LENGTH_SHORT);
                                 break;
                         }
-
                     }
 
                     else loginResult = Toast.makeText(this, "Please, fill the form", Toast.LENGTH_SHORT);
@@ -93,6 +130,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                break;
                 //TODO Activity with super user options
         }
     }
@@ -182,7 +220,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
 
-    public int userVerification(String user, String password) throws ExecutionException, InterruptedException{
+    public int adminVerification(String user, String password) throws ExecutionException, InterruptedException{
         String query = "select admin,password from users where username=\"" + user + "\"";
         Persistence persistence = new Persistence(this);
         String res[] = persistence.execute(query, "select").get().split("-");
@@ -194,4 +232,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
         return -2; //incorrect password
     }
+    public int userVerification(String user, String password) throws ExecutionException, InterruptedException{
+        String query = "select password from users where username=\"" + user + "\"";
+        Persistence persistence = new Persistence(this);
+        String res[] = persistence.execute(query, "select").get().split("-");
+        if (res[0].equals("")) return -1; //-1 = no existe usuario
+
+        if (res[0].equals(password))
+            return 1; //1 = login successed as user;
+        return -2; //incorrect password
+    }
+
+
 }
