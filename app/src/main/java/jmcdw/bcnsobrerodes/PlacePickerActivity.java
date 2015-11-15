@@ -74,13 +74,13 @@ public class PlacePickerActivity extends AppCompatActivity {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                RelativeLayout puntuaLayout = (RelativeLayout) findViewById(R.id.puntuaPlace);
-                puntuaLayout.setVisibility(View.VISIBLE);
                 ratingBar.setRating(Float.parseFloat(puntuacio));
 
                 info += "\nTé una puntuació de " + puntuacio + " estrelles";
                 info += "\nHa estat puntuada " + nPuntuacions + " cops.";
             }
+            RelativeLayout puntuaLayout = (RelativeLayout) findViewById(R.id.puntuaPlace);
+            puntuaLayout.setVisibility(View.VISIBLE);
 
             mInfo.setText(info);
 
