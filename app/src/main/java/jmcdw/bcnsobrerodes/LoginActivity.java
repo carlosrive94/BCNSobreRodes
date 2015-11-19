@@ -115,6 +115,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 SharedPreferences.Editor editor = sharedpreferences.edit();
                                 editor.putString("username", username.getText().toString());
                                 editor.commit();
+                                intent = new Intent(this, AdminActivity.class);
+                                startActivity(intent);
                                 break;
                             case 2:
                                 loginResult = Toast.makeText(this, "This user is not an Admin", Toast.LENGTH_SHORT);
