@@ -3,6 +3,7 @@ package jmcdw.bcnsobrerodes;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
@@ -67,6 +68,8 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
     private ArrayList<Obstacle> obstaclesDB;
     private List<List<HashMap<String, String>>> rutes;
     //private PolylineOptions myRuta = null;
+    private SharedPreferences sp;
+    private String username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -674,4 +677,60 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         return true;
     }*/
 
+    public void onClickIncidenciaButton(View view) {
+        //obrir pop-up incidencia
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        // Get the layout inflater
+        LayoutInflater inflater = this.getLayoutInflater();
+        // Inflate and set the layout for the dialog
+        // Pass null as the parent view because its going in the dialog layout
+        final AlertDialog.Builder builder1 = builder.setView(inflater.inflate(R.layout.dialog_incidencia, null))
+                // Add action buttons
+                .setPositiveButton("Crear Incidència", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        //clearView();
+                        EditText comentariText = (EditText) ((AlertDialog) dialog).findViewById(R.id.Comentari);
+                        String comentari = comentariText.getText().toString();
+                        LatLng pos = null;
+                        sp = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+                        username = sp.getString("username", null);
+                        try {
+                            pos = placesFunctions.whereIam();
+                            String query = "insert into Obstacles(latitud, longitud, descripcio)" +
+                                    " values(\"" + pos.latitude + "\", \"" + pos.longitude + "\", \"" +
+                                    comentari + "\", \"" + username + "\")";
+                            Persistence persistence = new Persistence(context);
+                            try {
+                                persistence.execute(query, "modification");
+                            } catch (Exception e) {
+                                alertDialog(e.getMessage());
+                            }
+                        } catch (LocalitzacioDisabled localitzacioDisabled) {
+                            localitzacioDisabled.printStackTrace();
+                        }
+                        Obstacle obstacle = new Obstacle(pos, comentari);
+                        String obstacleAddress = getAddressFromLoc(obstacle.getPosicio()).getAddressLine(0);
+                        markersObstacles.add(myMap.addMarker(new MarkerOptions()
+                                .position(obstacle.getPosicio())
+                                .title(obstacleAddress)
+                                .snippet(obstacle.getDescripcio())
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))));
+                        obstaclesDB.add(obstacle);
+                    }
+                })
+                .setNegativeButton("Cancela", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                    }
+                });
+        builder.create().show();
+
+    }
+    public void onClickCancelarIncidencia() {
+        //obrir pop-up incidencia
+    }
+    public void onClickCreaIncidencia() {
+        //obrir pop-up incidencia
+    }
 }
