@@ -103,8 +103,13 @@ public class PlacesFunctions implements GoogleApiClient.OnConnectionFailedListen
     public int getNPuntuacions(String id) throws ExecutionException, InterruptedException {
         String query = "select nPuntuacions from LocalitzacioMobilitat where idPlace=\"" + id + "\"";
         Persistence persistence = new Persistence(context);
-        String result= persistence.execute(query, "select").get();
-        if(result.equals("")) return 0;
+        String result = persistence.execute(query, "select").get();
+        if (result.equals("")) return 0;
         else return Integer.parseInt(result);
+    }
+
+    public boolean esAccessible(String id) {
+        if (Vars.ESTACIONS_NO_ACCESIBLES.contains(id)) return false;
+        return false;
     }
 }
