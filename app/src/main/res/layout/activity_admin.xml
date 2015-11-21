@@ -9,37 +9,28 @@
     tools:context="jmcdw.bcnsobrerodes.AdminActivity"
     android:gravity="top">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <Button
+        android:layout_width="150dp"
+        android:layout_height="75dp"
+        android:text="Verify"
+        android:id="@+id/verifyButton"
+        android:layout_gravity="center"
+        android:layout_marginTop="80dp" />
 
-        <ListView
-            android:layout_width="wrap_content"
-            android:layout_height="436dp"
-            android:id="@+id/listView" />
-    </LinearLayout>
+    <Button
+        android:layout_width="150dp"
+        android:layout_height="75dp"
+        android:text="Delete"
+        android:id="@+id/deleteButton"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"/>
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal">
+    <Button
+        android:layout_width="150dp"
+        android:layout_height="75dp"
+        android:text="Ban User"
+        android:id="@+id/banButton"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"/>
 
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Verify"
-            android:id="@+id/button"
-            android:layout_gravity="center_horizontal"
-            android:layout_weight="20" />
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Delete"
-            android:id="@+id/deleteButton"
-            android:layout_gravity="center_horizontal"
-            android:layout_weight="20" />
-    </LinearLayout>
 </LinearLayout>
