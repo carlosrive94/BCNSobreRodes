@@ -19,7 +19,6 @@ import java.util.Map;
  * Created by ywy on 2015/11/21.
  */
 public class MySimpleAdapter extends BaseAdapter {
-    //声明一个LayoutInflater对象（其作用是用来实例化布局）
     private LayoutInflater mInflater;
     private List<Map<String, Object>> list;
     private int layoutID;
