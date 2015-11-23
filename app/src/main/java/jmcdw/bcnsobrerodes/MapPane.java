@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -65,7 +66,8 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
     private boolean obstaclesMostrats;
     private ArrayList<Marker> markersObstacles;
     private ArrayList<Obstacle> obstaclesDB;
-    private List<List<HashMap<String, String>>> rutes;
+    private String travelMode;
+    //private List<List<HashMap<String, String>>> rutes;
     //private PolylineOptions myRuta = null;
 
     @Override
@@ -190,6 +192,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         );
         mark.showInfoWindow();
         */
+
         if (locationEnabled) {
             //get info from locations
             Address address_from = getAddressFromLoc(from);
@@ -209,6 +212,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
 
     }
     */
+
     //Pre: loc is not null
     public Address getAddressFromLoc(LatLng loc) {
         Geocoder geocoder;
@@ -221,12 +225,6 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         }
         return addresses.get(0);
     }
-
-    /*protected synchronized void buildGoogleApiClient() {
-        myGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(LocationServices.API)
-                .build();
-    }*/
 
     protected void displayInfo() {
         TextView infoText = (TextView) findViewById(R.id.InfoText);
@@ -312,11 +310,15 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         return null;
     }*/
 
-    public void onClickRoute(View view) {
 
+    public void onClickRoute(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         // Get the layout inflater
         LayoutInflater inflater = this.getLayoutInflater();
+
+        //set default checked routeMode to walking
+        //radioGroup.check(R.id.rbtn_walking);
+
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
         builder.setView(inflater.inflate(R.layout.dialog_from_to, null))
@@ -358,7 +360,21 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                         //obtenim la informació dels punts de la ruta per mostrarlos als markers
                         String from_info = addr_from.getAddressLine(0);
                         String to_info = addr_to.getAddressLine(0);
-
+                        //get travelMode from radioGroup
+                        RadioGroup radioGroup = (RadioGroup) ((AlertDialog) dialog).findViewById(R.id.OptionsRadioGroup);
+                        int checkedId = radioGroup.getCheckedRadioButtonId();
+                        if (checkedId == R.id.rbtn_walking) {
+                            travelMode = "walking";
+                        }
+                        else if (checkedId == R.id.rbtn_driving) {
+                            travelMode = "driving";
+                        }
+                        else if (checkedId == R.id.rbtn_public_transport) {
+                            travelMode = "transit";
+                        }
+                        else {
+                            travelMode = "walking";
+                        }
                         drawRoute(from, from_info, to, to_info);
                         dialog.dismiss();
                     }
@@ -470,7 +486,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         String route_alternatives = "alternatives=" + "true";
 
         // Mode
-        String mode = "mode=" + "walking";
+        String mode = "mode=" + travelMode;
 
         // Building the parameters to the web service
         String parameters = str_origin + "&" + str_dest + "&" + mode + "&" + route_alternatives;
