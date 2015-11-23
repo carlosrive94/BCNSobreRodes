@@ -54,34 +54,35 @@ public class PlacePickerActivity extends AppCompatActivity {
             if (attributions == null) attributions = "";
             id = place.getId();
 
-            try {
-                nPuntuacions = placesFunctions.getNPuntuacions(id);
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
             String info = name + "\n" + address + "\n" + Html.fromHtml(attributions);
 
-            if (nPuntuacions == 0) info += "\nNo ha estat puntuada mai.";
-            else {
-                String puntuacio = null;
+            if (placesFunctions.esAccessible(id)) {
                 try {
-                    puntuacio = placesFunctions.getPuntuacio(id);
+                    nPuntuacions = placesFunctions.getNPuntuacions(id);
                 } catch (ExecutionException e) {
                     e.printStackTrace();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                ratingBar.setRating(Float.parseFloat(puntuacio));
 
-                info += "\nTé una puntuació de " + puntuacio + " estrelles";
-                info += "\nHa estat puntuada " + nPuntuacions + " cops.";
-            }
-            RelativeLayout puntuaLayout = (RelativeLayout) findViewById(R.id.puntuaPlace);
-            puntuaLayout.setVisibility(View.VISIBLE);
+                if (nPuntuacions == 0) info += "\nNo ha estat puntuada mai.";
+                else {
+                    String puntuacio = null;
+                    try {
+                        puntuacio = placesFunctions.getPuntuacio(id);
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    ratingBar.setRating(Float.parseFloat(puntuacio));
 
+                    info += "\nTé una puntuació de " + puntuacio + " estrelles";
+                    info += "\nHa estat puntuada " + nPuntuacions + " cops.";
+                }
+                RelativeLayout puntuaLayout = (RelativeLayout) findViewById(R.id.puntuaPlace);
+                puntuaLayout.setVisibility(View.VISIBLE);
+            } else info += "\nNo és accesible.";
             mInfo.setText(info);
 
         } else {

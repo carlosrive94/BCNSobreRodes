@@ -34,8 +34,6 @@ public class PrincipalActivity extends Activity implements View.OnClickListener 
         username = sp.getString("username", null);
         TextView viewUser = (TextView) findViewById(R.id.usernView);
         viewUser.setText(username);
-
-
     }
 
 
