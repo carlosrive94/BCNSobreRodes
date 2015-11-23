@@ -49,7 +49,6 @@ import java.util.concurrent.ExecutionException;
 
 import jmcdw.bcnsobrerodes.Utils.LocalitzacioDisabled;
 import jmcdw.bcnsobrerodes.Utils.Obstacle;
-import jmcdw.bcnsobrerodes.Utils.ObstacleDatabaseStub;
 import jmcdw.bcnsobrerodes.Utils.Persistence;
 import jmcdw.bcnsobrerodes.Utils.PlacesFunctions;
 
