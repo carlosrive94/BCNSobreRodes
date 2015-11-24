@@ -22,13 +22,24 @@ public class Verify extends AppCompatActivity {
     private SimpleAdapter adapter;
     private ListView listView;
     private List<Map<String, Object>> list;
+    private String buttonPressed;
     public static Verify ma;
+
+    private String getOptionPressed(Bundle savedInstanceState){
+        if (savedInstanceState == null){
+            Bundle extras = getIntent().getExtras();
+            if (extras == null)return null;
+            else return extras.getString("YouClicked");
+        }
+        else return (String) savedInstanceState.getSerializable("YouClicked");
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        buttonPressed = getOptionPressed(savedInstanceState);
         ma = this;
-        this.setContentView(R.layout.activity_verify);
+         this.setContentView(R.layout.activity_verify);
         list = new ArrayList<Map<String, Object>>();
         listView = (ListView) findViewById(R.id.listview);
         MySimpleAdapter adapter = new MySimpleAdapter(this, list,
