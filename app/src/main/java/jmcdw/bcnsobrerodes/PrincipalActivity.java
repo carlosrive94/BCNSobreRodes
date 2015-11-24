@@ -1,23 +1,20 @@
 package jmcdw.bcnsobrerodes;
 
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
-public class PrincipalActivity extends Activity implements View.OnClickListener {
+public class PrincipalActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Button places;
     private Button map;
     private Button obstacles;
-    private Button db;
     private SharedPreferences sp;
     private String username;
 
@@ -29,7 +26,7 @@ public class PrincipalActivity extends Activity implements View.OnClickListener 
         init();
     }
 
-    private void printUsername(){
+    private void printUsername() {
         sp = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         username = sp.getString("username", null);
         TextView viewUser = (TextView) findViewById(R.id.usernView);
@@ -43,9 +40,6 @@ public class PrincipalActivity extends Activity implements View.OnClickListener 
 
         map = (Button) findViewById(R.id.button_map);
         map.setOnClickListener(this);
-
-        db = (Button) findViewById(R.id.button_bd);
-        db.setOnClickListener(this);
 
         obstacles = (Button) findViewById(R.id.button_obstacles);
         obstacles.setOnClickListener(this);
@@ -65,10 +59,6 @@ public class PrincipalActivity extends Activity implements View.OnClickListener 
                 break;
             case R.id.button_obstacles:
                 intent = new Intent(this, ObstaclesActivity.class);
-                startActivity(intent);
-                break;
-            case R.id.button_bd:
-                intent = new Intent(this, DatabaseActivity.class);
                 startActivity(intent);
                 break;
         }
