@@ -1,6 +1,7 @@
 package jmcdw.bcnsobrerodes;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -16,12 +17,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
+import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -55,7 +59,7 @@ import jmcdw.bcnsobrerodes.Utils.PlacesFunctions;
 //import android.appwidget.;
 
 
-public class MapPane extends AppCompatActivity implements OnMapReadyCallback, OnMapLongClickListener {
+public class MapPane extends AppCompatActivity implements OnMapReadyCallback, OnMapLongClickListener, OnMapClickListener {
 
     private GoogleMap myMap;
     private Geocoder geocoder;
@@ -71,6 +75,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
     //private PolylineOptions myRuta = null;
     private SharedPreferences sp;
     private String username;
+    private String clickedAddress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +90,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         obstaclesMostrats = true;
         markersObstacles = new ArrayList<>();
         obstaclesDB = new ArrayList<>();
+        clickedAddress = "";
         //myPlacesFunctions = new PlacesFunctions(this);
         //buildGoogleApiClient();
     }
@@ -126,28 +132,13 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(barcelona, 13));
         myMap = map;
         myMap.setOnMapLongClickListener(this);
+        myMap.setOnMapClickListener(this);
         carregaObstaclesDB();
         carregaMarkersObstacles();
         //myMap.setOnMapClickListener(this);
     }
 
-    /*private void insertaABD() {
-        //carrer de benet mateu 18, carrer del doctor carulla 68
-        LatLng loc = getLatLng("carrer de benet mateu 18");
-
-        String query = "insert into Obstacles(latitud, longitud, descripcio)" +
-                " values(\"" + loc.latitude + "\", \"" + loc.longitude + "\", \"" + "Carrer molt empinat" + "\")";
-        Persistence persistence = new Persistence(this);
-        persistence.execute(query, "modification");
-
-        loc = getLatLng("carrer del doctor carulla 68");
-
-        query = "insert into Obstacles(latitud, longitud, descripcio)" +
-                " values(\"" + loc.latitude + "\", \"" + loc.longitude + "\", \"" + "Carrer tallat" + "\")";
-        persistence = new Persistence(this);
-        persistence.execute(query, "modification");
-    }
-
+    /*
     private LatLng getLatLng(String location) {
         //afegeixo Barcelona al final del string per a que googleMaps no busqui a altres llocs.
         location +=  ", Barcelona";
@@ -166,48 +157,20 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
     }*/
 
     @Override
-    public void onMapLongClick(LatLng to) {
+    public void onMapClick(LatLng clicked_place) {
+        //void
+    }
+
+    @Override
+    public void onMapLongClick(LatLng clicked_place) {
         clearView();
         //obtain_my_location
-        boolean locationEnabled = true;
-        LatLng from = null;
-        try {
-            from = placesFunctions.whereIam();
-        } catch (LocalitzacioDisabled localitzacioDisabled) {
-            locationEnabled = false;
-        }
-
-        /*
-        String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
-        String city = addresses.get(0).getLocality();
-        String country = addresses.get(0).getCountryName();
-        String postalCode = addresses.get(0).getPostalCode();
-        StringBuilder sb = new StringBuilder();
-        sb.append(address + "\n" + ", ");
-        sb.append(postalCode + ", " + city + ", " + country);
-
-        Marker mark = myMap.addMarker(new MarkerOptions()
-                        .position(to)
-                        .title("You are here")
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-                        .snippet(sb.toString())
-        );
-        mark.showInfoWindow();
-        */
-
-        if (locationEnabled) {
-            //get info from locations
-            Address address_from = getAddressFromLoc(from);
-            Address address_to = getAddressFromLoc(to);
-            String info_from = address_from.getAddressLine(0);
-            String info_to = address_to.getAddressLine(0);
-
-            drawRoute(from, info_from, to, info_to);
-        }
-        else {
-            alertDialog("Per usar aquesta funcionalitat has d'activar la localització");
-        }
+        Address address = getAddressFromLoc(clicked_place);
+        clickedAddress = address.getAddressLine(0);
+        myMap.addMarker(new MarkerOptions().position(clicked_place).title(clickedAddress));
+        myMap.animateCamera(CameraUpdateFactory.newLatLng(clicked_place));
     }
+
     /*
     @Override
     public void onMapClick(LatLng clickCoords) {
@@ -241,6 +204,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
     protected void clearView() {
         myMap.clear();
         eraseDisplayedInfo();
+        clickedAddress = "";
         ArrayList<Marker> aux = new ArrayList<>();
         for (Marker marker : markersObstacles) {
             aux.add(myMap.addMarker(new MarkerOptions()
@@ -274,6 +238,25 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
             myMap.addMarker(new MarkerOptions().position(latLng).title(address.getAddressLine(0)));
             myMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
         }
+    }
+
+    //retorna string buit si la localització no està activada
+    private String getMyLocationAddress() {
+        String res = "";
+        boolean locationEnabled = true;
+        LatLng loc = null;
+        try {
+            loc = placesFunctions.whereIam();
+        } catch (LocalitzacioDisabled localitzacioDisabled) {
+            locationEnabled = false;
+        }
+
+        if (locationEnabled) {
+            //get info from current location
+            Address address_loc = getAddressFromLoc(loc);
+            res = address_loc.getAddressLine(0);
+        }
+        return res;
     }
 
     public void onClickObstaclesButton(View view) {
@@ -312,9 +295,123 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         return null;
     }*/
 
-
     public void onClickRoute(View view) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        // custom dialog
+        final Dialog dialog = new Dialog(context);
+        dialog.setContentView(R.layout.dialog_from_to);
+        dialog.setTitle("Ruta");
+
+        RadioButton walking_rbtn = (RadioButton) dialog.findViewById(R.id.rbtn_walking);
+        walking_rbtn.setChecked(true);
+
+        if(clickedAddress != "") {
+            String my_location = getMyLocationAddress();
+            if (my_location != "") {
+                EditText from_txt = (EditText) dialog.findViewById(R.id.FromText);
+                from_txt.setText(my_location);
+            }
+            EditText to_txt = (EditText) dialog.findViewById(R.id.ToText);
+            to_txt.setText(clickedAddress);
+        }
+
+        Button loc_from = (Button) dialog.findViewById(R.id.btn_LocFrom);
+        Button loc_to = (Button) dialog.findViewById(R.id.btn_LocTo);
+        Button close = (Button) dialog.findViewById(R.id.btn_close);
+        Button search = (Button) dialog.findViewById(R.id.btn_search);
+        // if button is clicked, close the custom dialog
+        loc_from.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText from_text = (EditText) dialog.findViewById(R.id.FromText);
+                String my_location = getMyLocationAddress();
+                if (my_location == "")
+                    alertDialog("Per usar aquesta funcionalitat has d'activar la localització");
+                else {
+                    from_text.setText(my_location);
+                }
+            }
+        });
+
+        loc_to.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText from_text = (EditText) dialog.findViewById(R.id.ToText);
+                String my_location = getMyLocationAddress();
+                if (my_location == "")
+                    alertDialog("Per usar aquesta funcionalitat has d'activar la localització");
+                else {
+                    from_text.setText(my_location);
+                }
+            }
+        });
+
+
+        search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clearView();
+                EditText from_et = (EditText) dialog.findViewById(R.id.FromText);
+                EditText to_et = (EditText) dialog.findViewById(R.id.ToText);
+                String from_str = from_et.getText().toString();
+                String to_str = to_et.getText().toString();
+
+                //obtenim la latitud i longitud dels punts de la ruta
+                List<Address> addressList = null;
+                Address addr_from = null;
+                Address addr_to = null;
+                if (from_str != null || !from_str.equals("")) {
+                    try {
+                        //afegim ", Barcelona" al final del string
+                        addressList = geocoder.getFromLocationName(from_str + ", Barcelona", 1);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    addr_from = addressList.get(0);
+                }
+                if (to_str != null || !to_str.equals("")) {
+                    try {
+                        //afegim ", Barcelona" al final del string
+                        addressList = geocoder.getFromLocationName(to_str + ", Barcelona", 1);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    addr_to = addressList.get(0);
+                }
+                LatLng from = new LatLng(addr_from.getLatitude(), addr_from.getLongitude());
+                LatLng to = new LatLng(addr_to.getLatitude(), addr_to.getLongitude());
+
+                //obtenim la informació dels punts de la ruta per mostrarlos als markers
+                String from_info = addr_from.getAddressLine(0);
+                String to_info = addr_to.getAddressLine(0);
+                //get travelMode from radioGroup
+                RadioGroup radioGroup = (RadioGroup) dialog.findViewById(R.id.OptionsRadioGroup);
+                int checkedId = radioGroup.getCheckedRadioButtonId();
+                if (checkedId == R.id.rbtn_walking) {
+                    travelMode = "walking";
+                }
+                else if (checkedId == R.id.rbtn_driving) {
+                    travelMode = "driving";
+                }
+                else if (checkedId == R.id.rbtn_public_transport) {
+                    travelMode = "transit";
+                }
+                else {
+                    travelMode = "walking";
+                }
+                drawRoute(from, from_info, to, to_info);
+                dialog.dismiss();
+            }
+        });
+
+        close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+        /*AlertDialog.Builder builder = new AlertDialog.Builder(this);
         // Get the layout inflater
         LayoutInflater inflater = this.getLayoutInflater();
 
@@ -386,7 +483,34 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                         dialog.dismiss();
                     }
                 });
-        builder.create().show();
+        final AlertDialog routeDialog = builder.create();
+        Button my_loc_from = (Button) (routeDialog).findViewById(R.id.LocFrom);
+        my_loc_from.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                EditText from_text = (EditText) ((AlertDialog) routeDialog).findViewById(R.id.FromText);
+                String my_location = getMyLocationAddress();
+                if (my_location == "")
+                    alertDialog("Per usar aquesta funcionalitat has d'activar la localització");
+                else {
+                    from_text.setText(my_location);
+                }
+            }
+        });
+        Button my_loc_to = (Button) (routeDialog).findViewById(R.id.LocFrom);
+       my_loc_to.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                EditText to_text = (EditText) ((AlertDialog) routeDialog).findViewById(R.id.ToText);
+                String my_location = getMyLocationAddress();
+                if (my_location == "")
+                    alertDialog("Per usar aquesta funcionalitat has d'activar la localització");
+                else {
+                    to_text.setText(my_location);
+                }
+            }
+        });
+        builder.show();
+        //builder.create().show();
+        */
     }
     /*
     private void showRouteInfo() {
@@ -650,7 +774,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
 
                 //get obstacles de la BD i afegirlos a obstacles
                 ArrayList<Obstacle> obstaclesRuta = obteObstaclesARuta(lineOptions, obstaclesDB);
-                if (obstaclesRuta.isEmpty()) {
+                if (obstaclesRuta.isEmpty() && !mostratAvis) {
                     break;
                 }
                 else if (!mostratAvis){
