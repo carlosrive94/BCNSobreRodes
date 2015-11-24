@@ -78,7 +78,7 @@ public class PlacePickerActivity extends AppCompatActivity {
                     }
                     ratingBar.setRating(Float.parseFloat(puntuacio));
 
-                    info += "\nTé una puntuació de " + puntuacio + " estrelles";
+                    info += "\nTé una puntuació d'accesibilitat de " + puntuacio + " estrelles.";
                     info += "\nHa estat puntuada " + nPuntuacions + " cops.";
                 }
                 puntuaLayout.setVisibility(View.VISIBLE);
