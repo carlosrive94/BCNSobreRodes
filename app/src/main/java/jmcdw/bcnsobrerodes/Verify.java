@@ -61,7 +61,6 @@ public class Verify extends AppCompatActivity {
     }
 
     private void insertObstacles() throws ExecutionException, InterruptedException {
-        String query = "select admin,password from users where username=\"" + "1" + "\"";
         String query2 = "SELECT afegit_per, latitud, longitud, descripcio " +
                 "FROM Obstacles WHERE verificat = 0 " +
                 "order by afegit_per, latitud, longitud";

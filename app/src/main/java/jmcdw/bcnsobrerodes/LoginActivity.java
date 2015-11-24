@@ -15,6 +15,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 
+import com.google.android.gms.location.places.Place;
+
 import java.util.concurrent.ExecutionException;
 
 import jmcdw.bcnsobrerodes.Utils.Persistence;
@@ -60,7 +62,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         Intent intent;
         switch (arg0.getId()) {
             case  R.id.button_create:
-                newAccount();
+                falseNewAccount();
                 break;
 
             case R.id.button_user:
@@ -137,6 +139,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
+    public void falseNewAccount(){
+        Intent intent = new Intent(this, PlacePickerActivity.class);
+        startActivity (intent);
+    }
     public void newAccount (){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = this.getLayoutInflater();

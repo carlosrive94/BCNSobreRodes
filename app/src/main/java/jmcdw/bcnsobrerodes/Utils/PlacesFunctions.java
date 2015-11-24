@@ -110,6 +110,6 @@ public class PlacesFunctions implements GoogleApiClient.OnConnectionFailedListen
 
     public boolean esAccessible(String id) {
         if (Vars.ESTACIONS_NO_ACCESIBLES.contains(id)) return false;
-        return false;
+        return true;
     }
 }

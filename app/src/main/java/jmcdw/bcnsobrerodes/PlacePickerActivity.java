@@ -33,6 +33,7 @@ public class PlacePickerActivity extends AppCompatActivity {
     private String id;
     private RatingBar ratingBar;
     private int nPuntuacions;
+    private RelativeLayout puntuaLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,12 +78,14 @@ public class PlacePickerActivity extends AppCompatActivity {
                     }
                     ratingBar.setRating(Float.parseFloat(puntuacio));
 
-                    info += "\nTé una puntuació de " + puntuacio + " estrelles";
+                    info += "\nTé una puntuació d'accesibilitat de " + puntuacio + " estrelles.";
                     info += "\nHa estat puntuada " + nPuntuacions + " cops.";
                 }
-                RelativeLayout puntuaLayout = (RelativeLayout) findViewById(R.id.puntuaPlace);
                 puntuaLayout.setVisibility(View.VISIBLE);
-            } else info += "\nNo és accesible.";
+            } else {
+                puntuaLayout.setVisibility(View.INVISIBLE);
+                info += "\nNo és accesible.";
+            }
             mInfo.setText(info);
 
         } else {
@@ -92,6 +95,7 @@ public class PlacePickerActivity extends AppCompatActivity {
 
 
     private void initComponents() {
+        puntuaLayout = (RelativeLayout) findViewById(R.id.puntuaPlace);
         mInfo = (TextView) findViewById(R.id.infoPlace);
         ratingBar = (RatingBar) findViewById(R.id.ratingBar);
 

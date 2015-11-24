@@ -836,7 +836,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                         username = sp.getString("username", null);
                         try {
                             pos = placesFunctions.whereIam();
-                            String query = "insert into Obstacles(latitud, longitud, descripcio)" +
+                            String query = "insert into Obstacles(latitud, longitud, descripcio, afegit_per)" +
                                     " values(\"" + pos.latitude + "\", \"" + pos.longitude + "\", \"" +
                                     comentari + "\", \"" + username + "\")";
                             Persistence persistence = new Persistence(context);

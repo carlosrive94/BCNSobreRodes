@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -6,12 +5,12 @@
 
 
     <TextView
+        android:id="@+id/usernView"
         android:layout_width="wrap_content"
         android:layout_height="35dp"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:id="@+id/usernView"
         android:layout_gravity="right"
-        android:layout_marginRight="10dp" />
+        android:layout_marginRight="10dp"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <Button
         android:id="@+id/button_places"
@@ -31,11 +30,5 @@
         android:layout_width="150dp"
         android:layout_height="75dp"
         android:text="MAP W/ OBSTACLES" />
-   
-    <Button
-        android:id="@+id/button_bd"
-        android:layout_width="150dp"
-        android:layout_height="75dp"
-        android:text="BD" />
 
 </LinearLayout>
