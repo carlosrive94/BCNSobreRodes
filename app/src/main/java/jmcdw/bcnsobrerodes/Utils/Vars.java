@@ -18,7 +18,9 @@ public class Vars {
     private static String ESTACIO_POBLENOU = "ChIJPVegaD-jpBIRDZ2cFb5NR6E";
     private static String ESTACIO_VIRREI_AMAT = "ChIJO4nk5i-9pBIRPSysH2uTxFo";
     private static String ESTACIO_COLLBLANC = "ChIJH4RcP_GYpBIRFPA5wkbVkJU";
-    public static ArrayList ESTACIONS_NO_ACCESIBLES = new ArrayList() {{
+    public static ArrayList ESTACIONS_NO_ACCESIBLES = new ArrayList<>();
+
+    static{
         ESTACIONS_NO_ACCESIBLES.add(ESTACIO_PLACASANTS);
         ESTACIONS_NO_ACCESIBLES.add(ESTACIO_ESPANYA);
         ESTACIONS_NO_ACCESIBLES.add(ESTACIO_URQUINAONA);
@@ -32,5 +34,5 @@ public class Vars {
         ESTACIONS_NO_ACCESIBLES.add(ESTACIO_POBLENOU);
         ESTACIONS_NO_ACCESIBLES.add(ESTACIO_VIRREI_AMAT);
         ESTACIONS_NO_ACCESIBLES.add(ESTACIO_COLLBLANC);
-    }};
+    }
 }
