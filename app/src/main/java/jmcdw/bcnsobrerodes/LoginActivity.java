@@ -135,7 +135,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     e.printStackTrace();
                 }
                 break;
-                //TODO Activity with super user options
         }
     }
 

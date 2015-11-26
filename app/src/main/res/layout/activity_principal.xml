@@ -28,19 +28,10 @@
             android:text="PLACES" />
 
         <Button
-            android:id="@+id/button_obstacles"
-            android:layout_width="150dp"
-            android:layout_height="75dp"
-            android:layout_below="@+id/button_places"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="35dp"
-            android:text="MAP W/ OBSTACLES" />
-
-        <Button
             android:id="@+id/button_map"
             android:layout_width="150dp"
             android:layout_height="75dp"
-            android:layout_below="@+id/button_obstacles"
+            android:layout_below="@+id/button_places"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="35dp"
             android:text="MAP" />

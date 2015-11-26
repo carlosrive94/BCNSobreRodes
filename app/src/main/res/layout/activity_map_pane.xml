@@ -20,7 +20,7 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/linear_layout">
+        android:id="@+id/first_layout">
         <EditText
             android:id="@+id/AdressText"
             android:layout_width="183dp"
@@ -34,18 +34,10 @@
             android:id="@+id/SearchButton"
             android:layout_gravity="right"
             android:onClick="onClickSearch"/>
-        <Button
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Ruta"
-            android:id="@+id/RouteButton"
-            android:layout_gravity="right"
-            android:onClick="onClickRoute"/>
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_below="@+id/linear_layout"
+    <RelativeLayout
+        android:layout_below="@+id/first_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/info_layout">
@@ -54,7 +46,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="bold"/>
-    </LinearLayout>
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="7dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ruta"
+            android:id="@+id/RouteButton"
+            android:onClick="onClickRoute"/>
+    </RelativeLayout>
 
     <Button
             style="?android:attr/buttonStyleSmall"
