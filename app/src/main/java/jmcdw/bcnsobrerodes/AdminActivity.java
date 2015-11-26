@@ -44,7 +44,8 @@ public class AdminActivity extends AppCompatActivity implements View.OnClickList
                 break;
             case R.id.banButton:
                // intent.putExtra("YouClicked", "Ban User");
-                
+                intent = new Intent(this, BanUser.class);
+                intent.putExtra("YouClicked", "BanUser");
                 break;
         }
         startActivity(intent);

@@ -1,7 +1,10 @@
-package jmcdw.bcnsobrerodes;
+package jmcdw.bcnsobrerodes.Utils;
+
+/**
+ * Created by ywy on 2015/11/26.
+ */
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -14,32 +17,29 @@ import android.widget.TextView;
 import java.util.List;
 import java.util.Map;
 
-import jmcdw.bcnsobrerodes.Utils.Persistence;
+import jmcdw.bcnsobrerodes.BanUser;
+import jmcdw.bcnsobrerodes.Delete;
+import jmcdw.bcnsobrerodes.R;
 
-/**
- * Created by ywy on 2015/11/21.
- */
-public class MySimpleAdapter2 extends BaseAdapter {
+
+public class MySimpleAdapter3 extends BaseAdapter {
     private LayoutInflater mInflater;
     private List<Map<String, Object>> list;
     private int layoutID;
     private String flag[];
     private int ItemIDs[];
-    private int auxposition;
     private Context context;
     private Intent intent;
 
-    public MySimpleAdapter2(Context context, List<Map<String, Object>> list,
-                           int layoutID, String flag[], int ItemIDs[]) {
+    public MySimpleAdapter3(Context context, List<Map<String, Object>> list,
+                            int layoutID, String flag[], int ItemIDs[]) {
 
         this.mInflater = LayoutInflater.from(context);
         this.list = list;
         this.layoutID = layoutID;
         this.flag = flag;
         this.ItemIDs = ItemIDs;
-        this.auxposition = 0;
         this.context = context;
-        this.intent = intent;
     }
     @Override
     public int getCount() {
@@ -58,7 +58,6 @@ public class MySimpleAdapter2 extends BaseAdapter {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        auxposition = position;
         convertView = mInflater.inflate(layoutID, null);
         for (int i = 0; i < flag.length; i++) {
             if (convertView.findViewById(ItemIDs[i]) instanceof TextView) {
@@ -69,27 +68,43 @@ public class MySimpleAdapter2 extends BaseAdapter {
             }
         }
 
-        ((Button)convertView.findViewById(R.id.Deletebtn)).setOnClickListener(
+        ((Button)convertView.findViewById(R.id.Banbtn)).setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         String username = (String) list.get(position).get(flag[0]);
-                        String[] latlong =  ((String) list.get(position).get(flag[1])).split(",");
-                        double lat = Double.parseDouble(latlong[0]);
-                        double lng = Double.parseDouble(latlong[1]);
-
-                        String query = "delete from Obstacles " +
-                                "where afegit_per =\""+username+"\" AND longitud =\""+lng+"\" AND latitud =\""+lat+"\"";
+                        String query = "update users " +
+                                "set esta_baneado = 1 " +
+                                "where username =\""+username+"\"";
 
                         Persistence persistence = new Persistence(context);
                         persistence.execute(query, "modification");
 
-                        Intent intent = new Intent(context, Delete.class);
+                        Intent intent = new Intent(context, BanUser.class);
                         ((Activity) context).finish();
                         context.startActivity(intent);
+
                     }
                 });
 
+        ((Button)convertView.findViewById(R.id.Desbanbtn)).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String username = (String) list.get(position).get(flag[0]);
+                        String query = "update users " +
+                                "set esta_baneado = 0 " +
+                                "where username =\""+username+"\"";
+
+                        Persistence persistence = new Persistence(context);
+                        persistence.execute(query, "modification");
+
+                        Intent intent = new Intent(context, BanUser.class);
+                        ((Activity) context).finish();
+                        context.startActivity(intent);
+
+                    }
+                });
         return convertView;
     }
 

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+import jmcdw.bcnsobrerodes.Utils.MySimpleAdapter2;
 import jmcdw.bcnsobrerodes.Utils.Persistence;
 
 public class Delete extends AppCompatActivity {

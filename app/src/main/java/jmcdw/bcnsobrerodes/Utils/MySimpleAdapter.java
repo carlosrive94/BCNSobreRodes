@@ -1,4 +1,4 @@
-package jmcdw.bcnsobrerodes;
+package jmcdw.bcnsobrerodes.Utils;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -17,7 +17,9 @@ import android.widget.TextView;
 import java.util.List;
 import java.util.Map;
 
+import jmcdw.bcnsobrerodes.R;
 import jmcdw.bcnsobrerodes.Utils.Persistence;
+import jmcdw.bcnsobrerodes.Verify;
 
 /**
  * Created by ywy on 2015/11/21.
