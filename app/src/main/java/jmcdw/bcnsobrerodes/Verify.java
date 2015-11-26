@@ -3,9 +3,11 @@ package jmcdw.bcnsobrerodes;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TableLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -83,6 +85,12 @@ public class Verify extends AppCompatActivity {
                 map.put("item1_description", desc);
                 list.add(map);
             }
+        }
+        else{
+            TextView dynamicTextView = new TextView(this);
+            dynamicTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            dynamicTextView.setText(" There are no obstacles without ");
+            //TODO textview mostrando que no hay nada x validar
         }
     }
 }

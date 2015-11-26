@@ -59,9 +59,6 @@
             android:name=".CategoriesActivity"
             android:label="@string/title_activity_categories"></activity>
         <activity
-            android:name=".ObstaclesActivity"
-            android:label="@string/title_activity_obstacles"></activity>
-        <activity
             android:name=".PrincipalActivity"
             android:label="PrincipalActivity"></activity>
         <activity android:name=".AdminActivity"></activity>

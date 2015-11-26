@@ -14,7 +14,6 @@ public class PrincipalActivity extends AppCompatActivity implements View.OnClick
 
     private Button places;
     private Button map;
-    private Button obstacles;
     private SharedPreferences sp;
     private String username;
 
@@ -40,9 +39,6 @@ public class PrincipalActivity extends AppCompatActivity implements View.OnClick
 
         map = (Button) findViewById(R.id.button_map);
         map.setOnClickListener(this);
-
-        obstacles = (Button) findViewById(R.id.button_obstacles);
-        obstacles.setOnClickListener(this);
     }
 
     @Override
@@ -55,10 +51,6 @@ public class PrincipalActivity extends AppCompatActivity implements View.OnClick
                 break;
             case R.id.button_map:
                 intent = new Intent(this, MapPane.class);
-                startActivity(intent);
-                break;
-            case R.id.button_obstacles:
-                intent = new Intent(this, ObstaclesActivity.class);
                 startActivity(intent);
                 break;
         }
