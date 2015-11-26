@@ -2,6 +2,7 @@ package jmcdw.bcnsobrerodes;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TableLayout;
@@ -65,20 +66,23 @@ public class Verify extends AppCompatActivity {
                 "FROM Obstacles WHERE verificat = 0 " +
                 "order by afegit_per, latitud, longitud";
         Persistence persistence = new Persistence(this);
-        String tuples[] = persistence.execute(query2, "select").get().split("/");
-        for (String tupla : tuples) {
-            String[] infoObstacle = tupla.split("-");
-            String user = infoObstacle[0];
-            double lat = Double.parseDouble(infoObstacle[1]);
-            double lng = Double.parseDouble(infoObstacle[2]);
-            String desc = infoObstacle[3];
+        String tups = persistence.execute(query2, "select").get();
+        if (!tups.equals("")) {
+            String tuples[] = tups.split("/");
+            for (String tupla : tuples) {
+                Log.e("tupla", tupla);
+                String[] infoObstacle = tupla.split("-");
+                String user = infoObstacle[0];
+                double lat = Double.parseDouble(infoObstacle[1]);
+                double lng = Double.parseDouble(infoObstacle[2]);
+                String desc = infoObstacle[3];
 
-            Map<String, Object> map = new HashMap<String, Object>();
-            map.put("item1_username", user);
-            map.put("item1_longLat", lat + ", " + lng);
-            map.put("item1_description", desc);
-            list.add(map);
+                Map<String, Object> map = new HashMap<String, Object>();
+                map.put("item1_username", user);
+                map.put("item1_longLat", lat + ", " + lng);
+                map.put("item1_description", desc);
+                list.add(map);
+            }
         }
-
     }
 }

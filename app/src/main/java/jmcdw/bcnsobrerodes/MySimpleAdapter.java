@@ -92,11 +92,26 @@ public class MySimpleAdapter extends BaseAdapter {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        String username = (String) list.get(position).get(flag[0]);
+                        String[] latlong =  ((String) list.get(position).get(flag[1])).split(",");
+                        double lat = Double.parseDouble(latlong[0]);
+                        double lng = Double.parseDouble(latlong[1]);
 
-                        new AlertDialog.Builder(Verify.ma)
-                                .setTitle("DIY SimpleAdapter")
-                                .setMessage("Deny Success！")
-                                .show();
+                        String query = "delete from Obstacles " +
+                                "where afegit_per =\""+username+"\" AND longitud =\""+lng+"\" AND latitud =\""+lat+"\"";
+
+                        Persistence persistence = new Persistence(context);
+                        persistence.execute(query, "modification");
+
+                        query =  "update users " +
+                                "set obs_falsos = obs_falsos + 1 " +
+                                "where username =\""+username+"\"";
+                        persistence = new Persistence(context);
+                        persistence.execute(query, "modification");
+
+
+                        Intent intent = new Intent(context, Verify.class);
+                        context.startActivity(intent);
                     }
                 });
         return convertView;
