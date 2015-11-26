@@ -36,17 +36,17 @@ public class AdminActivity extends AppCompatActivity implements View.OnClickList
         intent = new Intent(this, Verify.class);
         switch (v.getId()) {
             case R.id.verifyButton:
+                intent = new Intent(this, Verify.class);
                 intent.putExtra("YouClicked", "Verify");
                 break;
             case R.id.deleteButton:
+                intent = new Intent(this, Delete.class);
                 intent.putExtra("YouClicked", "Delete");
                 break;
             case R.id.banButton:
-                intent.putExtra("YouClicked", "Ban User");
+               // intent.putExtra("YouClicked", "Ban User");
                 break;
         }
-
         startActivity(intent);
-
     }
 }

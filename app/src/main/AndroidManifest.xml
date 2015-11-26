@@ -29,12 +29,15 @@
         <activity
             android:name=".LoginActivity"
             android:label="@string/app_name">
+        </activity>
+        <activity
+            android:name=".SplashActivity"
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            >
         </activity>
         <activity
             android:name=".MapPane"
@@ -56,13 +59,12 @@
             android:name=".CategoriesActivity"
             android:label="@string/title_activity_categories"></activity>
         <activity
-            android:name=".ObstaclesActivity"
-            android:label="@string/title_activity_obstacles"></activity>
-        <activity
             android:name=".PrincipalActivity"
-            android:label="PrincipalActivity"></activity>
-        <activity android:name=".AdminActivity"></activity>
-        <activity android:name=".Verify"></activity>
+            android:label="PrincipalActivity" />
+        <activity android:name=".AdminActivity" />
+        <activity android:name=".Verify" />
+        <activity android:name=".Delete" >
+        </activity>
     </application>
 
 </manifest>
