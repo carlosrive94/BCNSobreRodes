@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -17,7 +16,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -32,6 +30,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
 
@@ -49,7 +48,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.ExecutionException;
 
 import jmcdw.bcnsobrerodes.Utils.LocalitzacioDisabled;
 import jmcdw.bcnsobrerodes.Utils.Obstacle;
@@ -59,8 +57,8 @@ import jmcdw.bcnsobrerodes.Utils.PlacesFunctions;
 //import android.appwidget.;
 
 
-public class MapPane extends AppCompatActivity implements OnMapReadyCallback, OnMapLongClickListener, OnMapClickListener {
 
+public class MapPane extends AppCompatActivity implements OnMapReadyCallback, OnMapLongClickListener, OnMapClickListener {
     private GoogleMap myMap;
     private Geocoder geocoder;
     private String infoToDisplay;
@@ -72,10 +70,11 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
     private ArrayList<Obstacle> obstaclesDB;
     private String travelMode;
     //private List<List<HashMap<String, String>>> rutes;
-    //private PolylineOptions myRuta = null;
     private SharedPreferences sp;
     private String username;
     private String clickedAddress;
+    private boolean enableRouteClick;
+    private ArrayList<Polyline> myRoutes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +90,8 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         markersObstacles = new ArrayList<>();
         obstaclesDB = new ArrayList<>();
         clickedAddress = "";
+        enableRouteClick = false;
+        myRoutes = new ArrayList<>();
         //myPlacesFunctions = new PlacesFunctions(this);
         //buildGoogleApiClient();
     }
@@ -156,9 +157,48 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         return null;
     }*/
 
+    private Polyline clickedRoute(LatLng clicked_place) {
+        for (Polyline route : myRoutes) {
+            if (PolyUtil.isLocationOnPath(clicked_place, route.getPoints(), true, 50)) {
+                return route;
+            }
+        }
+        return null;
+    }
+
     @Override
     public void onMapClick(LatLng clicked_place) {
-        //void
+        if (enableRouteClick) {
+            Polyline clickedRoute = clickedRoute(clicked_place);
+            if (clickedRoute != null) {
+                if (clickedRoute.getColor() == Color.GRAY) {
+                    PolylineOptions newSelectedRoute = new PolylineOptions();
+                    newSelectedRoute.addAll(clickedRoute.getPoints());
+                    newSelectedRoute.width(4);
+                    newSelectedRoute.zIndex(2);
+                    newSelectedRoute.color(Color.BLUE);
+                    myRoutes.remove(clickedRoute);
+                    clickedRoute.remove();
+                    myRoutes.add(myMap.addPolyline(newSelectedRoute));
+
+                    Polyline oldSelectedRoute = null;
+                    for (Polyline route : myRoutes) {
+                        if (route.getColor() == Color.BLUE) {
+                            oldSelectedRoute = route;
+                            break;
+                        }
+                    }
+                    PolylineOptions auxRoute = new PolylineOptions();
+                    auxRoute.addAll(oldSelectedRoute.getPoints());
+                    auxRoute.width(4);
+                    auxRoute.zIndex(1);
+                    auxRoute.color(Color.GRAY);
+                    myRoutes.remove(oldSelectedRoute);
+                    oldSelectedRoute.remove();
+                    myRoutes.add(myMap.addPolyline(auxRoute));
+                }
+            }
+        }
     }
 
     @Override
@@ -203,6 +243,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
 
     protected void clearView() {
         myMap.clear();
+        enableRouteClick = false;
         eraseDisplayedInfo();
         clickedAddress = "";
         ArrayList<Marker> aux = new ArrayList<>();
@@ -744,7 +785,10 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
             ArrayList<LatLng> points = null;
             PolylineOptions lineOptions = null;
             MarkerOptions markerOptions = new MarkerOptions();
-
+            //natejo la variable global myRoutes
+            for (int i = 0; i < myRoutes.size(); i++) {
+                myRoutes.remove(i);
+            }
             // Traversing through all the routes
             for (int i = 0; i < result.size(); i++) {
                 points = new ArrayList<LatLng>();
@@ -767,34 +811,37 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                 // Adding all the points in the route to LineOptions
                 lineOptions.addAll(points);
                 lineOptions.width(4);
-                lineOptions.color(Color.BLUE);
-
-                // Drawing polyline in the Google Map for the i-th route
-                myMap.addPolyline(lineOptions);
+                if (i == 0) {
+                    lineOptions.color(Color.BLUE);
+                    lineOptions.zIndex(2);
+                }
+                else {
+                    lineOptions.color(Color.GRAY);
+                    lineOptions.zIndex(1);
+                }
+                myRoutes.add(myMap.addPolyline(lineOptions));
 
                 //get obstacles de la BD i afegirlos a obstacles
-                ArrayList<Obstacle> obstaclesRuta = obteObstaclesARuta(lineOptions, obstaclesDB);
-                if (obstaclesRuta.isEmpty() && !mostratAvis) {
-                    break;
-                }
-                else if (!mostratAvis){
-                    String info="Hem tobat " + obstaclesRuta.size();
-                    if (obstaclesRuta.size() == 1) info += " possible obstacle a la ruta:\n";
-                    else info += " possibles obstacles a la ruta:\n";
-                    for (Obstacle obstacle : obstaclesRuta) {
-                        info += "- " + obstacle.getDescripcio() + "\n";
+                if (!mostratAvis) {
+                    ArrayList<Obstacle> obstaclesRuta = obteObstaclesARuta(lineOptions, obstaclesDB);
+                    if (obstaclesRuta.isEmpty()) {
+                        break;
+                    } else {
+                        String info = "Hem tobat " + obstaclesRuta.size();
+                        if (obstaclesRuta.size() == 1) info += " possible obstacle a la ruta:\n";
+                        else info += " possibles obstacles a la ruta:\n";
+                        for (Obstacle obstacle : obstaclesRuta) {
+                            info += "- " + obstacle.getDescripcio() + "\n";
+                        }
+                        info += "\n Es mostren les rutes alternatives.";
+                        alertDialog(info);
+                        mostratAvis = true;
                     }
-                    info += "\n Es mostren les rutes alternatives.";
-                    alertDialog(info);
-                    mostratAvis = true;
+                }
+                else {
+                    enableRouteClick = true;
                 }
             }
-            //Save my route on global variables
-            //myRuta = lineOptions;
-            //41.3937473 , 2.1233227
-            //carrer de benet mateu 18, carrer del doctor carulla 68
-
-
         }
     }
 
