@@ -30,7 +30,7 @@ public class PrincipalActivity extends AppCompatActivity implements View.OnClick
         sp = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         username = sp.getString("username", null);
         TextView viewUser = (TextView) findViewById(R.id.usernView);
-        viewUser.setText(username);
+        viewUser.setText("Logged as " + username);
     }
 
 
