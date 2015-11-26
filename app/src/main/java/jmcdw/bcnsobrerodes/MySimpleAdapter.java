@@ -1,5 +1,6 @@
 package jmcdw.bcnsobrerodes;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -84,7 +85,9 @@ public class MySimpleAdapter extends BaseAdapter {
 
                         Persistence persistence = new Persistence(context);
                         persistence.execute(query, "modification");
+
                         Intent intent = new Intent(context, Verify.class);
+                        ((Activity) context).finish();
                         context.startActivity(intent);
                     }
                 });
@@ -111,6 +114,7 @@ public class MySimpleAdapter extends BaseAdapter {
 
 
                         Intent intent = new Intent(context, Verify.class);
+                        ((Activity) context).finish();
                         context.startActivity(intent);
                     }
                 });

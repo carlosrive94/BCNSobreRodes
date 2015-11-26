@@ -11,26 +11,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="10sp"
-            android:id="@+id/username"
+            android:id="@+id/username2"
             />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="10sp"
-            android:id="@+id/longLat" />
+            android:id="@+id/longLat2" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="10sp"
-            android:id="@+id/description"
+            android:id="@+id/description2"
             />
 
         <Button
-            android:layout_width="80dp"
+            android:layout_width="wrap_content"
             android:layout_height="35dp"
             android:text="Delete"
-            android:textSize="10sp"
+            android:textSize="9sp"
             android:id="@+id/Deletebtn"
             android:focusable="false"
             />

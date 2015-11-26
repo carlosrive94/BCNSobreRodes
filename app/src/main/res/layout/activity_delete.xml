@@ -13,20 +13,21 @@
             android:layout_height="wrap_content"
             android:text="username"
             android:textSize="12sp"
+            android:layout_marginLeft="5dp"
             />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="latitud, longitud"
             android:textSize="12sp"
-            android:layout_marginLeft="15dp"
+            android:layout_marginLeft="20dp"
             />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="descripcio"
             android:textSize="12sp"
-            android:layout_marginLeft="15dp"
+            android:layout_marginLeft="40dp"
             />
     </LinearLayout>
 
