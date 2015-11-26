@@ -3,14 +3,8 @@ package jmcdw.bcnsobrerodes;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.TableLayout;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,15 +12,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import jmcdw.bcnsobrerodes.Utils.Obstacle;
 import jmcdw.bcnsobrerodes.Utils.Persistence;
 
-public class Verify extends AppCompatActivity {
+public class Delete extends AppCompatActivity {
+
     private SimpleAdapter adapter;
     private ListView listView;
     private List<Map<String, Object>> list;
     private String buttonPressed;
-    public static Verify ma;
+    public static Delete ma;
 
     private String getOptionPressed(Bundle savedInstanceState){
         if (savedInstanceState == null){
@@ -42,11 +36,11 @@ public class Verify extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         buttonPressed = getOptionPressed(savedInstanceState);
         ma = this;
-         this.setContentView(R.layout.activity_verify);
+        this.setContentView(R.layout.activity_delete);
         list = new ArrayList<Map<String, Object>>();
-        listView = (ListView) findViewById(R.id.listview);
-        MySimpleAdapter adapter = new MySimpleAdapter(this, list,
-                R.layout.listview, new String[] { "item1_username",
+        listView = (ListView) findViewById(R.id.listview2);
+        MySimpleAdapter2 adapter = new MySimpleAdapter2(this, list,
+                R.layout.listview2, new String[] { "item1_username",
                 "item1_longLat", "item1_description" }, new int[] { R.id.username, R.id.longLat, R.id.description
         });
         listView.setAdapter(adapter);
@@ -61,7 +55,7 @@ public class Verify extends AppCompatActivity {
 
     private void insertObstacles() throws ExecutionException, InterruptedException {
         String query2 = "SELECT afegit_per, latitud, longitud, descripcio " +
-                "FROM Obstacles WHERE verificat = 0 " +
+                "FROM Obstacles " +
                 "order by afegit_per, latitud, longitud";
         Persistence persistence = new Persistence(this);
         String tups = persistence.execute(query2, "select").get();
@@ -81,12 +75,6 @@ public class Verify extends AppCompatActivity {
                 map.put("item1_description", desc);
                 list.add(map);
             }
-        }
-        else{
-            TextView dynamicTextView = new TextView(this);
-            dynamicTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-            dynamicTextView.setText(" There are no obstacles without ");
-            //TODO textview mostrando que no hay nada x validar
         }
     }
 }
