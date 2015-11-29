@@ -1,5 +1,7 @@
 package jmcdw.bcnsobrerodes;
 
+import jmcdw.bcnsobrerodes.Utils.Path;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,12 +12,13 @@ import org.json.JSONObject;
 
 import com.google.android.gms.maps.model.LatLng;
 
+
 public class DirectionsJSONParser {
 
     /** Receives a JSONObject and returns a list of lists containing latitude and longitude */
-    public List<List<HashMap<String,String>>> parse(JSONObject jObject){
+    public List<List<Path>> parse(JSONObject jObject){
 
-        List<List<HashMap<String, String>>> routes = new ArrayList<List<HashMap<String,String>>>() ;
+        List<List<Path>> routes = new ArrayList<List<Path>>();
         JSONArray jRoutes = null;
         JSONArray jLegs = null;
         JSONArray jSteps = null;
@@ -27,28 +30,43 @@ public class DirectionsJSONParser {
             /** Traversing all routes */
             for(int i=0;i<jRoutes.length();i++){
                 jLegs = ( (JSONObject)jRoutes.get(i)).getJSONArray("legs");
-                List path = new ArrayList<HashMap<String, String>>();
+                List<Path> ruta = new ArrayList<Path>();
 
                 /** Traversing all legs */
                 for(int j=0;j<jLegs.length();j++){
                     jSteps = ( (JSONObject)jLegs.get(j)).getJSONArray("steps");
+                    Path path = null;
 
                     /** Traversing all steps */
                     for(int k=0;k<jSteps.length();k++){
                         String polyline = "";
+                        String mode = "";
+                        String ini_station = null;
+                        String end_station = null;
                         polyline = (String)((JSONObject)((JSONObject)jSteps.get(k)).get("polyline")).get("points");
-                        List<LatLng> list = decodePoly(polyline);
+                        //Si es transit s'ha d'agafar la estació origen i la estació desti
+                        mode = (String)((JSONObject)((JSONObject)jSteps.get(k))).get("travel_mode");
+                        if(((JSONObject)jSteps.get(k)).get("travel_mode")=="TRANSIT") {
+                            ini_station = (String)((JSONObject)((JSONObject)((JSONObject)jSteps.get(k)).get("transit_details")).get("departure_stop")).get("name");
+                            end_station = (String)((JSONObject)((JSONObject)((JSONObject)jSteps.get(k)).get("transit_details")).get("arrival_stop")).get("name");
+                        }
+                        //Si es transit o driving no s'han de tenir en compte els obtacles que trobi
 
+                        List<LatLng> list = decodePoly(polyline);
+                        List<HashMap<String,String>> step = new ArrayList<>();
                         /** Traversing all points */
                         for(int l=0;l<list.size();l++){
                             HashMap<String, String> hm = new HashMap<String, String>();
                             hm.put("lat", Double.toString(((LatLng)list.get(l)).latitude) );
                             hm.put("lng", Double.toString(((LatLng)list.get(l)).longitude) );
-                            path.add(hm);
+                            step.add(hm);
                         }
+
+                        path = new Path(mode, step , ini_station, end_station);
+                        ruta.add(path);
                     }
-                    routes.add(path);
                 }
+                routes.add(ruta);
             }
 
         } catch (JSONException e) {
