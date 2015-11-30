@@ -1,5 +1,6 @@
-package jmcdw.bcnsobrerodes;
+package jmcdw.bcnsobrerodes.Utils;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -8,14 +9,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
 import java.util.Map;
 
+import jmcdw.bcnsobrerodes.Delete;
+import jmcdw.bcnsobrerodes.R;
 import jmcdw.bcnsobrerodes.Utils.Persistence;
 
 /**
@@ -29,6 +29,7 @@ public class MySimpleAdapter2 extends BaseAdapter {
     private int ItemIDs[];
     private int auxposition;
     private Context context;
+    private Intent intent;
 
     public MySimpleAdapter2(Context context, List<Map<String, Object>> list,
                            int layoutID, String flag[], int ItemIDs[]) {
@@ -40,6 +41,7 @@ public class MySimpleAdapter2 extends BaseAdapter {
         this.ItemIDs = ItemIDs;
         this.auxposition = 0;
         this.context = context;
+        this.intent = intent;
     }
     @Override
     public int getCount() {
@@ -78,9 +80,19 @@ public class MySimpleAdapter2 extends BaseAdapter {
                         double lat = Double.parseDouble(latlong[0]);
                         double lng = Double.parseDouble(latlong[1]);
 
+                        String query = "delete from Obstacles " +
+                                "where afegit_per =\""+username+"\" AND longitud =\""+lng+"\" AND latitud =\""+lat+"\"";
+
+                        Persistence persistence = new Persistence(context);
+                        persistence.execute(query, "modification");
+
+                        Intent intent = new Intent(context, Delete.class);
+                        ((Activity) context).finish();
+                        context.startActivity(intent);
                     }
                 });
 
         return convertView;
     }
+
 }

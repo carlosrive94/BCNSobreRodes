@@ -1,5 +1,6 @@
 package jmcdw.bcnsobrerodes;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+import jmcdw.bcnsobrerodes.Utils.MySimpleAdapter2;
 import jmcdw.bcnsobrerodes.Utils.Persistence;
 
 public class Delete extends AppCompatActivity {
@@ -39,9 +41,10 @@ public class Delete extends AppCompatActivity {
         this.setContentView(R.layout.activity_delete);
         list = new ArrayList<Map<String, Object>>();
         listView = (ListView) findViewById(R.id.listview2);
+        Intent intent = getIntent();
         MySimpleAdapter2 adapter = new MySimpleAdapter2(this, list,
                 R.layout.listview2, new String[] { "item1_username",
-                "item1_longLat", "item1_description" }, new int[] { R.id.username, R.id.longLat, R.id.description
+                "item1_longLat", "item1_description" }, new int[] { R.id.username2, R.id.longLat2, R.id.description2
         });
         listView.setAdapter(adapter);
         try {
@@ -56,6 +59,7 @@ public class Delete extends AppCompatActivity {
     private void insertObstacles() throws ExecutionException, InterruptedException {
         String query2 = "SELECT afegit_per, latitud, longitud, descripcio " +
                 "FROM Obstacles " +
+                "where verificat = 1 "+
                 "order by afegit_per, latitud, longitud";
         Persistence persistence = new Persistence(this);
         String tups = persistence.execute(query2, "select").get();
@@ -74,6 +78,7 @@ public class Delete extends AppCompatActivity {
                 map.put("item1_longLat", lat + ", " + lng);
                 map.put("item1_description", desc);
                 list.add(map);
+
             }
         }
     }

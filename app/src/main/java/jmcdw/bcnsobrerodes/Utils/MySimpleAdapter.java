@@ -1,5 +1,6 @@
-package jmcdw.bcnsobrerodes;
+package jmcdw.bcnsobrerodes.Utils;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -16,7 +17,9 @@ import android.widget.TextView;
 import java.util.List;
 import java.util.Map;
 
+import jmcdw.bcnsobrerodes.R;
 import jmcdw.bcnsobrerodes.Utils.Persistence;
+import jmcdw.bcnsobrerodes.Verify;
 
 /**
  * Created by ywy on 2015/11/21.
@@ -84,7 +87,9 @@ public class MySimpleAdapter extends BaseAdapter {
 
                         Persistence persistence = new Persistence(context);
                         persistence.execute(query, "modification");
+
                         Intent intent = new Intent(context, Verify.class);
+                        ((Activity) context).finish();
                         context.startActivity(intent);
                     }
                 });
@@ -111,6 +116,7 @@ public class MySimpleAdapter extends BaseAdapter {
 
 
                         Intent intent = new Intent(context, Verify.class);
+                        ((Activity) context).finish();
                         context.startActivity(intent);
                     }
                 });

@@ -53,6 +53,7 @@ import jmcdw.bcnsobrerodes.Utils.LocalitzacioDisabled;
 import jmcdw.bcnsobrerodes.Utils.Obstacle;
 import jmcdw.bcnsobrerodes.Utils.Persistence;
 import jmcdw.bcnsobrerodes.Utils.PlacesFunctions;
+import jmcdw.bcnsobrerodes.Utils.Path;
 
 //import android.appwidget.;
 
@@ -757,14 +758,14 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
     /**
      * A class to parse the Google Places in JSON format
      */
-    private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {
+    private class ParserTask extends AsyncTask<String, Integer, List<List<Path>>> {
 
         // Parsing the data in non-ui thread
         @Override
-        protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
+        protected List<List<Path>> doInBackground(String... jsonData) {
 
             JSONObject jObject;
-            List<List<HashMap<String, String>>> routes = null;
+            List<List<Path>> routes = null;
 
             try {
                 jObject = new JSONObject(jsonData[0]);
@@ -780,7 +781,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
 
         // Executes in UI thread, after the parsing process
         @Override
-        protected void onPostExecute(List<List<HashMap<String, String>>> result) {
+        protected void onPostExecute(List<List<Path>> result) {
             boolean mostratAvis = false;
             ArrayList<LatLng> points = null;
             PolylineOptions lineOptions = null;
@@ -795,18 +796,26 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                 lineOptions = new PolylineOptions();
 
                 // Fetching i-th route
-                List<HashMap<String, String>> path = result.get(i);
+                List<Path> path = result.get(i);
 
-                // Fetching all the points in i-th route
-                for (int j = 0; j < path.size(); j++) {
-                    HashMap<String, String> point = path.get(j);
+                //Fetching all the steps in i-th route
+                for(int j = 0; j < path.size(); j++) {
+                    //Fetching the j-th step
+                    Path step = path.get(j);
+                    List<HashMap<String, String>> lineStep = step.getPolyline();
+                    // Fetching all the points in j-th step
+                    for (int k = 0; k < lineStep.size(); k++) {
+                        HashMap<String, String> point = lineStep.get(k);
 
-                    double lat = Double.parseDouble(point.get("lat"));
-                    double lng = Double.parseDouble(point.get("lng"));
-                    LatLng position = new LatLng(lat, lng);
+                        double lat = Double.parseDouble(point.get("lat"));
+                        double lng = Double.parseDouble(point.get("lng"));
+                        LatLng position = new LatLng(lat, lng);
 
-                    points.add(position);
+                        points.add(position);
+                    }
                 }
+
+
 
                 // Adding all the points in the route to LineOptions
                 lineOptions.addAll(points);
