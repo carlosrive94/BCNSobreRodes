@@ -728,7 +728,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
             try {
                 JSONObject jsonObj = new JSONObject(data.toString());
                 JSONArray parentArray = jsonObj.getJSONArray("routes");
-                final JSONArray legArray = parentArray.getJSONObject(0).getJSONArray("legs");
+                JSONArray legArray = parentArray.getJSONObject(0).getJSONArray("legs");
                 JSONObject distanceObj = legArray.getJSONObject(0).getJSONObject("distance");
                 JSONObject durationObj = legArray.getJSONObject(0).getJSONObject("duration");
                 String distance = distanceObj.getString("text"); //String that contains the distance value formatted
