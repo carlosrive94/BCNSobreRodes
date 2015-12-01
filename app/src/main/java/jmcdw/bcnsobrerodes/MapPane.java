@@ -48,12 +48,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Vector;
 
 import jmcdw.bcnsobrerodes.Utils.LocalitzacioDisabled;
 import jmcdw.bcnsobrerodes.Utils.Obstacle;
 import jmcdw.bcnsobrerodes.Utils.Persistence;
 import jmcdw.bcnsobrerodes.Utils.PlacesFunctions;
 import jmcdw.bcnsobrerodes.Utils.Path;
+import jmcdw.bcnsobrerodes.Utils.Route;
 
 //import android.appwidget.;
 
@@ -75,7 +77,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
     private String username;
     private String clickedAddress;
     private boolean enableRouteClick;
-    private ArrayList<Polyline> myRoutes;
+    private List<Route> myRoutes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +94,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         obstaclesDB = new ArrayList<>();
         clickedAddress = "";
         enableRouteClick = false;
-        myRoutes = new ArrayList<>();
+        myRoutes = new Vector<>();
         //myPlacesFunctions = new PlacesFunctions(this);
         //buildGoogleApiClient();
     }
@@ -158,9 +160,11 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         return null;
     }*/
 
-    private Polyline clickedRoute(LatLng clicked_place) {
-        for (Polyline route : myRoutes) {
-            if (PolyUtil.isLocationOnPath(clicked_place, route.getPoints(), true, 50)) {
+    private Route clickedRoute(LatLng clicked_place) {
+
+        for (Route route : myRoutes) {
+            Polyline pol = route.getPol();
+            if (PolyUtil.isLocationOnPath(clicked_place, pol.getPoints(), true, 50)) {
                 return route;
             }
         }
@@ -170,33 +174,42 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
     @Override
     public void onMapClick(LatLng clicked_place) {
         if (enableRouteClick) {
-            Polyline clickedRoute = clickedRoute(clicked_place);
+            Route clickedRoute = clickedRoute(clicked_place);
             if (clickedRoute != null) {
-                if (clickedRoute.getColor() == Color.GRAY) {
-                    PolylineOptions newSelectedRoute = new PolylineOptions();
-                    newSelectedRoute.addAll(clickedRoute.getPoints());
-                    newSelectedRoute.width(4);
-                    newSelectedRoute.zIndex(2);
-                    newSelectedRoute.color(Color.BLUE);
-                    myRoutes.remove(clickedRoute);
-                    clickedRoute.remove();
-                    myRoutes.add(myMap.addPolyline(newSelectedRoute));
-
-                    Polyline oldSelectedRoute = null;
-                    for (Polyline route : myRoutes) {
-                        if (route.getColor() == Color.BLUE) {
+                Polyline clickedRoutePol = clickedRoute.getPol();
+                if (clickedRoutePol.getColor() == Color.GRAY) {
+                    //get old selected route
+                    Route oldSelectedRoute = null;
+                    for (Route route : myRoutes) {
+                        if (route.getPol().getColor() == Color.BLUE) {
                             oldSelectedRoute = route;
                             break;
                         }
                     }
-                    PolylineOptions auxRoute = new PolylineOptions();
-                    auxRoute.addAll(oldSelectedRoute.getPoints());
-                    auxRoute.width(4);
-                    auxRoute.zIndex(1);
-                    auxRoute.color(Color.GRAY);
-                    myRoutes.remove(oldSelectedRoute);
-                    oldSelectedRoute.remove();
-                    myRoutes.add(myMap.addPolyline(auxRoute));
+
+                    //prepare polylineOpts for the new selected route
+                    PolylineOptions newSelectedRouteOpts = new PolylineOptions();
+                    newSelectedRouteOpts.addAll(clickedRoutePol.getPoints());
+                    newSelectedRouteOpts.width(4);
+                    newSelectedRouteOpts.zIndex(2);
+                    newSelectedRouteOpts.color(Color.BLUE);
+
+                    //update clicked polyline (make it blue) and display new selected route info
+                    clickedRoutePol.remove();
+                    clickedRoute.setPol(myMap.addPolyline(newSelectedRouteOpts));
+                    displayInfo("Distància: " + clickedRoute.getDist() + "\nTemps estimat: " + clickedRoute.getTemps());
+
+                    //prepare polylineOpts for the old selected route
+                    PolylineOptions auxPolOpts = new PolylineOptions();
+                    auxPolOpts.addAll(oldSelectedRoute.getPol().getPoints());
+                    auxPolOpts.width(4);
+                    auxPolOpts.zIndex(1);
+                    auxPolOpts.color(Color.GRAY);
+
+                    //update old selected route polyline (make it gray)
+                    Polyline oldSelectedPol = oldSelectedRoute.getPol();
+                    oldSelectedPol.remove();
+                    oldSelectedRoute.setPol(myMap.addPolyline(auxPolOpts));
                 }
             }
         }
@@ -232,14 +245,13 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         return addresses.get(0);
     }
 
-    protected void displayInfo() {
+    protected void displayInfo(String info) {
         TextView infoText = (TextView) findViewById(R.id.InfoText);
-        infoText.setText(infoToDisplay);
+        infoText.setText(info);
     }
 
     protected void eraseDisplayedInfo() {
-        infoToDisplay = "";
-        displayInfo();
+        displayInfo("");
     }
 
     protected void clearView() {
@@ -260,6 +272,10 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
             for(Marker marker: markersObstacles) {
                 marker.setVisible(false);
             }
+        }
+        //natejo la variable global myRoutes
+        for (int i = 0; i < myRoutes.size(); i++) {
+            myRoutes.remove(i);
         }
     }
 
@@ -729,6 +745,29 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
             try {
                 JSONObject jsonObj = new JSONObject(data.toString());
                 JSONArray parentArray = jsonObj.getJSONArray("routes");
+                //Log.d("#rutes", Integer.toString(parentArray.length()));
+                for (int i=0; i<parentArray.length(); i++) {
+                    JSONArray legArray = parentArray.getJSONObject(i).getJSONArray("legs");
+                    JSONObject distanceObj = legArray.getJSONObject(0).getJSONObject("distance");
+                    JSONObject durationObj = legArray.getJSONObject(0).getJSONObject("duration");
+                    String distance = distanceObj.getString("text"); //String that contains the distance value formatted
+                    String time = durationObj.getString("text"); //String that contains the duration time value formatted
+                    Route ruta = new Route(distance,time);
+                    myRoutes.add(ruta);
+                }
+                /*if (parentArray.length()>1) {
+                    Log.d("Ruta1 distance", myRoutes.get(0).getDist());
+                    Log.d("Ruta2 distance", myRoutes.get(1).getDist());
+                }*/
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+            /*
+            try {
+                JSONObject jsonObj = new JSONObject(data.toString());
+                JSONArray parentArray = jsonObj.getJSONArray("routes");
                 JSONArray legArray = parentArray.getJSONObject(0).getJSONArray("legs");
                 JSONObject distanceObj = legArray.getJSONObject(0).getJSONObject("distance");
                 JSONObject durationObj = legArray.getJSONObject(0).getJSONObject("duration");
@@ -738,6 +777,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+            */
             return data;
         }
 
@@ -751,7 +791,6 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
 
             // Invokes the thread for parsing the JSON data
             parserTask.execute(result);
-            displayInfo();
         }
     }
 
@@ -770,7 +809,6 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
             try {
                 jObject = new JSONObject(jsonData[0]);
                 DirectionsJSONParser parser = new DirectionsJSONParser();
-
                 // Starts parsing data
                 routes = parser.parse(jObject);
             } catch (Exception e) {
@@ -786,10 +824,6 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
             ArrayList<LatLng> points = null;
             PolylineOptions lineOptions = null;
             MarkerOptions markerOptions = new MarkerOptions();
-            //natejo la variable global myRoutes
-            for (int i = 0; i < myRoutes.size(); i++) {
-                myRoutes.remove(i);
-            }
             // Traversing through all the routes
             for (int i = 0; i < result.size(); i++) {
                 points = new ArrayList<LatLng>();
@@ -828,8 +862,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                     lineOptions.color(Color.GRAY);
                     lineOptions.zIndex(1);
                 }
-                myRoutes.add(myMap.addPolyline(lineOptions));
-
+                myRoutes.get(i).setPol(myMap.addPolyline(lineOptions));
                 //get obstacles de la BD i afegirlos a obstacles
                 if (!mostratAvis) {
                     ArrayList<Obstacle> obstaclesRuta = obteObstaclesARuta(lineOptions, obstaclesDB);
@@ -851,6 +884,8 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                     enableRouteClick = true;
                 }
             }
+            //mostro la info de la ruta seleccionada per defecte (la ruta 0)
+            displayInfo("Distància: " + myRoutes.get(0).getDist() + "\nTemps estimat: " + myRoutes.get(0).getTemps());
         }
     }
 
