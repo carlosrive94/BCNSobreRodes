@@ -8,7 +8,10 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.PlaceBuffer;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -22,7 +25,8 @@ public class PlacesFunctions implements GoogleApiClient.OnConnectionFailedListen
     private static final String LOG_TAG = "PlacesAPIActivity";
     private static final int RADIUS_LOCATION = 50;
     private static Context context;
-    private GoogleApiClient mGoogleApiClient;
+    private static GoogleApiClient mGoogleApiClient;
+    CharSequence name;
     private LatLngBounds BOUNDS = new LatLngBounds(
             new LatLng(41.342535, 2.149677), new LatLng(41.745079, 2.167947));
 
@@ -44,9 +48,29 @@ public class PlacesFunctions implements GoogleApiClient.OnConnectionFailedListen
         mGoogleApiClient = new GoogleApiClient.Builder(context)
                 .addApi(Places.PLACE_DETECTION_API)
                 .addApi(LocationServices.API)
+                .addApi(Places.GEO_DATA_API)
                 .enableAutoManage((AppCompatActivity) context, GOOGLE_API_CLIENT_ID, this)
                 .build();
     }
+
+    public void loadNameOfPlace(String id) {
+        PendingResult<PlaceBuffer> placeResult = Places.GeoDataApi.getPlaceById(mGoogleApiClient, id);
+        placeResult.setResultCallback(new ResultCallback<PlaceBuffer>() {
+            @Override
+            public void onResult(PlaceBuffer places) {
+                setName(places.get(0).getName());
+            }
+        });
+    }
+
+    public void setName(CharSequence name){
+        this.name = name;
+    }
+
+    public CharSequence getName(){
+        return name;
+    }
+
 
     private LatLngBounds convertCenterAndRadiusToBounds(LatLng center, double radius) {
         LatLng southwest = SphericalUtil.computeOffset(center, radius * Math.sqrt(2.0), 225);
