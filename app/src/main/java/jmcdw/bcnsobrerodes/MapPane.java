@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -48,6 +49,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 import java.util.Vector;
 
 import jmcdw.bcnsobrerodes.Utils.LocalitzacioDisabled;
@@ -88,6 +90,8 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         mapFragment.getMapAsync(this);
         geocoder = new Geocoder(this);
         context = this;
+        sp = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        username = sp.getString("username", null);
         placesFunctions = new PlacesFunctions(this);
         obstaclesMostrats = true;
         markersObstacles = new ArrayList<>();
@@ -909,53 +913,69 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
 
     public void onClickIncidenciaButton(View view) {
         //obrir pop-up incidencia
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        // Get the layout inflater
-        LayoutInflater inflater = this.getLayoutInflater();
-        // Inflate and set the layout for the dialog
-        // Pass null as the parent view because its going in the dialog layout
-        final AlertDialog.Builder builder1 = builder.setView(inflater.inflate(R.layout.dialog_incidencia, null))
-                // Add action buttons
-                .setPositiveButton("Crear Incidència", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        //clearView();
-                        EditText comentariText = (EditText) ((AlertDialog) dialog).findViewById(R.id.Comentari);
-                        String comentari = comentariText.getText().toString();
-                        LatLng pos = null;
-                        sp = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-                        username = sp.getString("username", null);
-                        try {
-                            pos = placesFunctions.whereIam();
-                            String query = "insert into Obstacles(latitud, longitud, descripcio, afegit_per)" +
-                                    " values(\"" + pos.latitude + "\", \"" + pos.longitude + "\", \"" +
-                                    comentari + "\", \"" + username + "\")";
-                            Persistence persistence = new Persistence(context);
-                            try {
-                                persistence.execute(query, "modification");
-                            } catch (Exception e) {
-                                alertDialog(e.getMessage());
-                            }
-                        } catch (LocalitzacioDisabled localitzacioDisabled) {
-                            localitzacioDisabled.printStackTrace();
-                        }
-                        Obstacle obstacle = new Obstacle(pos, comentari);
-                        String obstacleAddress = getAddressFromLoc(obstacle.getPosicio()).getAddressLine(0);
-                        markersObstacles.add(myMap.addMarker(new MarkerOptions()
-                                .position(obstacle.getPosicio())
-                                .title(obstacleAddress)
-                                .snippet(obstacle.getDescripcio())
-                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))));
-                        obstaclesDB.add(obstacle);
-                    }
-                })
-                .setNegativeButton("Cancela", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.dismiss();
-                    }
-                });
-        builder.create().show();
+        String verifBanned = "select esta_baneado from users " +
+                "where username = \""+ username + "\"";
 
+        Persistence persistence = new Persistence(this);
+        String result = "";
+        try {
+            result = persistence.execute(verifBanned, "select").get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+       if (result.equals("0")) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            // Get the layout inflater
+            LayoutInflater inflater = this.getLayoutInflater();
+            // Inflate and set the layout for the dialog
+            // Pass null as the parent view because its going in the dialog layout
+            final AlertDialog.Builder builder1 = builder.setView(inflater.inflate(R.layout.dialog_incidencia, null))
+                    // Add action buttons
+                    .setPositiveButton("Crear Incidència", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                            //clearView();
+                            EditText comentariText = (EditText) ((AlertDialog) dialog).findViewById(R.id.Comentari);
+                            String comentari = comentariText.getText().toString();
+                            LatLng pos = null;
+                            //sp = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+                            //username = sp.getString("username", null);
+                            try {
+                                pos = placesFunctions.whereIam();
+                                String query = "insert into Obstacles(latitud, longitud, descripcio, afegit_per)" +
+                                        " values(\"" + pos.latitude + "\", \"" + pos.longitude + "\", \"" +
+                                        comentari + "\", \"" + username + "\")";
+                                Persistence persistence = new Persistence(context);
+                                try {
+                                    persistence.execute(query, "modification");
+                                } catch (Exception e) {
+                                    alertDialog(e.getMessage());
+                                }
+                            } catch (LocalitzacioDisabled localitzacioDisabled) {
+                                localitzacioDisabled.printStackTrace();
+                            }
+                            Obstacle obstacle = new Obstacle(pos, comentari);
+                            String obstacleAddress = getAddressFromLoc(obstacle.getPosicio()).getAddressLine(0);
+                            markersObstacles.add(myMap.addMarker(new MarkerOptions()
+                                    .position(obstacle.getPosicio())
+                                    .title(obstacleAddress)
+                                    .snippet(obstacle.getDescripcio())
+                                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))));
+                            obstaclesDB.add(obstacle);
+                        }
+                    })
+                    .setNegativeButton("Cancela", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.dismiss();
+                        }
+                    });
+            builder.create().show();
+        }
+        else {
+            Toast.makeText(MapPane.this, "Sorry, you are a banned user", Toast.LENGTH_LONG).show();
+        }
     }
     public void onClickCancelarIncidencia() {
         //obrir pop-up incidencia

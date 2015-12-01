@@ -62,7 +62,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         Intent intent;
         switch (arg0.getId()) {
             case  R.id.button_create:
-                falseNewAccount();
+                newAccount();
                 break;
 
             case R.id.button_user:
@@ -73,16 +73,21 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         switch (i) {
                             case -1:
                                 loginResult = Toast.makeText(this, "Username not found", Toast.LENGTH_SHORT);
+                                username.setText("");
+                                password.setText("");
                                 break;
                             case -2:
                                 loginResult = Toast.makeText(this, "Incorrect Password", Toast.LENGTH_SHORT);
+                                password.setText("");
                                 break;
                             case 1:
                                 loginResult = Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT);
-                                //guardar la informacon de la sesion con el usuario que ha hecho el login
+                                //guardar la informacion de la sesion con el usuario que ha hecho el login
                                 SharedPreferences.Editor editor = sharedpreferences.edit();
                                 editor.putString("username", username.getText().toString());
                                 editor.commit();
+                                username.setText("");
+                                password.setText("");
                                 intent = new Intent(this, PrincipalActivity.class);
                                 startActivity(intent);
                                 break;
@@ -107,16 +112,21 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         switch (i) {
                             case -1:
                                 loginResult = Toast.makeText(this, "Username not found", Toast.LENGTH_SHORT);
+                                username.setText("");
+                                password.setText("");
                                 break;
                             case -2:
+                                password.setText("");
                                 loginResult = Toast.makeText(this, "Incorrect Password", Toast.LENGTH_SHORT);
                                 break;
                             case 1:
                                 loginResult = Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT);
-                                //guardar la informacon de la sesion con el usuario que ha hecho el login
+                                //guardar la informacion de la sesion con el usuario que ha hecho el login
                                 SharedPreferences.Editor editor = sharedpreferences.edit();
                                 editor.putString("username", username.getText().toString());
                                 editor.commit();
+                                username.setText("");
+                                password.setText("");
                                 intent = new Intent(this, AdminActivity.class);
                                 startActivity(intent);
                                 break;
@@ -138,10 +148,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    public void falseNewAccount(){
-        Intent intent = new Intent(this, PlacePickerActivity.class);
-        startActivity (intent);
-    }
     public void newAccount (){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = this.getLayoutInflater();
