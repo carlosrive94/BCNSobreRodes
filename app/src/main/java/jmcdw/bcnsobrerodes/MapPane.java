@@ -20,6 +20,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
@@ -33,6 +34,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
+import com.google.android.gms.location.places.GeoDataApi;
+import com.google.android.gms.location.places.GeoDataApi;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -786,12 +789,19 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
             ArrayList<LatLng> points = null;
             PolylineOptions lineOptions = null;
             MarkerOptions markerOptions = new MarkerOptions();
+
             //natejo la variable global myRoutes
             for (int i = 0; i < myRoutes.size(); i++) {
                 myRoutes.remove(i);
             }
+
             // Traversing through all the routes
             for (int i = 0; i < result.size(); i++) {
+                Boolean ini_accesible = true;
+                Boolean end_accesible = true;
+                String ini_station = null;
+                String end_station = null;
+
                 points = new ArrayList<LatLng>();
                 lineOptions = new PolylineOptions();
 
@@ -802,6 +812,22 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                 for(int j = 0; j < path.size(); j++) {
                     //Fetching the j-th step
                     Path step = path.get(j);
+                    String station = "Espanya";
+                    if(step.getMode().equals("TRANSIT")) {
+                        if(step.getIni_station().equals(station)) {
+                            ini_accesible = false;
+                            ini_station = step.getIni_station();
+                        }
+                        if(step.getEnd_station().equals(station)) {
+                            end_accesible = false;
+                            end_station = step.getEnd_station();
+                        }
+                        // per tal que sigui una estació no adaptada s'ha de trobar la estació_ini
+                        // o fi dins de la base de dades de estacions no adaptades
+                        // Si la estació no es adaptada posar un flag
+                    }
+
+
                     List<HashMap<String, String>> lineStep = step.getPolyline();
                     // Fetching all the points in j-th step
                     for (int k = 0; k < lineStep.size(); k++) {
@@ -814,8 +840,6 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                         points.add(position);
                     }
                 }
-
-
 
                 // Adding all the points in the route to LineOptions
                 lineOptions.addAll(points);
@@ -830,25 +854,58 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                 }
                 myRoutes.add(myMap.addPolyline(lineOptions));
 
-                //get obstacles de la BD i afegirlos a obstacles
-                if (!mostratAvis) {
-                    ArrayList<Obstacle> obstaclesRuta = obteObstaclesARuta(lineOptions, obstaclesDB);
-                    if (obstaclesRuta.isEmpty()) {
-                        break;
-                    } else {
-                        String info = "Hem tobat " + obstaclesRuta.size();
-                        if (obstaclesRuta.size() == 1) info += " possible obstacle a la ruta:\n";
-                        else info += " possibles obstacles a la ruta:\n";
-                        for (Obstacle obstacle : obstaclesRuta) {
-                            info += "- " + obstacle.getDescripcio() + "\n";
+                // Si es TRANSIT
+                // i no és adaptada es busca una alternativa
+                //      Si la estació_ini no es adaptada es busca la estació més a prop
+                //      de estació_ini
+                //      Si la estació_fi no es adaptada es busca la estació més a prop
+                //      de estació_fi
+                //          Es calcula una nova ruta que pasi pels markers de les estacions que s'han calculat anteriormen
+                if (travelMode.equals("transit") && (ini_accesible==false  || end_accesible==false)) {
+                    //Mostra avís estació no accesible i es calculen rutes alternatives
+                    if (!mostratAvis) {
+                        String info = "La estació ";
+                        if (ini_accesible == false && end_accesible == true) {
+                            info += ini_station;
+                            info += " no és accesible.\n";
+                        } else if (ini_accesible == true && end_accesible == false) {
+                            info += end_station;
+                            info += " no és accesible.\n";
+                        } else {
+                            info += end_station + " i " +  end_station;
+                            info += " no són accesibles.\n";
                         }
-                        info += "\n Es mostren les rutes alternatives.";
                         alertDialog(info);
                         mostratAvis = true;
                     }
+                    else {
+                        enableRouteClick = true;
+                    }
                 }
-                else {
-                    enableRouteClick = true;
+
+
+                //get obstacles de la BD i afegirlos a obstacles
+                //si es WALKING
+                if(travelMode.equals("walking")) {
+                    if (!mostratAvis) {
+                        ArrayList<Obstacle> obstaclesRuta = obteObstaclesARuta(lineOptions, obstaclesDB);
+                        if (obstaclesRuta.isEmpty()) {
+                            break;
+                        } else {
+                            String info = "Hem tobat " + obstaclesRuta.size();
+                            if (obstaclesRuta.size() == 1)
+                                info += " possible obstacle a la ruta:\n";
+                            else info += " possibles obstacles a la ruta:\n";
+                            for (Obstacle obstacle : obstaclesRuta) {
+                                info += "- " + obstacle.getDescripcio() + "\n";
+                            }
+                            info += "\n Es mostren les rutes alternatives.";
+                            alertDialog(info);
+                            mostratAvis = true;
+                        }
+                    } else {
+                        enableRouteClick = true;
+                    }
                 }
             }
         }

@@ -46,7 +46,7 @@ public class DirectionsJSONParser {
                         polyline = (String)((JSONObject)((JSONObject)jSteps.get(k)).get("polyline")).get("points");
                         //Si es transit s'ha d'agafar la estació origen i la estació desti
                         mode = (String)((JSONObject)((JSONObject)jSteps.get(k))).get("travel_mode");
-                        if(((JSONObject)jSteps.get(k)).get("travel_mode")=="TRANSIT") {
+                        if(mode.equals("TRANSIT")) {
                             ini_station = (String)((JSONObject)((JSONObject)((JSONObject)jSteps.get(k)).get("transit_details")).get("departure_stop")).get("name");
                             end_station = (String)((JSONObject)((JSONObject)((JSONObject)jSteps.get(k)).get("transit_details")).get("arrival_stop")).get("name");
                         }
