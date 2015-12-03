@@ -59,22 +59,15 @@ import jmcdw.bcnsobrerodes.Utils.PlacesFunctions;
 import jmcdw.bcnsobrerodes.Utils.Path;
 import jmcdw.bcnsobrerodes.Utils.Route;
 
-//import android.appwidget.;
-
-
-
 public class MapPane extends AppCompatActivity implements OnMapReadyCallback, OnMapLongClickListener, OnMapClickListener {
     private GoogleMap myMap;
     private Geocoder geocoder;
-    private String infoToDisplay;
-    //private GoogleApiClient myGoogleApiClient;
     private PlacesFunctions placesFunctions;
     private Context context;
     private boolean obstaclesMostrats;
     private ArrayList<Marker> markersObstacles;
     private ArrayList<Obstacle> obstaclesDB;
     private String travelMode;
-    //private List<List<HashMap<String, String>>> rutes;
     private SharedPreferences sp;
     private String username;
     private String clickedAddress;
@@ -99,8 +92,6 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         clickedAddress = "";
         enableRouteClick = false;
         myRoutes = new Vector<>();
-        //myPlacesFunctions = new PlacesFunctions(this);
-        //buildGoogleApiClient();
     }
 
     public void carregaObstaclesDB() {
@@ -122,7 +113,6 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
     }
 
     public void carregaMarkersObstacles() {
-        //ObstacleDatabaseStub DB = new ObstacleDatabaseStub();
         for (Obstacle obstacle : obstaclesDB) {
             String obstacleAddress = getAddressFromLoc(obstacle.getPosicio()).getAddressLine(0);
             markersObstacles.add(myMap.addMarker(new MarkerOptions()
@@ -143,26 +133,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         myMap.setOnMapClickListener(this);
         carregaObstaclesDB();
         carregaMarkersObstacles();
-        //myMap.setOnMapClickListener(this);
     }
-
-    /*
-    private LatLng getLatLng(String location) {
-        //afegeixo Barcelona al final del string per a que googleMaps no busqui a altres llocs.
-        location +=  ", Barcelona";
-        List<Address> addressList = null;
-        if (location != null || !location.equals("")) {
-            try {
-                addressList = geocoder.getFromLocationName(location, 1);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            Address address = addressList.get(0);
-            LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-            return latLng;
-        }
-        return null;
-    }*/
 
     private Route clickedRoute(LatLng clicked_place) {
 
@@ -228,13 +199,6 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         myMap.addMarker(new MarkerOptions().position(clicked_place).title(clickedAddress));
         myMap.animateCamera(CameraUpdateFactory.newLatLng(clicked_place));
     }
-
-    /*
-    @Override
-    public void onMapClick(LatLng clickCoords) {
-
-    }
-    */
 
     //Pre: loc is not null
     public Address getAddressFromLoc(LatLng loc) {
@@ -338,24 +302,6 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
             obstaclesMostrats = false;
         }
     }
-
-    /*
-    private LatLng getLatLng(String location) {
-        //afegeixo Barcelona al final del string per a que googleMaps no busqui a altres llocs.
-        location +=  ", Barcelona";
-        List<Address> addressList = null;
-        if (location != null || !location.equals("")) {
-            try {
-                addressList = geocoder.getFromLocationName(location, 1);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            Address address = addressList.get(0);
-            LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-            return latLng;
-        }
-        return null;
-    }*/
 
     public void onClickRoute(View view) {
         // custom dialog
@@ -473,120 +419,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         });
 
         dialog.show();
-        /*AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        // Get the layout inflater
-        LayoutInflater inflater = this.getLayoutInflater();
-
-        //set default checked routeMode to walking
-        //radioGroup.check(R.id.rbtn_walking);
-
-        // Inflate and set the layout for the dialog
-        // Pass null as the parent view because its going in the dialog layout
-        builder.setView(inflater.inflate(R.layout.dialog_from_to, null))
-                // Add action buttons
-                .setPositiveButton("Cerca", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        clearView();
-                        EditText from_et = (EditText) ((AlertDialog) dialog).findViewById(R.id.FromText);
-                        EditText to_et = (EditText) ((AlertDialog) dialog).findViewById(R.id.ToText);
-                        String from_str = from_et.getText().toString();
-                        String to_str = to_et.getText().toString();
-
-                        //obtenim la latitud i longitud dels punts de la ruta
-                        List<Address> addressList = null;
-                        Address addr_from = null;
-                        Address addr_to = null;
-                        if (from_str != null || !from_str.equals("")) {
-                            try {
-                                //afegim ", Barcelona" al final del string
-                                addressList = geocoder.getFromLocationName(from_str + ", Barcelona", 1);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            addr_from = addressList.get(0);
-                        }
-                        if (to_str != null || !to_str.equals("")) {
-                            try {
-                                //afegim ", Barcelona" al final del string
-                                addressList = geocoder.getFromLocationName(to_str + ", Barcelona", 1);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            addr_to = addressList.get(0);
-                        }
-                        LatLng from = new LatLng(addr_from.getLatitude(), addr_from.getLongitude());
-                        LatLng to = new LatLng(addr_to.getLatitude(), addr_to.getLongitude());
-
-                        //obtenim la informació dels punts de la ruta per mostrarlos als markers
-                        String from_info = addr_from.getAddressLine(0);
-                        String to_info = addr_to.getAddressLine(0);
-                        //get travelMode from radioGroup
-                        RadioGroup radioGroup = (RadioGroup) ((AlertDialog) dialog).findViewById(R.id.OptionsRadioGroup);
-                        int checkedId = radioGroup.getCheckedRadioButtonId();
-                        if (checkedId == R.id.rbtn_walking) {
-                            travelMode = "walking";
-                        }
-                        else if (checkedId == R.id.rbtn_driving) {
-                            travelMode = "driving";
-                        }
-                        else if (checkedId == R.id.rbtn_public_transport) {
-                            travelMode = "transit";
-                        }
-                        else {
-                            travelMode = "walking";
-                        }
-                        drawRoute(from, from_info, to, to_info);
-                        dialog.dismiss();
-                    }
-                })
-                .setNegativeButton("Cancela", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.dismiss();
-                    }
-                });
-        final AlertDialog routeDialog = builder.create();
-        Button my_loc_from = (Button) (routeDialog).findViewById(R.id.LocFrom);
-        my_loc_from.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                EditText from_text = (EditText) ((AlertDialog) routeDialog).findViewById(R.id.FromText);
-                String my_location = getMyLocationAddress();
-                if (my_location == "")
-                    alertDialog("Per usar aquesta funcionalitat has d'activar la localització");
-                else {
-                    from_text.setText(my_location);
-                }
-            }
-        });
-        Button my_loc_to = (Button) (routeDialog).findViewById(R.id.LocFrom);
-       my_loc_to.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                EditText to_text = (EditText) ((AlertDialog) routeDialog).findViewById(R.id.ToText);
-                String my_location = getMyLocationAddress();
-                if (my_location == "")
-                    alertDialog("Per usar aquesta funcionalitat has d'activar la localització");
-                else {
-                    to_text.setText(my_location);
-                }
-            }
-        });
-        builder.show();
-        //builder.create().show();
-        */
     }
-    /*
-    private void showRouteInfo() {
-        //esperem 1 segon a que el thread creat a drawRoute actualitzi la variable global infoToDisplay.
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // Do something after 1s = 1000ms
-                displayInfo();
-            }
-        }, 1000);
-    }*/
-
 
     private void alertDialog(String msg) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -599,44 +432,6 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                 });
         builder.create().show();
     }
-
-
-    /*public void drawRoute(String str_from, String str_to) {
-        List<Address> addressList = null;
-        Address addr_from = null;
-        Address addr_to = null;
-        if (str_from != null || !str_from.equals("")) {
-            try {
-                //afegim ", Barcelona" al final del string
-                addressList = geocoder.getFromLocationName(str_from + ", Barcelona", 1);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            addr_from = addressList.get(0);
-        }
-        if (str_to != null || !str_to.equals("")) {
-            try {
-                //afegim ", Barcelona" al final del string
-                addressList = geocoder.getFromLocationName(str_to + ", Barcelona", 1);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            addr_to = addressList.get(0);
-        }
-        LatLng latLng_from = new LatLng(addr_from.getLatitude(),addr_from.getLongitude());
-        LatLng latLng_to = new LatLng(addr_to.getLatitude(),addr_to.getLongitude());
-        myMap.addMarker(new MarkerOptions().position(latLng_from).title(addr_from.getAddressLine(0)));
-        myMap.addMarker(new MarkerOptions().position(latLng_to).title(addr_to.getAddressLine(0)));
-        LatLng cameraLatLng = new LatLng((latLng_from.latitude + latLng_to.latitude)/2,(latLng_from.longitude + latLng_to.longitude)/2);
-        myMap.animateCamera(CameraUpdateFactory.newLatLngZoom(cameraLatLng, 13));
-        // Getting URL to the Google Directions API
-        String url = getDirectionsUrl(latLng_from, latLng_to);
-
-        DownloadTask downloadTask = new DownloadTask();
-
-        // Start downloading json data from Google Directions API
-        downloadTask.execute(url);
-    }*/
 
     public void drawRoute(LatLng from, String from_info, LatLng to, String to_info) {
         myMap.addMarker(new MarkerOptions().position(from).title(from_info));
@@ -766,22 +561,6 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
-
-            /*
-            try {
-                JSONObject jsonObj = new JSONObject(data.toString());
-                JSONArray parentArray = jsonObj.getJSONArray("routes");
-                JSONArray legArray = parentArray.getJSONObject(0).getJSONArray("legs");
-                JSONObject distanceObj = legArray.getJSONObject(0).getJSONObject("distance");
-                JSONObject durationObj = legArray.getJSONObject(0).getJSONObject("duration");
-                String distance = distanceObj.getString("text"); //String that contains the distance value formatted
-                String time = durationObj.getString("text"); //String that contains the duration time value formatted
-                infoToDisplay = "Distància: " + distance + "\nTemps estimat: " + time;
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            */
             return data;
         }
 
@@ -852,9 +631,6 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                         points.add(position);
                     }
                 }
-
-
-
                 // Adding all the points in the route to LineOptions
                 lineOptions.addAll(points);
                 lineOptions.width(4);
@@ -903,13 +679,6 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         }
         return obstaclesTrobats;
     }
-
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_map_pane, menu);
-        return true;
-    }*/
 
     public void onClickIncidenciaButton(View view) {
         //obrir pop-up incidencia
@@ -976,11 +745,5 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         else {
             Toast.makeText(MapPane.this, "Sorry, you are a banned user", Toast.LENGTH_LONG).show();
         }
-    }
-    public void onClickCancelarIncidencia() {
-        //obrir pop-up incidencia
-    }
-    public void onClickCreaIncidencia() {
-        //obrir pop-up incidencia
     }
 }
