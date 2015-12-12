@@ -159,7 +159,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                     //get old selected route
                     Route oldSelectedRoute = null;
                     for (Route route : myRoutes) {
-                        if (route.getPol().getColor() == Color.BLUE) {
+                        if (route.getPol().getColor() != Color.GRAY) {
                             oldSelectedRoute = route;
                             break;
                         }
@@ -170,12 +170,17 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                     newSelectedRouteOpts.addAll(clickedRoutePol.getPoints());
                     newSelectedRouteOpts.width(4);
                     newSelectedRouteOpts.zIndex(2);
-                    newSelectedRouteOpts.color(Color.BLUE);
+                    if (clickedRoute.esAccessible()) {
+                        newSelectedRouteOpts.color(Color.BLUE);
+                    }
+                    else {
+                        newSelectedRouteOpts.color(Color.RED);
+                    }
 
                     //update clicked polyline (make it blue) and display new selected route info
                     clickedRoutePol.remove();
                     clickedRoute.setPol(myMap.addPolyline(newSelectedRouteOpts));
-                    displayInfo("Distància: " + clickedRoute.getDist() + "\nTemps estimat: " + clickedRoute.getTemps());
+                    displayInfo("Ruta "+(myRoutes.indexOf(clickedRoute)+1)+"\nDistància: " + clickedRoute.getDist() + "\nTemps estimat: " + clickedRoute.getTemps());
 
                     //prepare polylineOpts for the old selected route
                     PolylineOptions auxPolOpts = new PolylineOptions();
@@ -660,16 +665,6 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                 // Adding all the points in the route to LineOptions
                 lineOptions.addAll(points);
                 lineOptions.width(4);
-                if (i == 0) {
-                    lineOptions.color(Color.BLUE);
-                    lineOptions.zIndex(2);
-                }
-                else {
-                    lineOptions.color(Color.GRAY);
-                    lineOptions.zIndex(1);
-                }
-
-                myRoutes.get(i).setPol(myMap.addPolyline(lineOptions));
 
                 // Si es TRANSIT
                 // i no és adaptada es busca una alternativa
@@ -678,55 +673,75 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                 //      Si la estació_fi no es adaptada es busca la estació més a prop
                 //      de estació_fi
                 //          Es calcula una nova ruta que pasi pels markers de les estacions que s'han calculat anteriormen
-                if (travelMode.equals("transit") && (ini_accesible==false  || end_accesible==false)) {
-                    //Mostra avís estació no accesible i es calculen rutes alternatives
-                    if (!mostratAvis) {
-                        String info = "La estació ";
-                        if (ini_accesible == false && end_accesible == true) {
-                            info += ini_station;
-                            info += " no és accesible.\n";
-                        } else if (ini_accesible == true && end_accesible == false) {
-                            info += end_station;
-                            info += " no és accesible.\n";
-                        } else {
-                            info += end_station + " i " +  end_station;
-                            info += " no són accesibles.\n";
+                if (travelMode.equals("transit")) {
+                    if (ini_accesible==false  || end_accesible==false) {
+                        myRoutes.get(i).setAccessible(false);
+                        //Mostra avís estació no accesible i es calculen rutes alternatives
+                        if (!mostratAvis) {
+                            String info = "La estació ";
+                            if (ini_accesible == false && end_accesible == true) {
+                                info += ini_station;
+                                info += " no és accesible.\n";
+                            } else if (ini_accesible == true && end_accesible == false) {
+                                info += end_station;
+                                info += " no és accesible.\n";
+                            } else {
+                                info += end_station + " i " +  end_station;
+                                info += " no són accesibles.\n";
+                            }
+                            alertDialog(info);
+                            mostratAvis = true;
                         }
-                        alertDialog(info);
-                        mostratAvis = true;
                     }
                     else {
-                        enableRouteClick = true;
+                        myRoutes.get(i).setAccessible(true);
                     }
+                    enableRouteClick = true;
                 }
 
 
                 //get obstacles de la BD i afegirlos a obstacles
                 //si es WALKING
-                if(travelMode.equals("walking")) {
+                else if(travelMode.equals("walking")) {
                     if (!mostratAvis) {
                         ArrayList<Obstacle> obstaclesRuta = obteObstaclesARuta(lineOptions, obstaclesDB);
                         if (obstaclesRuta.isEmpty()) {
-                            break;
+                            myRoutes.get(i).setAccessible(true);
                         } else {
+                            myRoutes.get(i).setAccessible(false);
                             String info = "Hem tobat " + obstaclesRuta.size();
                             if (obstaclesRuta.size() == 1)
-                                info += " possible obstacle a la ruta:\n";
-                            else info += " possibles obstacles a la ruta:\n";
+                                info += " possible obstacle a la ruta " + (i+1) + ":\n";
+                            else info += " possibles obstacles a la ruta " + (i+1) +":\n";
                             for (Obstacle obstacle : obstaclesRuta) {
                                 info += "- " + obstacle.getDescripcio() + "\n";
                             }
-                            info += "\n Es mostren les rutes alternatives.";
                             alertDialog(info);
                             mostratAvis = true;
                         }
                     } else {
-                        enableRouteClick = true;
+                        ArrayList<Obstacle> obstaclesRuta = obteObstaclesARuta(lineOptions, obstaclesDB);
+                        if (!obstaclesRuta.isEmpty()) {
+                            myRoutes.get(i).setAccessible(false);
+                        }
                     }
+                    enableRouteClick = true;
                 }
+                if (i == 0) {
+                    //és la ruta principal
+                    if (myRoutes.get(i).esAccessible() == true) { lineOptions.color(Color.BLUE); }
+                    else { lineOptions.color(Color.RED); }
+                    lineOptions.zIndex(2);
+                }
+                else {
+                    //és una ruta alternativa
+                    lineOptions.color(Color.GRAY);
+                    lineOptions.zIndex(1);
+                }
+                myRoutes.get(i).setPol(myMap.addPolyline(lineOptions));
             }
-            //mostro la info de la ruta seleccionada per defecte (la ruta 0)
-            displayInfo("Distància: " + myRoutes.get(0).getDist() + "\nTemps estimat: " + myRoutes.get(0).getTemps());
+            //mostro la info de la ruta principal
+            displayInfo("Ruta 1\nDistància: " + myRoutes.get(0).getDist() + "\nTemps estimat: " + myRoutes.get(0).getTemps());
         }
     }
 
