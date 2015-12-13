@@ -1,6 +1,7 @@
 package jmcdw.bcnsobrerodes.Utils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Vars {
 
@@ -23,8 +24,8 @@ public class Vars {
     private static String FGC_EL_PUTXET = "ChIJkzvlGQyYpBIRpyowuJNwqhc";
     private static String FGC_PEU_DEL_FUNICULAR = "ChIJL5i-eTGYpBIRXiSDdBu-F1k";
 
-    public static ArrayList ID_ESTACIONS_NO_ACCESIBLES = new ArrayList<>();
-    public static ArrayList NAME_ESTACIONS_NO_ACCESIBLES = new ArrayList<>();
+    public static List<String> ID_ESTACIONS_NO_ACCESIBLES = new ArrayList<String>();
+    public static List<String> NAME_ESTACIONS_NO_ACCESIBLES = new ArrayList<String>();
 
     static{
         ID_ESTACIONS_NO_ACCESIBLES.add(TMB_PLACASANTS);
@@ -49,7 +50,7 @@ public class Vars {
         NAME_ESTACIONS_NO_ACCESIBLES.add("Espanya");
         NAME_ESTACIONS_NO_ACCESIBLES.add("Urquinaona");
         NAME_ESTACIONS_NO_ACCESIBLES.add("Clot");
-        NAME_ESTACIONS_NO_ACCESIBLES.add("Zona Universitaria");
+        NAME_ESTACIONS_NO_ACCESIBLES.add("Zona Universitària");
         NAME_ESTACIONS_NO_ACCESIBLES.add("Vallcarca");
         NAME_ESTACIONS_NO_ACCESIBLES.add("Maragall");
         NAME_ESTACIONS_NO_ACCESIBLES.add("Verdaguer");

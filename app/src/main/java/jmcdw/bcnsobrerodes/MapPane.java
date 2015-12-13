@@ -49,6 +49,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -61,6 +62,7 @@ import jmcdw.bcnsobrerodes.Utils.Persistence;
 import jmcdw.bcnsobrerodes.Utils.PlacesFunctions;
 import jmcdw.bcnsobrerodes.Utils.Path;
 import jmcdw.bcnsobrerodes.Utils.Route;
+import jmcdw.bcnsobrerodes.Utils.Vars;
 
 public class MapPane extends AppCompatActivity implements OnMapReadyCallback, OnMapLongClickListener, OnMapClickListener {
     private GoogleMap myMap;
@@ -613,10 +615,8 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
 
             // Traversing through all the routes
             for (int i = 0; i < result.size(); i++) {
-                Boolean ini_accesible = true;
-                Boolean end_accesible = true;
-                String ini_station = null;
-                String end_station = null;
+                Boolean accesible = true;
+                List<String> stations = new ArrayList<String>();
 
                 points = new ArrayList<LatLng>();
                 lineOptions = new PolylineOptions();
@@ -628,15 +628,15 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                 for(int j = 0; j < path.size(); j++) {
                     //Fetching the j-th step
                     Path step = path.get(j);
-                    String station = "Espanya";
                     if(step.getMode().equals("TRANSIT")) {
-                        if(step.getIni_station().equals(station)) {
-                            ini_accesible = false;
-                            ini_station = step.getIni_station();
+
+                        if(Vars.NAME_ESTACIONS_NO_ACCESIBLES.contains(step.getIni_station())) {
+                            accesible = false;
+                            stations.add(step.getIni_station());
                         }
-                        if(step.getEnd_station().equals(station)) {
-                            end_accesible = false;
-                            end_station = step.getEnd_station();
+                        if(Vars.NAME_ESTACIONS_NO_ACCESIBLES.contains(step.getEnd_station())) {
+                            accesible = false;
+                            stations.add(step.getEnd_station());
                         }
                         // per tal que sigui una estació no adaptada s'ha de trobar la estació_ini
                         // o fi dins de la base de dades de estacions no adaptades
@@ -678,27 +678,22 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                 //      Si la estació_fi no es adaptada es busca la estació més a prop
                 //      de estació_fi
                 //          Es calcula una nova ruta que pasi pels markers de les estacions que s'han calculat anteriormen
-                if (travelMode.equals("transit") && (ini_accesible==false  || end_accesible==false)) {
+                if (travelMode.equals("transit") && !accesible) {
                     //Mostra avís estació no accesible i es calculen rutes alternatives
                     if (!mostratAvis) {
                         String info = "La estació ";
-                        if (ini_accesible == false && end_accesible == true) {
-                            info += ini_station;
-                            info += " no és accesible.\n";
-                        } else if (ini_accesible == true && end_accesible == false) {
-                            info += end_station;
-                            info += " no és accesible.\n";
-                        } else {
-                            info += end_station + " i " +  end_station;
-                            info += " no són accesibles.\n";
+                        Boolean un = true;
+                        for(String station : stations) {
+                            if (!un) info += " i ";
+                            info += station;
+                            un = true;
                         }
+                        info += " no és accessible.";
                         alertDialog(info);
                         mostratAvis = true;
                     }
-                    else {
-                        enableRouteClick = true;
-                    }
                 }
+                enableRouteClick = true;
 
 
                 //get obstacles de la BD i afegirlos a obstacles
