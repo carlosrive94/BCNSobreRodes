@@ -1,21 +1,26 @@
 package jmcdw.bcnsobrerodes;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 public class AdminActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Button verify;
     private Button delete;
     private Button ban;
+    private int backPressedCounter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin);
+        backPressedCounter = 0;
         init();
     }
 
@@ -49,5 +54,15 @@ public class AdminActivity extends AppCompatActivity implements View.OnClickList
                 break;
         }
         startActivity(intent);
+    }
+    @Override
+    public void onBackPressed() {
+       if (backPressedCounter != 0) super.onBackPressed();
+       else {
+           ++backPressedCounter;
+           Toast.makeText(this, "Press back again to logout",
+                   Toast.LENGTH_SHORT).show();
+       }
+
     }
 }
