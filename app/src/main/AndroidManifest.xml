@@ -45,7 +45,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".PlacePickerActivity"
-            android:label="Places"
+            android:label="Punts d'interès"
             android:screenOrientation="portrait" />
 
         <meta-data
