@@ -46,24 +46,21 @@
 
     <Button
         android:id="@+id/pickerButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/puntuaPlace"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
-        android:text="Launch Places API Picker" />
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/lup" />
 
     <Button
         android:id="@+id/categoriesButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/pickerButton"
-        android:layout_alignStart="@+id/pickerButton"
-        android:layout_below="@+id/pickerButton"
-        android:layout_marginTop="56dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:background="@drawable/carpeta"
         android:nestedScrollingEnabled="false"
-        android:onClick="onCategoriesNearby"
-        android:text="Categories Nearby" />
+        android:onClick="onCategoriesNearby" />
 
 
 </RelativeLayout>
