@@ -144,7 +144,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
 
         for (Route route : myRoutes) {
             Polyline pol = route.getPol();
-            if (PolyUtil.isLocationOnPath(clicked_place, pol.getPoints(), true, 50)) {
+            if (PolyUtil.isLocationOnPath(clicked_place, pol.getPoints(), true, 100)) {
                 return route;
             }
         }
@@ -617,7 +617,6 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
             ArrayList<LatLng> points = null;
             PolylineOptions lineOptions = null;
             MarkerOptions markerOptions = new MarkerOptions();
-
             // Traversing through all the routes
             for (int i = 0; i < result.size(); i++) {
                 Boolean accesible = true;
@@ -719,8 +718,10 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                     }
                     enableRouteClick = true;
                 }
-                else
+                else {
                     myRoutes.get(i).setAccessible(true);
+                    enableRouteClick = true;
+                }
 
                 if (i == 0) {
                     //és la ruta principal
