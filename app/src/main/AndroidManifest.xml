@@ -41,7 +41,7 @@
         </activity>
         <activity
             android:name=".MapPane"
-            android:label="Map"
+            android:label="Mapa"
             android:screenOrientation="portrait" />
         <activity
             android:name=".PlacePickerActivity"

@@ -17,15 +17,15 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="383dp"
+        android:gravity="center_vertical">
 
         <Button
             android:id="@+id/button_places"
             android:layout_width="150dp"
             android:layout_height="75dp"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="35dp"
-            android:text="PLACES" />
+            android:text="Punts d'interès" />
 
         <Button
             android:id="@+id/button_map"
@@ -34,7 +34,7 @@
             android:layout_below="@+id/button_places"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="35dp"
-            android:text="MAP" />
+            android:text="Mapa" />
 
 
     </RelativeLayout>

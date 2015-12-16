@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="6dp"
         android:layout_marginTop="20dp"
-        android:text="Categories Nearby"
+        android:text="Categories"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <Spinner
@@ -27,7 +27,7 @@
         android:layout_gravity="right"
         android:layout_marginRight="14dp"
         android:onClick="onClickOK"
-        android:text="SEARCH" />
+        android:text="BUSCAR" />
 
     <TextView
         android:id="@+id/byCategResult"

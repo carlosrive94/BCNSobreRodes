@@ -73,10 +73,10 @@ public class CategoriesActivity extends AppCompatActivity implements
         if (mGoogleApiClient.isConnected()) {
             String gottenType = categSpinner.getSelectedItem().toString();
             switch (gottenType) {
-                case "Gym":
+                case "Gimnas":
                     mTipus = Place.TYPE_GYM;
                     break;
-                case "Shop":
+                case "Botiga":
                     mTipus = Place.TYPE_STORE;
                     break;
                 case "Restaurant":
@@ -85,16 +85,16 @@ public class CategoriesActivity extends AppCompatActivity implements
                 case "Hospital":
                     mTipus = Place.TYPE_HOSPITAL;
                     break;
-                case "Bank":
+                case "Banc":
                     mTipus = Place.TYPE_BANK;
                     break;
-                case "University":
+                case "Universitat":
                     mTipus = Place.TYPE_UNIVERSITY;
                     break;
-                case "School":
+                case "Escola":
                     mTipus = Place.TYPE_SCHOOL;
                     break;
-                case "Show All":
+                case "Totes":
                     break;
             }
             PendingResult<PlaceLikelihoodBuffer> result = Places.PlaceDetectionApi

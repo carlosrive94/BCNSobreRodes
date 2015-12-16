@@ -16,14 +16,14 @@
     <string name="title_activity_categories">CategoriesActivity</string>
 
     <string-array name="categories">
-        <item>Show All</item>
-        <item>Shop</item>
-        <item>School</item>
-        <item>University</item>
-        <item>Gym</item>
+        <item>Totes</item>
+        <item>Botiga</item>
+        <item>Escola</item>
+        <item>Universitat</item>
+        <item>Gimnas</item>
         <item>Restaurant</item>
         <item>Hospital</item>
-        <item>Bank</item>
+        <item>Banc</item>
 
     </string-array>
     <string name="title_activity_login">LoginActivity</string>
