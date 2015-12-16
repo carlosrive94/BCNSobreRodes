@@ -155,7 +155,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
     public void onMapClick(LatLng clicked_place) {
         if (enableRouteClick) {
             Route clickedRoute = clickedRoute(clicked_place);
-            if (clickedRoute != null) {
+            if (clickedRoute != null && clickedRoute.getPol() != null) {
                 Polyline clickedRoutePol = clickedRoute.getPol();
                 if (clickedRoutePol.getColor() == Color.GRAY) {
                     //get old selected route
