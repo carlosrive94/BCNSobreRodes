@@ -682,15 +682,15 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                         for(String station : stations) {
                             if (!un) info += " i ";
                             info += station;
-                            un = true;
+                            un = false;
                         }
                         info += " no és accessible.";
                         alertDialog(info);
                         mostratAvis = true;
                     }
+                    myRoutes.get(i).setAccessible(false);
                     enableRouteClick = true;
                 }
-
 
                 //get obstacles de la BD i afegirlos a obstacles
                 //si es WALKING
@@ -719,6 +719,9 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                     }
                     enableRouteClick = true;
                 }
+                else
+                    myRoutes.get(i).setAccessible(true);
+
                 if (i == 0) {
                     //és la ruta principal
                     if (myRoutes.get(i).esAccessible() == true) { lineOptions.color(Color.BLUE); }
