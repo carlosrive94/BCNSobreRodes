@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class PrincipalActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -16,9 +17,11 @@ public class PrincipalActivity extends AppCompatActivity implements View.OnClick
     private Button map;
     private SharedPreferences sp;
     private String username;
+    private int backPressedCounter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        backPressedCounter = 0;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_principal);
         printUsername();
@@ -54,5 +57,16 @@ public class PrincipalActivity extends AppCompatActivity implements View.OnClick
                 startActivity(intent);
                 break;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (backPressedCounter != 0) super.onBackPressed();
+        else {
+            ++backPressedCounter;
+            Toast.makeText(this, "Press back again to logout",
+                    Toast.LENGTH_SHORT).show();
+        }
+
     }
 }
