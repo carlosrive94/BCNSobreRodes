@@ -21,7 +21,6 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
@@ -36,8 +35,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
-import com.google.android.gms.location.places.GeoDataApi;
-import com.google.android.gms.location.places.GeoDataApi;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,7 +47,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -637,7 +633,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                         if(Vars.NAME_ESTACIONS_NO_ACCESIBLES.contains(step.getIni_station())) {
                             accesible = false;
                             stations.add(step.getIni_station());
-                            BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.señalPeligro);
+                            BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.senyalpeligro);
                             markersObstacles.add(myMap.addMarker(new MarkerOptions()
                                     .position(step.getIni_location())
                                     .title(step.getIni_station())
@@ -652,7 +648,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                         if(Vars.NAME_ESTACIONS_NO_ACCESIBLES.contains(step.getEnd_station())) {
                             accesible = false;
                             stations.add(step.getEnd_station());
-                            BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.señalPeligro);
+                            BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.senyalpeligro);
                             markersObstacles.add(myMap.addMarker(new MarkerOptions()
                                     .position(step.getEnd_location())
                                     .title(step.getEnd_station())

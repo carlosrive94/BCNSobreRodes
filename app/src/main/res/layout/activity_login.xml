@@ -14,20 +14,18 @@
         android:layout_marginTop="20dp">
 
 
-        <TextView
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="User"
-            android:textSize="20dp"
-            android:id="@+id/userLabel"
-            android:layout_marginRight="5dp" />
+            android:id="@+id/imgUser"
+            android:background="@mipmap/user_icon" />
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/editUser"
             android:maxLines="1"/>
+
     </LinearLayout>
 
     <LinearLayout
@@ -37,14 +35,11 @@
         android:layout_gravity="center_horizontal"
         android:id="@+id/passObjects">
 
-        <TextView
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Password"
-            android:textSize="20dp"
-            android:id="@+id/passLabel"
-            android:layout_marginRight="5dp" />
+            android:id="@+id/imgPass"
+            android:background="@mipmap/pass_icon" />
 
         <EditText
             android:layout_width="wrap_content"
@@ -60,24 +55,31 @@
     <Button
         android:id="@+id/button_admin"
         android:layout_width="150dp"
-        android:layout_height="75dp"
+        android:layout_height="wrap_content"
         android:text="Login as ADMIN"
         android:layout_gravity="center"
-        android:layout_marginTop="60dp" />
+        android:layout_marginTop="60dp"
+        android:background="#1d318c"
+        android:textColor="#ffffff" />
 
     <Button
         android:id="@+id/button_user"
         android:layout_width="150dp"
-        android:layout_height="75dp"
+        android:layout_height="wrap_content"
         android:text="Login as User"
         android:layout_gravity="center"
-        android:layout_marginTop="20dp" />
+        android:layout_marginTop="20dp"
+        android:textColor="#ffffff"
+        android:background="#1d318c" />
 
     <Button
         android:id="@+id/button_create"
         android:layout_width="150dp"
-        android:layout_height="75dp"
+        android:layout_height="wrap_content"
         android:text="Create Account"
         android:layout_gravity="center"
-        android:layout_marginTop="20dp" />
+        android:layout_marginTop="20dp"
+        android:background="#1d318c"
+        android:textColor="#ffffff" />
+
 </LinearLayout>
