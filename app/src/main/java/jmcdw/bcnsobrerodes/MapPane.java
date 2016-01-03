@@ -28,6 +28,7 @@ import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -633,14 +634,35 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                     //Fetching the j-th step
                     Path step = path.get(j);
                     if(step.getMode().equals("TRANSIT")) {
-
                         if(Vars.NAME_ESTACIONS_NO_ACCESIBLES.contains(step.getIni_station())) {
                             accesible = false;
                             stations.add(step.getIni_station());
+                            BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.señalPeligro);
+                            markersObstacles.add(myMap.addMarker(new MarkerOptions()
+                                    .position(step.getIni_location())
+                                    .title(step.getIni_station())
+                                    .icon(icon)));
+                        }
+                        else {
+                            markersObstacles.add(myMap.addMarker(new MarkerOptions()
+                                    .position(step.getIni_location())
+                                    .title(step.getIni_station())
+                                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))));
                         }
                         if(Vars.NAME_ESTACIONS_NO_ACCESIBLES.contains(step.getEnd_station())) {
                             accesible = false;
                             stations.add(step.getEnd_station());
+                            BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.señalPeligro);
+                            markersObstacles.add(myMap.addMarker(new MarkerOptions()
+                                    .position(step.getEnd_location())
+                                    .title(step.getEnd_station())
+                                    .icon(icon)));
+                        }
+                        else {
+                            markersObstacles.add(myMap.addMarker(new MarkerOptions()
+                                    .position(step.getEnd_location())
+                                    .title(step.getEnd_station())
+                                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))));
                         }
                         // per tal que sigui una estació no adaptada s'ha de trobar la estació_ini
                         // o fi dins de la base de dades de estacions no adaptades

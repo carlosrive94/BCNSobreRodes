@@ -43,12 +43,16 @@ public class DirectionsJSONParser {
                         String mode = "";
                         String ini_station = null;
                         String end_station = null;
+                        LatLng ini_location = null;
+                        LatLng end_location = null;
                         polyline = (String)((JSONObject)((JSONObject)jSteps.get(k)).get("polyline")).get("points");
                         //Si es transit s'ha d'agafar la estació origen i la estació desti
                         mode = (String)((JSONObject)((JSONObject)jSteps.get(k))).get("travel_mode");
                         if(mode.equals("TRANSIT")) {
                             ini_station = (String)((JSONObject)((JSONObject)((JSONObject)jSteps.get(k)).get("transit_details")).get("departure_stop")).get("name");
                             end_station = (String)((JSONObject)((JSONObject)((JSONObject)jSteps.get(k)).get("transit_details")).get("arrival_stop")).get("name");
+                            ini_location = (LatLng)((JSONObject)((JSONObject)((JSONObject)jSteps.get(k)).get("transit_details")).get("departure_stop")).get("location");
+                            end_location = (LatLng)((JSONObject)((JSONObject)((JSONObject)jSteps.get(k)).get("transit_details")).get("arrival_stop")).get("location");
                         }
                         //Si es transit o driving no s'han de tenir en compte els obtacles que trobi
 
@@ -62,7 +66,7 @@ public class DirectionsJSONParser {
                             step.add(hm);
                         }
 
-                        path = new Path(mode, step , ini_station, end_station);
+                        path = new Path(mode, step , ini_station, end_station, ini_location, end_location);
                         ruta.add(path);
                     }
                 }
