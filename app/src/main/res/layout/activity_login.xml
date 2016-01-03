@@ -53,21 +53,21 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/button_admin"
+        android:id="@+id/button_user"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:text="Login as ADMIN"
-        android:layout_gravity="center"
+        android:text="Login as User"
+        android:layout_gravity="center_horizontal"
         android:layout_marginTop="60dp"
         android:background="#1d318c"
         android:textColor="#ffffff" />
 
     <Button
-        android:id="@+id/button_user"
+        android:id="@+id/button_admin"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:text="Login as User"
-        android:layout_gravity="center"
+        android:text="Login as Admin"
+        android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"
         android:textColor="#ffffff"
         android:background="#1d318c" />

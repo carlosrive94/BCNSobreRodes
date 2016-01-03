@@ -28,7 +28,8 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name=".LoginActivity"
-            android:label="Login" >
+            android:label="Login"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".SplashActivity"
@@ -60,7 +61,8 @@
             android:label="Categories" />
         <activity
             android:name=".PrincipalActivity"
-            android:label="Menu" />
+            android:label="Menu"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".AdminActivity"
             android:label="Management"  />

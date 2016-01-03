@@ -4,17 +4,19 @@ package jmcdw.bcnsobrerodes;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class PrincipalActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private Button places;
-    private Button map;
+    private ImageButton places;
+    private ImageButton map;
     private SharedPreferences sp;
     private String username;
     private int backPressedCounter;
@@ -37,10 +39,10 @@ public class PrincipalActivity extends AppCompatActivity implements View.OnClick
 
 
     private void init() {
-        places = (Button) findViewById(R.id.button_places);
+        places = (ImageButton) findViewById(R.id.button_places);
         places.setOnClickListener(this);
 
-        map = (Button) findViewById(R.id.button_map);
+        map = (ImageButton) findViewById(R.id.button_map);
         map.setOnClickListener(this);
     }
 
