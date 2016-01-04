@@ -141,8 +141,13 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
 
         for (Route route : myRoutes) {
             Polyline pol = route.getPol();
-            if (PolyUtil.isLocationOnPath(clicked_place, pol.getPoints(), true, 100)) {
-                return route;
+            try {
+                if (PolyUtil.isLocationOnPath(clicked_place, pol.getPoints(), true, 100)) {
+                    return route;
+                }
+            }
+            catch (NullPointerException e ) {
+
             }
         }
         return null;
@@ -374,6 +379,9 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                 List<Address> addressList = null;
                 Address addr_from = null;
                 Address addr_to = null;
+                //aquestes línies son necessàries per evitar un error de la api de Google Maps en buscar el LatLng del Carrer Santa Maria Cervelló
+                if (from_str.equals("Carrer Santa Maria Cervelló")) from_str = "Carrer del Gran Capità, 6";
+                if (to_str.equals("Carrer Santa Maria Cervelló")) from_str = "Carrer del Gran Capità, 6";
                 if (from_str != null || !from_str.equals("")) {
                     try {
                         //afegim ", Barcelona" al final del string
