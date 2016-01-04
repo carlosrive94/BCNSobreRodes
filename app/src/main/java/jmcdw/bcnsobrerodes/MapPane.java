@@ -681,7 +681,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
 
                 // Adding all the points in the route to LineOptions
                 lineOptions.addAll(points);
-                lineOptions.width(4);
+                lineOptions.width(5);
 
                 // Si es TRANSIT
                 // i no és adaptada es busca una alternativa
@@ -691,21 +691,26 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                 //      de estació_fi
                 //          Es calcula una nova ruta que pasi pels markers de les estacions que s'han calculat anteriormen
 
-                if (travelMode.equals("transit") && !accesible) {
-                    //Mostra avís estació no accesible i es calculen rutes alternatives
-                    if (!mostratAvis) {
-                        String info = "La estació ";
-                        Boolean un = true;
-                        for(String station : stations) {
-                            if (!un) info += " i ";
-                            info += station;
-                            un = false;
+                if (travelMode.equals("transit")) {
+                    if (!accesible) {
+                        //Mostra avís estació no accesible i es calculen rutes alternatives
+                        if (!mostratAvis) {
+                            String info = "La estació ";
+                            Boolean un = true;
+                            for (String station : stations) {
+                                if (!un) info += " i ";
+                                info += station;
+                                un = false;
+                            }
+                            info += " no és accessible.";
+                            alertDialog(info);
+                            mostratAvis = true;
                         }
-                        info += " no és accessible.";
-                        alertDialog(info);
-                        mostratAvis = true;
+                        myRoutes.get(i).setAccessible(false);
                     }
-                    myRoutes.get(i).setAccessible(false);
+                    else {
+                        myRoutes.get(i).setAccessible(true);
+                    }
                     enableRouteClick = true;
                 }
 
