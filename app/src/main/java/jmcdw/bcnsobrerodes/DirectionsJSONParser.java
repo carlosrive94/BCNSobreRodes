@@ -43,6 +43,10 @@ public class DirectionsJSONParser {
                         String mode = "";
                         String ini_station = null;
                         String end_station = null;
+                        Double ini_location_lat = null;
+                        Double ini_location_lng = null;;
+                        Double end_location_lat = null;
+                        Double end_location_lng = null;
                         LatLng ini_location = null;
                         LatLng end_location = null;
                         polyline = (String)((JSONObject)((JSONObject)jSteps.get(k)).get("polyline")).get("points");
@@ -51,8 +55,12 @@ public class DirectionsJSONParser {
                         if(mode.equals("TRANSIT")) {
                             ini_station = (String)((JSONObject)((JSONObject)((JSONObject)jSteps.get(k)).get("transit_details")).get("departure_stop")).get("name");
                             end_station = (String)((JSONObject)((JSONObject)((JSONObject)jSteps.get(k)).get("transit_details")).get("arrival_stop")).get("name");
-                            ini_location = (LatLng)((JSONObject)((JSONObject)((JSONObject)jSteps.get(k)).get("transit_details")).get("departure_stop")).get("location");
-                            end_location = (LatLng)((JSONObject)((JSONObject)((JSONObject)jSteps.get(k)).get("transit_details")).get("arrival_stop")).get("location");
+                            ini_location_lat = (Double)((JSONObject)((JSONObject) ((JSONObject) ((JSONObject) jSteps.get(k)).get("transit_details")).get("departure_stop")).get("location")).get("lat");
+                            ini_location_lng = (Double)((JSONObject)((JSONObject) ((JSONObject) ((JSONObject) jSteps.get(k)).get("transit_details")).get("departure_stop")).get("location")).get("lat");
+                            ini_location = new LatLng(ini_location_lat,ini_location_lng);
+                            end_location_lat = (Double)((JSONObject)((JSONObject) ((JSONObject) ((JSONObject) jSteps.get(k)).get("transit_details")).get("arrival_stop")).get("location")).get("lat");
+                            end_location_lng = (Double)((JSONObject)((JSONObject) ((JSONObject) ((JSONObject) jSteps.get(k)).get("transit_details")).get("arrival_stop")).get("location")).get("lat");
+                            end_location = new LatLng(end_location_lat,end_location_lng);
                         }
                         //Si es transit o driving no s'han de tenir en compte els obtacles que trobi
 
