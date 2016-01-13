@@ -9,10 +9,30 @@
     tools:context=".PlacePickerActivity">
 
     <TextView
-        android:id="@+id/infoPlace"
+        android:id="@+id/namePlace"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:textColor="#000000"
+        android:textSize="20dp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/addressPlace"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/namePlace"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:textStyle="italic" />
+
+    <TextView
+        android:id="@+id/infoPlace"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/addressPlace"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp" />
 
@@ -27,7 +47,8 @@
         <LinearLayout
             android:id="@+id/linearPuntua"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingTop="20dp">
 
             <RatingBar
                 android:id="@+id/ratingBar"
@@ -38,8 +59,8 @@
                 android:id="@+id/puntuaButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Puntua!"
                 android:background="#1d318c"
+                android:text="Puntua!"
                 android:textColor="#ffffff" />
         </LinearLayout>
 

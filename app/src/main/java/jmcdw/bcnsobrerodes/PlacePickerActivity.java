@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Html;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RatingBar;
@@ -28,7 +27,7 @@ public class PlacePickerActivity extends AppCompatActivity {
 
     private static final int PLACE_PICKER_REQUEST = 1;
     private Context context;
-    private TextView mInfo;
+    private TextView mName, mAddress, mInfo;
     private PlacesFunctions placesFunctions;
     private String id;
     private RatingBar ratingBar;
@@ -55,7 +54,9 @@ public class PlacePickerActivity extends AppCompatActivity {
             if (attributions == null) attributions = "";
             id = place.getId();
 
-            String info = name + "\n" + address + "\n" + Html.fromHtml(attributions);
+            mName.setText(name);
+            mAddress.setText(address);
+            String info = "";
 
             if (placesFunctions.esAccessible(id)) {
                 try {
@@ -96,6 +97,8 @@ public class PlacePickerActivity extends AppCompatActivity {
 
     private void initComponents() {
         puntuaLayout = (RelativeLayout) findViewById(R.id.puntuaPlace);
+        mName = (TextView) findViewById(R.id.namePlace);
+        mAddress = (TextView) findViewById(R.id.addressPlace);
         mInfo = (TextView) findViewById(R.id.infoPlace);
         ratingBar = (RatingBar) findViewById(R.id.ratingBar);
 
