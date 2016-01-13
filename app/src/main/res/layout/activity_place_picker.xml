@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/infoPlace"
-        android:visibility="invisible">
+        >
 
         <LinearLayout
             android:id="@+id/linearPuntua"
@@ -38,7 +38,9 @@
                 android:id="@+id/puntuaButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Puntua!" />
+                android:text="Puntua!"
+                android:background="#1d318c"
+                android:textColor="#ffffff" />
         </LinearLayout>
 
     </RelativeLayout>
@@ -50,7 +52,7 @@
         android:layout_height="50dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:background="@drawable/lup" />
+        android:background="@mipmap/search_icon" />
 
     <Button
         android:id="@+id/categoriesButton"
@@ -58,7 +60,7 @@
         android:layout_height="50dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
-        android:background="@drawable/carpeta"
+        android:background="@mipmap/categories_icon"
         android:nestedScrollingEnabled="false"
         android:onClick="onCategoriesNearby" />
 
