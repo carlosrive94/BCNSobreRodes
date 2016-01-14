@@ -1,5 +1,6 @@
 package jmcdw.bcnsobrerodes;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
@@ -39,6 +40,8 @@ public class CategoriesActivity extends AppCompatActivity implements
         buildGoogleAPIClient();
         buildCategorySpinner();
         mfilterResult = (TextView) findViewById(R.id.byCategResult);
+        mfilterResult.setTextColor(Color.parseColor("#1d318c"));
+        mfilterResult.setTextSize(18);
         mfilterResult.setMovementMethod(new ScrollingMovementMethod());
        }
 
