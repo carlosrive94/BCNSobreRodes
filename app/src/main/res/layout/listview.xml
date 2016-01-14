@@ -8,40 +8,49 @@
     <TableRow
         android:layout_margin="8dp">
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="45dp"
             android:layout_height="wrap_content"
             android:textSize="10sp"
             android:id="@+id/username"
+            android:layout_marginRight="5dp"
             />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="10sp"
-            android:id="@+id/longLat" />
-        <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="105dp"
             android:layout_height="wrap_content"
             android:textSize="10sp"
             android:id="@+id/description"
             />
+        <LinearLayout android:layout_height="35dp" android:layout_width="180dp">
 
         <Button
-            android:layout_width="70dp"
+            android:layout_width="60dp"
             android:layout_height="35dp"
             android:text="Approve"
             android:textSize="10sp"
             android:id="@+id/Approvebtn"
             android:focusable="false"
+            android:background="#2bdc1b" />
             />
 
         <Button
-            android:layout_width="70dp"
+            android:layout_width="60dp"
             android:layout_height="35dp"
             android:text="Deny"
             android:textSize="10sp"
             android:id="@+id/Denybtn"
             android:focusable="false"
+            android:background="#f9542a" />
             />
+        <Button
+            android:layout_width="60dp"
+            android:layout_height="35dp"
+            android:text="Detail"
+            android:textSize="10sp"
+            android:id="@+id/Detailbtn"
+            android:focusable="false"
+            android:background="#97a4df"
+            />
+        </LinearLayout>
     </TableRow >
 </TableLayout>

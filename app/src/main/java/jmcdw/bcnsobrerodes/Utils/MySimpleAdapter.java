@@ -13,6 +13,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 import java.util.Map;
@@ -63,7 +64,7 @@ public class MySimpleAdapter extends BaseAdapter {
     public View getView(final int position, View convertView, ViewGroup parent) {
         auxposition = position;
         convertView = mInflater.inflate(layoutID, null);
-        for (int i = 0; i < flag.length; i++) {
+        for (int i = 0; i < flag.length-1; i++) {
             if (convertView.findViewById(ItemIDs[i]) instanceof TextView) {
 
                 TextView tv = (TextView) convertView.findViewById(ItemIDs[i]);
@@ -77,7 +78,7 @@ public class MySimpleAdapter extends BaseAdapter {
                     @Override
                     public void onClick(View v) {
                         String username = (String) list.get(position).get(flag[0]);
-                        String[] latlong =  ((String) list.get(position).get(flag[1])).split(",");
+                        String[] latlong =  ((String) list.get(position).get(flag[2])).split(",");
                         double lat = Double.parseDouble(latlong[0]);
                         double lng = Double.parseDouble(latlong[1]);
 
@@ -98,7 +99,7 @@ public class MySimpleAdapter extends BaseAdapter {
                     @Override
                     public void onClick(View v) {
                         String username = (String) list.get(position).get(flag[0]);
-                        String[] latlong =  ((String) list.get(position).get(flag[1])).split(",");
+                        String[] latlong =  ((String) list.get(position).get(flag[2])).split(",");
                         double lat = Double.parseDouble(latlong[0]);
                         double lng = Double.parseDouble(latlong[1]);
 
@@ -118,6 +119,22 @@ public class MySimpleAdapter extends BaseAdapter {
                         Intent intent = new Intent(context, Verify.class);
                         ((Activity) context).finish();
                         context.startActivity(intent);
+                    }
+                });
+
+        ((Button)convertView.findViewById(R.id.Detailbtn)).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String username = (String) list.get(position).get(flag[0]);
+                        String[] latlong =  ((String) list.get(position).get(flag[2])).split(",");
+                        double lat = Double.parseDouble(latlong[0]);
+                        double lng = Double.parseDouble(latlong[1]);
+                        Toast.makeText(context, "\nAdded by: " + username
+                                        + "\nDescription: " + (String) list.get(position).get(flag[1]) +"\nLatitud: " + lat + "\nLongitud: " + lng,
+                                Toast.LENGTH_LONG).show();
+
+
                     }
                 });
         return convertView;

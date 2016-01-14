@@ -44,7 +44,7 @@ public class Delete extends AppCompatActivity {
         Intent intent = getIntent();
         MySimpleAdapter2 adapter = new MySimpleAdapter2(this, list,
                 R.layout.listview2, new String[] { "item1_username",
-                "item1_longLat", "item1_description" }, new int[] { R.id.username2, R.id.longLat2, R.id.description2
+                 "item1_description", "item1_longLat" }, new int[] { R.id.username2, R.id.description2
         });
         listView.setAdapter(adapter);
         try {

@@ -8,32 +8,36 @@
     <TableRow
         android:layout_margin="8dp">
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="45dp"
             android:layout_height="wrap_content"
             android:textSize="10sp"
             android:id="@+id/username2"
             />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="10sp"
-            android:id="@+id/longLat2" />
-        <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="105dp"
             android:layout_height="wrap_content"
             android:textSize="10sp"
             android:id="@+id/description2"
             />
-
+        <LinearLayout android:layout_height="35dp" android:layout_width="120dp">
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="60dp"
             android:layout_height="35dp"
             android:text="Delete"
             android:textSize="9sp"
             android:id="@+id/Deletebtn"
             android:focusable="false"
+            android:background="#ebef15" />
+        <Button
+            android:layout_width="60dp"
+            android:layout_height="35dp"
+            android:text="Detail"
+            android:textSize="10sp"
+            android:id="@+id/Detailbtn2"
+            android:focusable="false"
+            android:background="#97a4df"
             />
-
+        </LinearLayout>
     </TableRow >
 </TableLayout>

@@ -43,7 +43,7 @@ public class Verify extends AppCompatActivity {
         listView = (ListView) findViewById(R.id.listview);
         MySimpleAdapter adapter = new MySimpleAdapter(this, list,
                 R.layout.listview, new String[] { "item1_username",
-                "item1_longLat", "item1_description" }, new int[] { R.id.username, R.id.longLat, R.id.description
+                 "item1_description", "item1_longLat" }, new int[] { R.id.username, R.id.description
         });
         listView.setAdapter(adapter);
         try {
@@ -68,7 +68,9 @@ public class Verify extends AppCompatActivity {
                 String[] infoObstacle = tupla.split("-");
                 String user = infoObstacle[0];
                 double lat = Double.parseDouble(infoObstacle[1]);
+
                 double lng = Double.parseDouble(infoObstacle[2]);
+
                 String desc = infoObstacle[3];
 
                 Map<String, Object> map = new HashMap<String, Object>();

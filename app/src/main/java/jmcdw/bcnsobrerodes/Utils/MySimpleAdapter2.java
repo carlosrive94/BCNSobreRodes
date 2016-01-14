@@ -4,13 +4,31 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Address;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
+import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.PolyUtil;
 import java.util.List;
 import java.util.Map;
 
@@ -62,7 +80,7 @@ public class MySimpleAdapter2 extends BaseAdapter {
     public View getView(final int position, View convertView, ViewGroup parent) {
         auxposition = position;
         convertView = mInflater.inflate(layoutID, null);
-        for (int i = 0; i < flag.length; i++) {
+        for (int i = 0; i < flag.length - 1; i++) {
             if (convertView.findViewById(ItemIDs[i]) instanceof TextView) {
 
                 TextView tv = (TextView) convertView.findViewById(ItemIDs[i]);
@@ -76,7 +94,7 @@ public class MySimpleAdapter2 extends BaseAdapter {
                     @Override
                     public void onClick(View v) {
                         String username = (String) list.get(position).get(flag[0]);
-                        String[] latlong =  ((String) list.get(position).get(flag[1])).split(",");
+                        String[] latlong =  ((String) list.get(position).get(flag[2])).split(",");
                         double lat = Double.parseDouble(latlong[0]);
                         double lng = Double.parseDouble(latlong[1]);
 
@@ -91,7 +109,20 @@ public class MySimpleAdapter2 extends BaseAdapter {
                         context.startActivity(intent);
                     }
                 });
+        ((Button)convertView.findViewById(R.id.Detailbtn2)).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String username = (String) list.get(position).get(flag[0]);
+                        String[] latlong =  ((String) list.get(position).get(flag[2])).split(",");
+                        double lat = Double.parseDouble(latlong[0]);
+                        double lng = Double.parseDouble(latlong[1]);
 
+                        Toast.makeText(context, "\nAdded by: " + username
+                                        + "\nDescription: " + (String) list.get(position).get(flag[1]) +"\nLatitud: " + lat + "\nLongitud: " + lng,
+                                Toast.LENGTH_LONG).show();
+                    }
+                });
         return convertView;
     }
 

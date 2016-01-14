@@ -206,6 +206,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
     public void onMapLongClick(LatLng clicked_place) {
         clearView();
         //obtain_my_location
+
         Address address = getAddressFromLoc(clicked_place);
         clickedAddress = address.getAddressLine(0);
         myMap.addMarker(new MarkerOptions().position(clicked_place).title(clickedAddress));
