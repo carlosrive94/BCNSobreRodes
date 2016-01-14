@@ -36,7 +36,7 @@ public class CategoriesActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_categories);
-        Log.v(LOG_TAG, "After onCreate");
+
         buildGoogleAPIClient();
         buildCategorySpinner();
         mfilterResult = (TextView) findViewById(R.id.byCategResult);
@@ -108,7 +108,6 @@ public class CategoriesActivity extends AppCompatActivity implements
                     for (PlaceLikelihood placeLikelihood : likelyPlaces) {
                         Place place = placeLikelihood.getPlace();
                         if (place.getPlaceTypes().contains(mTipus) || mTipus == -1) {
-                            Log.v(LOG_TAG, place.getName().toString());
                             mfilterResult.append(place.getName().toString());
                             mfilterResult.append("\n");
                             mTipus = -1;
