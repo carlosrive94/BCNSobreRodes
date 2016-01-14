@@ -97,7 +97,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
     }
 
     public void carregaObstaclesDB() {
-        String query = "select latitud,longitud,descripcio from Obstacles";
+        String query = "select latitud,longitud,descripcio,verificat from Obstacles";
         Persistence persistence = new Persistence(this);
         try {
             String rows[] = persistence.execute(query, "select").get().split("/");
@@ -107,7 +107,8 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                 double lng = Double.parseDouble(infoObstacle[1]);
                 LatLng loc = new LatLng(lat,lng);
                 String desc = infoObstacle[2];
-                obstaclesDB.add(new Obstacle(loc,desc));
+                Boolean verif = (Integer.parseInt(infoObstacle[3]) == 1);
+                obstaclesDB.add(new Obstacle(loc,desc,verif));
             }
         } catch (Exception e) {
             alertDialog(e.getMessage());
@@ -117,10 +118,21 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
     public void carregaMarkersObstacles() {
         for (Obstacle obstacle : obstaclesDB) {
             String obstacleAddress = getAddressFromLoc(obstacle.getPosicio()).getAddressLine(0);
+            /*String desc = obstacle.getDescripcio();
+            if (!obstacle.esVerificat()) {
+                desc = desc + "\n\n" +"<no verificat>";
+            }
+            else {
+                desc = desc + "\n\n" +"<verificat>";
+            }*/
+            float alpha = 1;
+            if (!obstacle.esVerificat()) alpha = 0.5f;
+
             markersObstacles.add(myMap.addMarker(new MarkerOptions()
                     .position(obstacle.getPosicio())
                     .title(obstacleAddress)
                     .snippet(obstacle.getDescripcio())
+                    .alpha(alpha)
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))));
         }
     }
@@ -142,7 +154,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         for (Route route : myRoutes) {
             Polyline pol = route.getPol();
             try {
-                if (PolyUtil.isLocationOnPath(clicked_place, pol.getPoints(), true, 100)) {
+                if (PolyUtil.isLocationOnPath(clicked_place, pol.getPoints(), true, 70)) {
                     return route;
                 }
             }
@@ -786,7 +798,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
 
     public void onClickIncidenciaButton(View view) {
         //obrir pop-up incidencia
-        String verifBanned = "select esta_baneado from users " +
+        final String verifBanned = "select esta_baneado from users " +
                 "where username = \""+ username + "\"";
 
         Persistence persistence = new Persistence(this);
@@ -826,17 +838,18 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                                 } catch (Exception e) {
                                     alertDialog(e.getMessage());
                                 }
+                                Obstacle obstacle = new Obstacle(pos, comentari, false);
+                                String obstacleAddress = getAddressFromLoc(obstacle.getPosicio()).getAddressLine(0);
+                                markersObstacles.add(myMap.addMarker(new MarkerOptions()
+                                        .position(obstacle.getPosicio())
+                                        .title(obstacleAddress)
+                                        .snippet(obstacle.getDescripcio())
+                                        .alpha(0.5f)
+                                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))));
+                                obstaclesDB.add(obstacle);
                             } catch (LocalitzacioDisabled localitzacioDisabled) {
-                                localitzacioDisabled.printStackTrace();
+                                alertDialog("Per usar aquesta funcionalitat has d'activar la localització");
                             }
-                            Obstacle obstacle = new Obstacle(pos, comentari);
-                            String obstacleAddress = getAddressFromLoc(obstacle.getPosicio()).getAddressLine(0);
-                            markersObstacles.add(myMap.addMarker(new MarkerOptions()
-                                    .position(obstacle.getPosicio())
-                                    .title(obstacleAddress)
-                                    .snippet(obstacle.getDescripcio())
-                                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))));
-                            obstaclesDB.add(obstacle);
                         }
                     })
                     .setNegativeButton("Cancela", new DialogInterface.OnClickListener() {
@@ -847,7 +860,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
             builder.create().show();
         }
         else {
-            Toast.makeText(MapPane.this, "Sorry, you are a banned user", Toast.LENGTH_LONG).show();
+            Toast.makeText(MapPane.this, "Ho sentim, el teu usari està banejat", Toast.LENGTH_LONG).show();
         }
     }
 }
