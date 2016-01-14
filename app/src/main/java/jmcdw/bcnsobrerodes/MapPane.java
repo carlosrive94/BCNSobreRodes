@@ -655,31 +655,31 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                             accesible = false;
                             stations.add(step.getIni_station());
                             BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.senyalpeligro);
-                            markersObstacles.add(myMap.addMarker(new MarkerOptions()
+                           myMap.addMarker(new MarkerOptions()
                                     .position(step.getIni_location())
                                     .title(step.getIni_station())
-                                    .icon(icon)));
+                                    .icon(icon));
                         }
                         else {
-                            markersObstacles.add(myMap.addMarker(new MarkerOptions()
+                           myMap.addMarker(new MarkerOptions()
                                     .position(step.getIni_location())
                                     .title(step.getIni_station())
-                                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))));
+                                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
                         }
                         if(Vars.NAME_ESTACIONS_NO_ACCESIBLES.contains(step.getEnd_station())) {
                             accesible = false;
                             stations.add(step.getEnd_station());
                             BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.senyalpeligro);
-                            markersObstacles.add(myMap.addMarker(new MarkerOptions()
-                                    .position(step.getEnd_location())
-                                    .title(step.getEnd_station())
-                                    .icon(icon)));
+                           myMap.addMarker(new MarkerOptions()
+                                   .position(step.getEnd_location())
+                                   .title(step.getEnd_station())
+                                   .icon(icon));
                         }
                         else {
-                            markersObstacles.add(myMap.addMarker(new MarkerOptions()
+                            myMap.addMarker(new MarkerOptions()
                                     .position(step.getEnd_location())
                                     .title(step.getEnd_station())
-                                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))));
+                                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
                         }
                         // per tal que sigui una estació no adaptada s'ha de trobar la estació_ini
                         // o fi dins de la base de dades de estacions no adaptades
@@ -827,28 +827,34 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                             LatLng pos = null;
                             //sp = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
                             //username = sp.getString("username", null);
-                            try {
-                                pos = placesFunctions.whereIam();
-                                String query = "insert into Obstacles(latitud, longitud, descripcio, afegit_per)" +
-                                        " values(\"" + pos.latitude + "\", \"" + pos.longitude + "\", \"" +
-                                        comentari + "\", \"" + username + "\")";
-                                Persistence persistence = new Persistence(context);
+
+                            if(comentari.replaceAll("\\s","")=="" || comentari == null) {
+                                alertDialog("És obligatori escriure un comentari");
+                            }
+                            else{
                                 try {
-                                    persistence.execute(query, "modification");
-                                } catch (Exception e) {
-                                    alertDialog(e.getMessage());
+                                    pos = placesFunctions.whereIam();
+                                    String query = "insert into Obstacles(latitud, longitud, descripcio, afegit_per)" +
+                                            " values(\"" + pos.latitude + "\", \"" + pos.longitude + "\", \"" +
+                                            comentari + "\", \"" + username + "\")";
+                                    Persistence persistence = new Persistence(context);
+                                    try {
+                                        persistence.execute(query, "modification");
+                                    } catch (Exception e) {
+                                        alertDialog(e.getMessage());
+                                    }
+                                    Obstacle obstacle = new Obstacle(pos, comentari, false);
+                                    String obstacleAddress = getAddressFromLoc(obstacle.getPosicio()).getAddressLine(0);
+                                    markersObstacles.add(myMap.addMarker(new MarkerOptions()
+                                            .position(obstacle.getPosicio())
+                                            .title(obstacleAddress)
+                                            .snippet(obstacle.getDescripcio())
+                                            .alpha(0.5f)
+                                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))));
+                                    obstaclesDB.add(obstacle);
+                                } catch (LocalitzacioDisabled localitzacioDisabled) {
+                                    alertDialog("Per usar aquesta funcionalitat has d'activar la localització");
                                 }
-                                Obstacle obstacle = new Obstacle(pos, comentari, false);
-                                String obstacleAddress = getAddressFromLoc(obstacle.getPosicio()).getAddressLine(0);
-                                markersObstacles.add(myMap.addMarker(new MarkerOptions()
-                                        .position(obstacle.getPosicio())
-                                        .title(obstacleAddress)
-                                        .snippet(obstacle.getDescripcio())
-                                        .alpha(0.5f)
-                                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))));
-                                obstaclesDB.add(obstacle);
-                            } catch (LocalitzacioDisabled localitzacioDisabled) {
-                                alertDialog("Per usar aquesta funcionalitat has d'activar la localització");
                             }
                         }
                     })
