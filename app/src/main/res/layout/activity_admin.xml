@@ -15,7 +15,9 @@
         android:text="Verify"
         android:id="@+id/verifyButton"
         android:layout_gravity="center"
-        android:layout_marginTop="80dp" />
+        android:layout_marginTop="80dp"
+        android:background="#1d318c"
+        android:textColor="#ffffff" />
 
     <Button
         android:layout_width="150dp"
@@ -23,7 +25,9 @@
         android:text="Delete"
         android:id="@+id/deleteButton"
         android:layout_gravity="center"
-        android:layout_marginTop="20dp"/>
+        android:layout_marginTop="20dp"
+        android:background="#1d318c"
+        android:textColor="#ffffff" />
 
     <Button
         android:layout_width="150dp"
@@ -31,6 +35,8 @@
         android:text="Ban User"
         android:id="@+id/banButton"
         android:layout_gravity="center"
-        android:layout_marginTop="20dp"/>
+        android:layout_marginTop="20dp"
+        android:textColor="#ffffff"
+        android:background="#1d318c" />
 
 </LinearLayout>
