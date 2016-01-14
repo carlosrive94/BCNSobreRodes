@@ -16,16 +16,16 @@
             />
 
         <TextView
-            android:layout_width="105dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:textSize="10sp"
             android:id="@+id/description"
             />
-        <LinearLayout android:layout_height="35dp" android:layout_width="180dp">
+        <LinearLayout android:layout_height="25dp" android:layout_width="185dp">
 
         <Button
             android:layout_width="60dp"
-            android:layout_height="35dp"
+            android:layout_height="25dp"
             android:text="Approve"
             android:textSize="10sp"
             android:id="@+id/Approvebtn"
@@ -35,7 +35,7 @@
 
         <Button
             android:layout_width="60dp"
-            android:layout_height="35dp"
+            android:layout_height="25dp"
             android:text="Deny"
             android:textSize="10sp"
             android:id="@+id/Denybtn"
@@ -44,7 +44,7 @@
             />
         <Button
             android:layout_width="60dp"
-            android:layout_height="35dp"
+            android:layout_height="25dp"
             android:text="Detail"
             android:textSize="10sp"
             android:id="@+id/Detailbtn"

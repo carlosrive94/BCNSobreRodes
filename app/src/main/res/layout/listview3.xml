@@ -9,7 +9,7 @@
         android:layout_margin="8dp">
         <TextView
             android:layout_width="50dp"
-            android:layout_height="35dp"
+            android:layout_height="25dp"
             android:textSize="10sp"
             android:id="@+id/username3"
             />
@@ -26,10 +26,10 @@
             android:textSize="10sp"
             android:id="@+id/baneado" />
 
-        <LinearLayout android:layout_height="35dp" android:layout_width="150dp">
+        <LinearLayout android:layout_height="25dp" android:layout_width="150dp">
         <Button
             android:layout_width="60dp"
-            android:layout_height="35dp"
+            android:layout_height="25dp"
             android:text="Ban"
             android:textSize="9sp"
             android:id="@+id/Banbtn"
@@ -39,7 +39,7 @@
 
         <Button
             android:layout_width="60dp"
-            android:layout_height="35dp"
+            android:layout_height="25dp"
             android:text="Unban"
             android:textSize="9sp"
             android:id="@+id/Desbanbtn"

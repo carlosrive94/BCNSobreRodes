@@ -20,10 +20,10 @@
             android:textSize="10sp"
             android:id="@+id/description2"
             />
-        <LinearLayout android:layout_height="35dp" android:layout_width="120dp">
+        <LinearLayout android:layout_height="25dp" android:layout_width="120dp">
         <Button
             android:layout_width="60dp"
-            android:layout_height="35dp"
+            android:layout_height="25dp"
             android:text="Delete"
             android:textSize="9sp"
             android:id="@+id/Deletebtn"
@@ -31,7 +31,7 @@
             android:background="#ebef15" />
         <Button
             android:layout_width="60dp"
-            android:layout_height="35dp"
+            android:layout_height="25dp"
             android:text="Detail"
             android:textSize="10sp"
             android:id="@+id/Detailbtn2"
