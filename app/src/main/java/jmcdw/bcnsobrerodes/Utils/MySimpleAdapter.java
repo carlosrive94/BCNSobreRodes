@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +17,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
+
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import jmcdw.bcnsobrerodes.R;
@@ -130,8 +137,21 @@ public class MySimpleAdapter extends BaseAdapter {
                         String[] latlong =  ((String) list.get(position).get(flag[2])).split(",");
                         double lat = Double.parseDouble(latlong[0]);
                         double lng = Double.parseDouble(latlong[1]);
+
+                        LatLng loc = new LatLng(lat, lng);
+                        Geocoder geocoder;
+                        List<Address> addresses = new ArrayList<>();
+                        geocoder = new Geocoder(context, Locale.getDefault());
+                        try {
+                            addresses = geocoder.getFromLocation(loc.latitude, loc.longitude, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        Address addr = addresses.get(0);
+
                         Toast.makeText(context, "\nAdded by: " + username
-                                        + "\nDescription: " + (String) list.get(position).get(flag[1]) +"\nLatitud: " + lat + "\nLongitud: " + lng,
+                                        + "\nDescription: " + (String) list.get(position).get(flag[1]) +"\nLatitud: " + lat + "\nLongitud: " + lng
+                                + "\nPlace: " + addr.getAddressLine(0),
                                 Toast.LENGTH_LONG).show();
 
 
