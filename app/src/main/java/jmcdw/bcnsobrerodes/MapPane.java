@@ -671,7 +671,10 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                             for (int q=0; q<station_markers.size(); q++) {
                                 if (station_markers.get(q).getTitle().equals(step.getIni_station())) {
                                     printedStation = true;
-                                    break;
+                                    if (!station_markers.get(q).getSnippet().contains(String.valueOf(i))) {
+                                        station_markers.get(q).snippet(station_markers.get(q).getSnippet()+","+i);
+                                        break;
+                                    }
                                 }
                             }
                             if (!printedStation) {
@@ -679,6 +682,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                                 opts.position(step.getIni_location());
                                 opts.title(step.getIni_station());
                                 opts.icon(icon);
+                                opts.snippet("Ruta "+i);
                                 station_markers.add(opts);
                             }
                         }
@@ -687,13 +691,17 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                             for (int q=0; q<station_markers.size(); q++) {
                                 if (station_markers.get(q).getTitle().equals(step.getIni_station())) {
                                     printedStation = true;
-                                    break;
+                                    if (!station_markers.get(q).getSnippet().contains(String.valueOf(i))) {
+                                        station_markers.get(q).snippet(station_markers.get(q).getSnippet()+","+i);
+                                        break;
+                                    }
                                 }
                             }
                             if (!printedStation) {
                                 MarkerOptions opts = new MarkerOptions();
                                 opts.position(step.getIni_location());
                                 opts.title(step.getIni_station());
+                                opts.snippet("Ruta " +i);
                                 opts.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
                                 station_markers.add(opts);
                             }
@@ -706,13 +714,17 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                             for (int q=0; q<station_markers.size(); q++) {
                                 if (station_markers.get(q).getTitle().equals(step.getIni_station())) {
                                     printedStation = true;
-                                    break;
+                                    if (!station_markers.get(q).getSnippet().contains(String.valueOf(i))) {
+                                        station_markers.get(q).snippet(station_markers.get(q).getSnippet()+","+i);
+                                        break;
+                                    }
                                 }
                             }
                             if (!printedStation) {
                                 MarkerOptions opts = new MarkerOptions();
                                 opts.position(step.getEnd_location());
                                 opts.title(step.getEnd_station());
+                                opts.snippet("Ruta " + i);
                                 opts.icon(icon);
                                 station_markers.add(opts);
                             }
@@ -722,13 +734,17 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                             for (int q=0; q<station_markers.size(); q++) {
                                 if (station_markers.get(q).getTitle().equals(step.getIni_station())) {
                                     printedStation = true;
-                                    break;
+                                    if (!station_markers.get(q).getSnippet().contains(String.valueOf(i))) {
+                                        station_markers.get(q).snippet(station_markers.get(q).getSnippet()+","+i);
+                                        break;
+                                    }
                                 }
                             }
                             if (!printedStation) {
                                 MarkerOptions opts = new MarkerOptions();
                                 opts.position(step.getEnd_location());
                                 opts.title(step.getEnd_station());
+                                opts.snippet("Ruta "+i);
                                 opts.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
                                 station_markers.add(opts);
                             }
