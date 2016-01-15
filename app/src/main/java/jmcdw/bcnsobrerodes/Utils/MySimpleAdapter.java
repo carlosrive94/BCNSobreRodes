@@ -147,13 +147,19 @@ public class MySimpleAdapter extends BaseAdapter {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                        Address addr = addresses.get(0);
-
-                        Toast.makeText(context, "\nAdded by: " + username
-                                        + "\nDescription: " + (String) list.get(position).get(flag[1]) +"\nLatitud: " + lat + "\nLongitud: " + lng
-                                + "\nPlace: " + addr.getAddressLine(0),
-                                Toast.LENGTH_LONG).show();
-
+                        Address addr;
+                        try {
+                            addr = addresses.get(0);
+                            Toast.makeText(context, "\nAdded by: " + username
+                                            + "\nDescription: " + (String) list.get(position).get(flag[1]) +"\nLatitud: " + lat + "\nLongitud: " + lng
+                                            + "\nPlace: " + addr.getAddressLine(0),
+                                    Toast.LENGTH_LONG).show();
+                        }
+                        catch (Exception e) {
+                            Toast.makeText(context, "\nAdded by: " + username
+                                            + "\nDescription: " + (String) list.get(position).get(flag[1]) +"\nLatitud: " + lat + "\nLongitud: " + lng,
+                                    Toast.LENGTH_LONG).show();
+                        }
 
                     }
                 });
