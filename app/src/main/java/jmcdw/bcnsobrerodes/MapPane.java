@@ -704,7 +704,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                             BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.senyalpeligro);
                             Boolean printedStation = false;
                             for (int q=0; q<station_markers.size(); q++) {
-                                if (station_markers.get(q).getTitle().equals(step.getIni_station())) {
+                                if (station_markers.get(q).getTitle().equals(step.getEnd_station())) {
                                     printedStation = true;
                                     break;
                                 }
@@ -720,7 +720,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                         else {
                             Boolean printedStation = false;
                             for (int q=0; q<station_markers.size(); q++) {
-                                if (station_markers.get(q).getTitle().equals(step.getIni_station())) {
+                                if (station_markers.get(q).getTitle().equals(step.getEnd_station())) {
                                     printedStation = true;
                                     break;
                                 }
