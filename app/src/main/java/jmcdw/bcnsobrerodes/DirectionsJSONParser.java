@@ -56,10 +56,10 @@ public class DirectionsJSONParser {
                             ini_station = (String)((JSONObject)((JSONObject)((JSONObject)jSteps.get(k)).get("transit_details")).get("departure_stop")).get("name");
                             end_station = (String)((JSONObject)((JSONObject)((JSONObject)jSteps.get(k)).get("transit_details")).get("arrival_stop")).get("name");
                             ini_location_lat = (Double)((JSONObject)((JSONObject) ((JSONObject) ((JSONObject) jSteps.get(k)).get("transit_details")).get("departure_stop")).get("location")).get("lat");
-                            ini_location_lng = (Double)((JSONObject)((JSONObject) ((JSONObject) ((JSONObject) jSteps.get(k)).get("transit_details")).get("departure_stop")).get("location")).get("lat");
+                            ini_location_lng = (Double)((JSONObject)((JSONObject) ((JSONObject) ((JSONObject) jSteps.get(k)).get("transit_details")).get("departure_stop")).get("location")).get("lng");
                             ini_location = new LatLng(ini_location_lat,ini_location_lng);
                             end_location_lat = (Double)((JSONObject)((JSONObject) ((JSONObject) ((JSONObject) jSteps.get(k)).get("transit_details")).get("arrival_stop")).get("location")).get("lat");
-                            end_location_lng = (Double)((JSONObject)((JSONObject) ((JSONObject) ((JSONObject) jSteps.get(k)).get("transit_details")).get("arrival_stop")).get("location")).get("lat");
+                            end_location_lng = (Double)((JSONObject)((JSONObject) ((JSONObject) ((JSONObject) jSteps.get(k)).get("transit_details")).get("arrival_stop")).get("location")).get("lng");
                             end_location = new LatLng(end_location_lat,end_location_lng);
                         }
                         //Si es transit o driving no s'han de tenir en compte els obtacles que trobi
