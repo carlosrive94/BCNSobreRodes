@@ -635,6 +635,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
             ArrayList<LatLng> points = null;
             PolylineOptions lineOptions = null;
             MarkerOptions markerOptions = new MarkerOptions();
+            ArrayList<MarkerOptions> station_markers = new ArrayList<>();
             // Traversing through all the routes
             for (int i = 0; i < result.size(); i++) {
                 Boolean accesible = true;
@@ -655,31 +656,71 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                             accesible = false;
                             stations.add(step.getIni_station());
                             BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.senyalpeligro);
-                           myMap.addMarker(new MarkerOptions()
-                                    .position(step.getIni_location())
-                                    .title(step.getIni_station())
-                                    .icon(icon));
+                            Boolean printedStation = false;
+                            for (int q=0; q<station_markers.size(); q++) {
+                                if (station_markers.get(q).getTitle().equals(step.getIni_station())) {
+                                    printedStation = true;
+                                    break;
+                                }
+                            }
+                            if (!printedStation) {
+                                MarkerOptions opts = new MarkerOptions();
+                                opts.position(step.getIni_location());
+                                opts.title(step.getIni_station());
+                                opts.icon(icon);
+                                station_markers.add(opts);
+                            }
                         }
                         else {
-                           myMap.addMarker(new MarkerOptions()
-                                    .position(step.getIni_location())
-                                    .title(step.getIni_station())
-                                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
+                            Boolean printedStation = false;
+                            for (int q=0; q<station_markers.size(); q++) {
+                                if (station_markers.get(q).getTitle().equals(step.getIni_station())) {
+                                    printedStation = true;
+                                    break;
+                                }
+                            }
+                            if (!printedStation) {
+                                MarkerOptions opts = new MarkerOptions();
+                                opts.position(step.getIni_location());
+                                opts.title(step.getIni_station());
+                                opts.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                                station_markers.add(opts);
+                            }
                         }
                         if(Vars.NAME_ESTACIONS_NO_ACCESIBLES.contains(step.getEnd_station())) {
                             accesible = false;
                             stations.add(step.getEnd_station());
                             BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.senyalpeligro);
-                           myMap.addMarker(new MarkerOptions()
-                                   .position(step.getEnd_location())
-                                   .title(step.getEnd_station())
-                                   .icon(icon));
+                            Boolean printedStation = false;
+                            for (int q=0; q<station_markers.size(); q++) {
+                                if (station_markers.get(q).getTitle().equals(step.getIni_station())) {
+                                    printedStation = true;
+                                    break;
+                                }
+                            }
+                            if (!printedStation) {
+                                MarkerOptions opts = new MarkerOptions();
+                                opts.position(step.getEnd_location());
+                                opts.title(step.getEnd_station());
+                                opts.icon(icon);
+                                station_markers.add(opts);
+                            }
                         }
                         else {
-                            myMap.addMarker(new MarkerOptions()
-                                    .position(step.getEnd_location())
-                                    .title(step.getEnd_station())
-                                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
+                            Boolean printedStation = false;
+                            for (int q=0; q<station_markers.size(); q++) {
+                                if (station_markers.get(q).getTitle().equals(step.getIni_station())) {
+                                    printedStation = true;
+                                    break;
+                                }
+                            }
+                            if (!printedStation) {
+                                MarkerOptions opts = new MarkerOptions();
+                                opts.position(step.getEnd_location());
+                                opts.title(step.getEnd_station());
+                                opts.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                                station_markers.add(opts);
+                            }
                         }
                         // per tal que sigui una estació no adaptada s'ha de trobar la estació_ini
                         // o fi dins de la base de dades de estacions no adaptades
@@ -782,6 +823,12 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
             }
             //mostro la info de la ruta principal
             displayInfo("Ruta 1\nDistància: " + myRoutes.get(0).getDist() + "\nTemps estimat: " + myRoutes.get(0).getTemps());
+            //pinto els markers de les estacions si cal
+            if(travelMode.equals("transit")) {
+                for (MarkerOptions markerOpts : station_markers) {
+                    myMap.addMarker(markerOpts);
+                }
+            }
         }
     }
 
