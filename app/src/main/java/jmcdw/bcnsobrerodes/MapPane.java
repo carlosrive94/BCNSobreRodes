@@ -117,23 +117,23 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
 
     public void carregaMarkersObstacles() {
         for (Obstacle obstacle : obstaclesDB) {
-            String obstacleAddress = getAddressFromLoc(obstacle.getPosicio()).getAddressLine(0);
-            /*String desc = obstacle.getDescripcio();
-            if (!obstacle.esVerificat()) {
-                desc = desc + "\n\n" +"<no verificat>";
+            try {
+                Address addr = getAddressFromLoc(obstacle.getPosicio());
+                String obstacleAddress = addr.getAddressLine(0);
+                float alpha = 1;
+                if (!obstacle.esVerificat()) alpha = 0.5f;
+                markersObstacles.add(myMap.addMarker(new MarkerOptions()
+                        .position(obstacle.getPosicio())
+                        .title(obstacleAddress)
+                        .snippet(obstacle.getDescripcio())
+                        .alpha(alpha)
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))));
             }
-            else {
-                desc = desc + "\n\n" +"<verificat>";
-            }*/
-            float alpha = 1;
-            if (!obstacle.esVerificat()) alpha = 0.5f;
 
-            markersObstacles.add(myMap.addMarker(new MarkerOptions()
-                    .position(obstacle.getPosicio())
-                    .title(obstacleAddress)
-                    .snippet(obstacle.getDescripcio())
-                    .alpha(alpha)
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))));
+            catch (IOException e) {
+                alertDialog(e.getMessage());
+                break;
+            }
         }
     }
 
@@ -218,23 +218,23 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
     public void onMapLongClick(LatLng clicked_place) {
         clearView();
         //obtain_my_location
-
-        Address address = getAddressFromLoc(clicked_place);
-        clickedAddress = address.getAddressLine(0);
-        myMap.addMarker(new MarkerOptions().position(clicked_place).title(clickedAddress));
-        myMap.animateCamera(CameraUpdateFactory.newLatLng(clicked_place));
+        try {
+            Address address = getAddressFromLoc(clicked_place);
+            clickedAddress = address.getAddressLine(0);
+            myMap.addMarker(new MarkerOptions().position(clicked_place).title(clickedAddress));
+            myMap.animateCamera(CameraUpdateFactory.newLatLng(clicked_place));
+        }
+        catch (IOException e) {
+            alertDialog(e.getMessage());
+        }
     }
 
     //Pre: loc is not null
-    public Address getAddressFromLoc(LatLng loc) {
+    public Address getAddressFromLoc(LatLng loc) throws IOException {
         Geocoder geocoder;
-        List<Address> addresses = new ArrayList<>();
+        List<Address> addresses;
         geocoder = new Geocoder(this, Locale.getDefault());
-        try {
-            addresses = geocoder.getFromLocation(loc.latitude, loc.longitude, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        addresses = geocoder.getFromLocation(loc.latitude, loc.longitude, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
         return addresses.get(0);
     }
 
@@ -281,32 +281,23 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         if (location != null || !location.equals("")) {
             try {
                 addressList = geocoder.getFromLocationName(location, 1);
+                Address address = addressList.get(0);
+                LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+                myMap.addMarker(new MarkerOptions().position(latLng).title(address.getAddressLine(0)));
+                myMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
             } catch (IOException e) {
-                e.printStackTrace();
+                alertDialog(e.getMessage());
             }
-            Address address = addressList.get(0);
-            LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-            myMap.addMarker(new MarkerOptions().position(latLng).title(address.getAddressLine(0)));
-            myMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
         }
     }
 
-    //retorna string buit si la localització no està activada
-    private String getMyLocationAddress() {
+    //LocalitzacioDisabled => localització no activada, IOException => error del Geocoder
+    private String getMyLocationAddress() throws LocalitzacioDisabled, IOException {
         String res = "";
         boolean locationEnabled = true;
-        LatLng loc = null;
-        try {
-            loc = placesFunctions.whereIam();
-        } catch (LocalitzacioDisabled localitzacioDisabled) {
-            locationEnabled = false;
-        }
-
-        if (locationEnabled) {
-            //get info from current location
-            Address address_loc = getAddressFromLoc(loc);
-            res = address_loc.getAddressLine(0);
-        }
+        LatLng loc = placesFunctions.whereIam();
+        Address address_loc = getAddressFromLoc(loc);
+        res = address_loc.getAddressLine(0);
         return res;
     }
 
@@ -338,13 +329,22 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
         walking_rbtn.setChecked(true);
 
         if(clickedAddress != "") {
-            String my_location = getMyLocationAddress();
-            if (my_location != "") {
-                EditText from_txt = (EditText) dialog.findViewById(R.id.FromText);
-                from_txt.setText(my_location);
+            try {
+                String my_location = getMyLocationAddress();
+                if (my_location != "") {
+                    EditText from_txt = (EditText) dialog.findViewById(R.id.FromText);
+                    from_txt.setText(my_location);
+                }
+                EditText to_txt = (EditText) dialog.findViewById(R.id.ToText);
+                to_txt.setText(clickedAddress);
             }
-            EditText to_txt = (EditText) dialog.findViewById(R.id.ToText);
-            to_txt.setText(clickedAddress);
+            catch (LocalitzacioDisabled l) {
+                alertDialog("Per usar aquesta funcionalitat cal activar la localització");
+            }
+            catch (IOException e) {
+                alertDialog(e.getMessage());
+            }
+
         }
 
         Button loc_from = (Button) dialog.findViewById(R.id.btn_LocFrom);
@@ -356,11 +356,16 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
             @Override
             public void onClick(View v) {
                 EditText from_text = (EditText) dialog.findViewById(R.id.FromText);
-                String my_location = getMyLocationAddress();
-                if (my_location == "")
+                try {
+                    String my_location = getMyLocationAddress();
                     alertDialog("Per usar aquesta funcionalitat has d'activar la localització");
-                else {
                     from_text.setText(my_location);
+                }
+                catch (LocalitzacioDisabled l) {
+                    alertDialog("Per usar aquesta funcionalitat has d'activar la localització");
+                }
+                catch (IOException e) {
+                    alertDialog(e.getMessage());
                 }
             }
         });
@@ -369,11 +374,15 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
             @Override
             public void onClick(View v) {
                 EditText from_text = (EditText) dialog.findViewById(R.id.ToText);
-                String my_location = getMyLocationAddress();
-                if (my_location == "")
-                    alertDialog("Per usar aquesta funcionalitat has d'activar la localització");
-                else {
+                try {
+                    String my_location = getMyLocationAddress();
                     from_text.setText(my_location);
+                }
+                catch (LocalitzacioDisabled l){
+                    alertDialog("Per usar aquesta funcionalitat has d'activar la localització");
+                }
+                catch (IOException e) {
+                    alertDialog(e.getMessage());
                 }
             }
         });
@@ -400,7 +409,8 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                         //afegim ", Barcelona" al final del string
                         addressList = geocoder.getFromLocationName(from_str + ", Barcelona", 1);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        alertDialog(e.getMessage());
+                        return;
                     }
                     addr_from = addressList.get(0);
                 }
@@ -409,7 +419,8 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                         //afegim ", Barcelona" al final del string
                         addressList = geocoder.getFromLocationName(to_str + ", Barcelona", 1);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        alertDialog(e.getMessage());
+                        return;
                     }
                     addr_to = addressList.get(0);
                 }
@@ -891,14 +902,19 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                                         alertDialog(e.getMessage());
                                     }
                                     Obstacle obstacle = new Obstacle(pos, comentari, false);
-                                    String obstacleAddress = getAddressFromLoc(obstacle.getPosicio()).getAddressLine(0);
-                                    markersObstacles.add(myMap.addMarker(new MarkerOptions()
-                                            .position(obstacle.getPosicio())
-                                            .title(obstacleAddress)
-                                            .snippet(obstacle.getDescripcio())
-                                            .alpha(0.5f)
-                                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))));
-                                    obstaclesDB.add(obstacle);
+                                    try {
+                                        String obstacleAddress = getAddressFromLoc(obstacle.getPosicio()).getAddressLine(0);
+                                        markersObstacles.add(myMap.addMarker(new MarkerOptions()
+                                                .position(obstacle.getPosicio())
+                                                .title(obstacleAddress)
+                                                .snippet(obstacle.getDescripcio())
+                                                .alpha(0.5f)
+                                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))));
+                                        obstaclesDB.add(obstacle);
+                                    }
+                                    catch (IOException e) {
+                                        Toast.makeText(MapPane.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                                    }
                                 } catch (LocalitzacioDisabled localitzacioDisabled) {
                                     alertDialog("Per usar aquesta funcionalitat has d'activar la localització");
                                 }
