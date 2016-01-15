@@ -285,7 +285,7 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                 LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
                 myMap.addMarker(new MarkerOptions().position(latLng).title(address.getAddressLine(0)));
                 myMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-            } catch (IOException e) {
+            } catch (Exception e) {
                 alertDialog(e.getMessage());
             }
         }
@@ -358,7 +358,6 @@ public class MapPane extends AppCompatActivity implements OnMapReadyCallback, On
                 EditText from_text = (EditText) dialog.findViewById(R.id.FromText);
                 try {
                     String my_location = getMyLocationAddress();
-                    alertDialog("Per usar aquesta funcionalitat has d'activar la localització");
                     from_text.setText(my_location);
                 }
                 catch (LocalitzacioDisabled l) {
